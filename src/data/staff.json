@@ -1,0 +1,53 @@
+[
+  {
+    "nome": "Alfonso",
+    "cognome": "D'Anna",
+    "ruolo": "Mister",
+    "area": "calcistico",
+    "descrizione": "Guida tecnica del gruppo e riferimento per l'identita sportiva della squadra.",
+    "foto": "/images/staff/danna-alfonso.jpg"
+  },
+  {
+    "nome": "Antonio",
+    "cognome": "Cipriano",
+    "ruolo": "Accompagnatore",
+    "area": "calcistico",
+    "descrizione": "Supporta il gruppo nelle attivita organizzative e nella gestione operativa delle giornate evento."
+  },
+  {
+    "nome": "Edoardo",
+    "cognome": "Marcucci",
+    "ruolo": "Socio fondatore",
+    "area": "istituzionale",
+    "descrizione": "Contribuisce alla visione e allo sviluppo del progetto fin dalle sue origini."
+  },
+  {
+    "nome": "Alessandro",
+    "cognome": "Arciero",
+    "ruolo": "Media e Videoreport",
+    "area": "istituzionale",
+    "descrizione": "Segue il racconto visivo della squadra e valorizza eventi, contenuti e presenza digitale.",
+    "foto": "/images/staff/arciero-alessandro.jpg"
+  },
+  {
+    "nome": "Flavio",
+    "cognome": "Moretti",
+    "ruolo": "Responsabile Food & Beverage",
+    "area": "istituzionale",
+    "descrizione": "Coordina gli aspetti logistici e relazionali legati all'ospitalita e ai momenti di rappresentanza."
+  },
+  {
+    "nome": "Joseph",
+    "cognome": "Fiore",
+    "ruolo": "Presidente esecutivo",
+    "area": "istituzionale",
+    "descrizione": "Presidia l'indirizzo esecutivo del progetto e il coordinamento delle attivita principali."
+  },
+  {
+    "nome": "Patrizio",
+    "cognome": "Pasqualini",
+    "ruolo": "Ufficio stampa",
+    "area": "istituzionale",
+    "descrizione": "Gestisce i rapporti con la stampa e supporta la comunicazione esterna della Nazionale."
+  }
+]

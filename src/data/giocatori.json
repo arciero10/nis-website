@@ -1,0 +1,37 @@
+[
+  { "nome": "Tommaso", "cognome": "Mascioli", "ruolo": "Portiere", "categoria": "portieri", "numero": null, "note": null },
+  { "nome": "Michele", "cognome": "Stipulante", "ruolo": "Portiere", "categoria": "portieri", "numero": null, "note": null },
+
+  { "nome": "Fabrizio", "cognome": "Cherubini", "ruolo": "Difensore", "categoria": "difensori", "numero": null, "note": null },
+  { "nome": "Fabrizio", "cognome": "Cioffi", "ruolo": "Difensore", "categoria": "difensori", "numero": null, "note": null },
+  { "nome": "Alessandro", "cognome": "Figlioli", "ruolo": "Difensore", "categoria": "difensori", "numero": null, "note": null },
+  { "nome": "Massimo", "cognome": "Meucci", "ruolo": "Difensore", "categoria": "difensori", "numero": null, "note": null },
+  { "nome": "Alessio", "cognome": "Piredda", "ruolo": "Difensore", "categoria": "difensori", "numero": null, "note": null },
+  { "nome": "Valerio", "cognome": "Quattrini", "ruolo": "Difensore", "categoria": "difensori", "numero": null, "note": null },
+  { "nome": "Daniele", "cognome": "Rocchi", "ruolo": "Difensore", "categoria": "difensori", "numero": null, "note": null },
+  { "nome": "Luca", "cognome": "Russo", "ruolo": "Difensore", "categoria": "difensori", "numero": null, "note": null },
+  { "nome": "Roberto", "cognome": "Vigna", "ruolo": "Difensore", "categoria": "difensori", "numero": null, "note": null },
+  { "nome": "Giovanni", "cognome": "Vozzi", "ruolo": "Difensore", "categoria": "difensori", "numero": null, "note": "Vice Capitano" },
+
+  { "nome": "Daniele", "cognome": "Burattini", "ruolo": "Centrocampista", "categoria": "centrocampisti", "numero": null, "note": null },
+  { "nome": "Riccardo", "cognome": "Cardinali", "ruolo": "Centrocampista", "categoria": "centrocampisti", "numero": null, "note": null },
+  { "nome": "Riccardo", "cognome": "Cerroni", "ruolo": "Centrocampista", "categoria": "centrocampisti", "numero": 20, "note": null, "foto": "/images/giocatori/cerroni-riccardo.jpg" },
+  { "nome": "Riccardo", "cognome": "Ciocchetti", "ruolo": "Centrocampista", "categoria": "centrocampisti", "numero": null, "note": null },
+  { "nome": "Luca", "cognome": "Cipriano", "ruolo": "Centrocampista", "categoria": "centrocampisti", "numero": 7, "note": "Capitano" },
+  { "nome": "Samuele", "cognome": "Ilari", "ruolo": "Centrocampista", "categoria": "centrocampisti", "numero": null, "note": null },
+  { "nome": "Giuseppe", "cognome": "Macrì", "ruolo": "Centrocampista", "categoria": "centrocampisti", "numero": null, "note": null },
+
+  { "nome": "Marco", "cognome": "Cerroni", "ruolo": "Attaccante", "categoria": "attaccanti", "numero": null, "note": null },
+  { "nome": "Matteo", "cognome": "Renzi", "ruolo": "Attaccante", "categoria": "attaccanti", "numero": null, "note": null },
+  { "nome": "Lorenzo", "cognome": "Spiniello", "ruolo": "Attaccante", "categoria": "attaccanti", "numero": null, "note": null },
+  { "nome": "Maurizio", "cognome": "Starace", "ruolo": "Attaccante", "categoria": "attaccanti", "numero": null, "note": null },
+  { "nome": "Andrea", "cognome": "Tantalo", "ruolo": "Attaccante", "categoria": "attaccanti", "numero": null, "note": null },
+
+  { "nome": "Alfonso", "cognome": "D'Anna", "ruolo": "Mister", "categoria": "staff", "numero": null, "note": null },
+  { "nome": "Antonio", "cognome": "Cipriano", "ruolo": "Accompagnatore", "categoria": "staff", "numero": null, "note": null },
+  { "nome": "Edoardo", "cognome": "Marcucci", "ruolo": "Socio fondatore", "categoria": "staff", "numero": null, "note": null },
+  { "nome": "Alessandro", "cognome": "Arciero", "ruolo": "Media e Videoreport", "categoria": "staff", "numero": null, "note": null },
+  { "nome": "Flavio", "cognome": "Moretti", "ruolo": "Responsabile Food & Beverage", "categoria": "staff", "numero": null, "note": null },
+  { "nome": "Joseph", "cognome": "Fiore", "ruolo": "Presidente esecutivo", "categoria": "staff", "numero": null, "note": null },
+  { "nome": "Patrizio", "cognome": "Pasqualini", "ruolo": "Ufficio stampa", "categoria": "staff", "numero": null, "note": null }
+]
