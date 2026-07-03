@@ -36,12 +36,14 @@ jobs:
         run: |
           rm -rf deploy
           mkdir -p deploy
-          cp -R .next/standalone/. deploy/
-          mkdir -p deploy/public
-          cp -R public/. deploy/public/
-          mkdir -p deploy/.next/static
-          cp -R .next/static/. deploy/.next/static/
+          cp -a .next/standalone/. deploy/
+          cp -a public deploy/public
+          mkdir -p deploy/.next
+          cp -a .next/static deploy/.next/static
+          ls -la deploy
+          ls -la deploy/.next
           test -f deploy/server.js
+          test -f deploy/.next/BUILD_ID
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
