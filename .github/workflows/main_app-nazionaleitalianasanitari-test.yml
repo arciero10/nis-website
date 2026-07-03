@@ -39,11 +39,25 @@ jobs:
           cp -a .next/standalone/. deploy/
           cp -a public deploy/public
           mkdir -p deploy/.next
+          cp -a .next/BUILD_ID deploy/.next/BUILD_ID
           cp -a .next/static deploy/.next/static
+          cp -a .next/server deploy/.next/server
+          cp -a .next/routes-manifest.json deploy/.next/routes-manifest.json || true
+          cp -a .next/prerender-manifest.json deploy/.next/prerender-manifest.json || true
+          cp -a .next/build-manifest.json deploy/.next/build-manifest.json || true
+          cp -a .next/app-build-manifest.json deploy/.next/app-build-manifest.json || true
+          cp -a .next/server-reference-manifest.json deploy/.next/server-reference-manifest.json || true
+          cp -a .next/required-server-files.json deploy/.next/required-server-files.json || true
+          echo "DEPLOY ROOT"
           ls -la deploy
+          echo "DEPLOY .NEXT"
           ls -la deploy/.next
+          echo "DEPLOY .NEXT SERVER"
+          ls -la deploy/.next/server
           test -f deploy/server.js
           test -f deploy/.next/BUILD_ID
+          test -d deploy/.next/server
+          test -d deploy/.next/static
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
