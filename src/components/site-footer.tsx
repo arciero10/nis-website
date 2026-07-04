@@ -1,12 +1,54 @@
 import Link from "next/link";
 
-import { contactInfo, footerColumns, socialLinks } from "@/lib/site-data";
+import { contactInfo, footerColumns, socialLinks, sponsors } from "@/lib/site-data";
 
 export function SiteFooter() {
   return (
     <footer className="mt-auto border-t border-white/10 bg-[linear-gradient(180deg,#020617_0%,#0f172a_100%)] text-white">
       <div className="mx-auto max-w-7xl px-6 py-14">
-        <div className="grid gap-8 rounded-[2rem] border border-white/10 bg-white/5 p-8 shadow-2xl backdrop-blur-sm lg:grid-cols-[1.1fr_0.9fr]">
+        <section className="rounded-[2rem] border border-white/10 bg-white/5 p-8 shadow-2xl backdrop-blur-sm">
+          <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+            <div className="max-w-2xl">
+              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-sky-300">
+                Sponsor e partner
+              </p>
+              <h2 className="mt-4 text-3xl font-bold tracking-tight md:text-4xl">
+                Una rete che sostiene il progetto con credibilita e visione
+              </h2>
+            </div>
+            <Link
+              href="/sponsor"
+              className="inline-flex w-fit items-center rounded-full border border-white/15 bg-white/10 px-5 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white transition hover:bg-white/15"
+            >
+              Scopri tutti gli sponsor
+            </Link>
+          </div>
+
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {sponsors.map((sponsor, index) => (
+              <Link
+                key={sponsor.name}
+                href="/sponsor"
+                className="group flex min-h-28 cursor-pointer flex-col justify-between rounded-[1.5rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.1)_0%,rgba(255,255,255,0.04)_100%)] p-5 transition hover:border-sky-300/35 hover:bg-white/10"
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-sky-200/80">
+                    {index === 0 ? "Sponsor" : index === 1 ? "Partner" : index === 2 ? "Supporter" : "Partner"}
+                  </span>
+                  <span className="h-px flex-1 bg-white/10" />
+                </div>
+                <div className="mt-4">
+                  <p className="text-lg font-bold uppercase tracking-[0.08em] text-white">
+                    {sponsor.name}
+                  </p>
+                  <p className="mt-2 text-sm text-slate-300">{sponsor.category}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        <div className="mt-10 grid gap-8 rounded-[2rem] border border-white/10 bg-white/5 p-8 shadow-2xl backdrop-blur-sm lg:grid-cols-[1.1fr_0.9fr]">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-sky-300">
               Nazionale Italiana Sanitari
@@ -70,50 +112,61 @@ export function SiteFooter() {
             © All rights reserved. Sito realizzato da PANTELEIA - Associazione Promozione
             Sociale. CF: 96647400587
             <br />
-            Iscrizione RUNTS: Rep. n. 165890 - Det. n. G03684 del 19/03/2026.
+            Iscrizione RUNTS: Rep. n. 165890 – Det. n. G03684 del 19/03/2026.
           </p>
 
-          <div className="flex flex-wrap gap-4 md:justify-end">
-            <a
-              href={socialLinks.instagram}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="transition hover:text-white"
-            >
-              Instagram
-            </a>
-            <a
-              href={socialLinks.facebook}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="transition hover:text-white"
-            >
-              Facebook
-            </a>
-            <a
-              href={socialLinks.youtube}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="transition hover:text-white"
-            >
-              YouTube
-            </a>
-            <a
-              href={socialLinks.x}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="transition hover:text-white"
-            >
-              X
-            </a>
-            <a
-              href={socialLinks.tiktok}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="transition hover:text-white"
-            >
-              TikTok
-            </a>
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div className="flex flex-wrap gap-4">
+              <a
+                href={socialLinks.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="transition hover:text-white"
+              >
+                Instagram
+              </a>
+              <a
+                href={socialLinks.facebook}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="transition hover:text-white"
+              >
+                Facebook
+              </a>
+              <a
+                href={socialLinks.youtube}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="transition hover:text-white"
+              >
+                YouTube
+              </a>
+              <a
+                href={socialLinks.x}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="transition hover:text-white"
+              >
+                X
+              </a>
+              <a
+                href={socialLinks.tiktok}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="transition hover:text-white"
+              >
+                TikTok
+              </a>
+            </div>
+
+            <div className="flex flex-wrap gap-4">
+              <Link href="/privacy-policy" className="transition hover:text-white">
+                Privacy Policy
+              </Link>
+              <Link href="/cookie-policy" className="transition hover:text-white">
+                Cookie Policy
+              </Link>
+            </div>
           </div>
         </div>
       </div>

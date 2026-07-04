@@ -24,6 +24,12 @@ const missionPoints = [
 ];
 
 export default function Home() {
+  const featuredEventImages = [
+    "/images/events/frosinone.jpg",
+    "/images/team/community.jpg",
+    "/images/generic/award.jpg",
+  ];
+
   return (
     <main className="min-h-screen bg-[linear-gradient(180deg,#071827_0%,#0d2238_18%,#f8fafc_18%,#eef2f7_100%)] text-slate-900">
       <section className="relative min-h-[78vh] overflow-hidden border-b border-white/10">
@@ -108,7 +114,7 @@ export default function Home() {
 
       <section className="mx-auto max-w-6xl px-6 py-20">
         <div className="grid gap-10 rounded-[2rem] border border-slate-200 bg-white/92 p-8 shadow-[0_24px_60px_rgba(15,23,42,0.08)] backdrop-blur-sm lg:grid-cols-[1fr_0.95fr] lg:items-center">
-          <div>
+          <div className="order-2 lg:order-1">
             <SectionTitle
               eyebrow="Missione"
               title="Una piattaforma che usa lo sport per generare impatto sociale"
@@ -124,6 +130,39 @@ export default function Home() {
                 {item}
               </div>
             ))}
+          </div>
+          <div className="order-1 overflow-hidden rounded-[1.75rem] border border-slate-200 bg-slate-950 shadow-[0_18px_42px_rgba(15,23,42,0.12)] lg:order-2">
+            <div className="grid gap-0 md:grid-cols-[1.1fr_0.9fr]">
+              <div className="relative min-h-[320px]">
+                <Image
+                  src="/images/team/lineup.jpg"
+                  alt="Squadra della Nazionale Italiana Sanitari sul campo"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  className="object-cover"
+                />
+              </div>
+              <div className="grid gap-0">
+                <div className="relative min-h-[160px]">
+                  <Image
+                    src="/images/team/community.jpg"
+                    alt="Momento di solidarieta e comunita della Nazionale Italiana Sanitari"
+                    fill
+                    sizes="(max-width: 768px) 100vw, 25vw"
+                    className="object-cover"
+                  />
+                </div>
+                <div className="relative min-h-[160px]">
+                  <Image
+                    src="/images/generic/award.jpg"
+                    alt="Rappresentanza istituzionale e attivita benefica della Nazionale Italiana Sanitari"
+                    fill
+                    sizes="(max-width: 768px) 100vw, 25vw"
+                    className="object-cover"
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -142,6 +181,15 @@ export default function Home() {
               aria-label={`Vai alla sezione eventi e scopri ${event.title}`}
               className="group block cursor-pointer rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_18px_42px_rgba(15,23,42,0.08)] transition hover:-translate-y-1 hover:border-sky-300 hover:shadow-[0_24px_48px_rgba(15,23,42,0.12)]"
             >
+              <div className="relative mb-5 overflow-hidden rounded-[1.25rem] bg-slate-100">
+                <Image
+                  src={featuredEventImages[featuredEvents.indexOf(event)] ?? "/images/events/frosinone.jpg"}
+                  alt={`Immagine collegata a ${event.title}`}
+                  width={900}
+                  height={640}
+                  className="h-48 w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+                />
+              </div>
               <p className="text-sm font-semibold uppercase tracking-[0.18em] text-sky-700">
                 {event.date}
               </p>
@@ -177,6 +225,21 @@ export default function Home() {
                 aria-label={`Vai alla sezione ${discipline.title}`}
                 className="group block cursor-pointer rounded-[2rem] border border-slate-200 bg-[linear-gradient(180deg,rgba(255,255,255,0.96)_0%,rgba(248,250,252,0.92)_100%)] p-6 shadow-[0_18px_42px_rgba(15,23,42,0.08)] transition hover:-translate-y-1 hover:border-sky-300 hover:shadow-[0_24px_48px_rgba(15,23,42,0.12)]"
               >
+                <div className="relative mb-5 overflow-hidden rounded-[1.25rem] bg-slate-100">
+                  <Image
+                    src={
+                      discipline.title === "Calcio"
+                        ? "/images/team/lineup.jpg"
+                        : discipline.title === "Running"
+                          ? "/images/team/community.jpg"
+                          : "/images/generic/award.jpg"
+                    }
+                    alt={`Immagine rappresentativa della disciplina ${discipline.title}`}
+                    width={900}
+                    height={640}
+                    className="h-44 w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+                  />
+                </div>
                 <span className="inline-flex rounded-full border border-sky-200 bg-sky-50 px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-sky-700">
                   {discipline.status}
                 </span>
@@ -195,6 +258,21 @@ export default function Home() {
                 aria-label={`Vai alla sezione ${discipline.title}`}
                 className="group block cursor-pointer rounded-[2rem] border border-slate-200 bg-[linear-gradient(180deg,rgba(255,255,255,0.96)_0%,rgba(248,250,252,0.92)_100%)] p-6 shadow-[0_18px_42px_rgba(15,23,42,0.08)] transition hover:-translate-y-1 hover:border-sky-300 hover:shadow-[0_24px_48px_rgba(15,23,42,0.12)]"
               >
+                <div className="relative mb-5 overflow-hidden rounded-[1.25rem] bg-slate-100">
+                  <Image
+                    src={
+                      discipline.title === "Calcio"
+                        ? "/images/team/lineup.jpg"
+                        : discipline.title === "Running"
+                          ? "/images/team/community.jpg"
+                          : "/images/generic/award.jpg"
+                    }
+                    alt={`Immagine rappresentativa della disciplina ${discipline.title}`}
+                    width={900}
+                    height={640}
+                    className="h-44 w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+                  />
+                </div>
                 <span className="inline-flex rounded-full border border-sky-200 bg-sky-50 px-4 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-sky-700">
                   {discipline.status}
                 </span>
@@ -227,6 +305,11 @@ export default function Home() {
                 aria-label={`Vai alla sezione sponsor e scopri ${sponsor.name}`}
                 className="group block cursor-pointer rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-[0_18px_42px_rgba(2,12,27,0.24)] transition hover:-translate-y-1 hover:border-sky-300/40 hover:bg-white/8"
               >
+                <div className="mb-5 flex h-20 items-center justify-center rounded-[1.25rem] border border-white/8 bg-white/8">
+                  <span className="text-center text-lg font-bold uppercase tracking-[0.12em] text-white">
+                    {sponsor.name}
+                  </span>
+                </div>
                 <p className="text-sm font-semibold uppercase tracking-[0.16em] text-amber-200">
                   {sponsor.category}
                 </p>
