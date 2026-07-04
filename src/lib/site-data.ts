@@ -10,6 +10,8 @@ export const socialLinks = {
   instagram: "https://www.instagram.com/nazionaleitalianasanitari",
   facebook: "https://www.facebook.com/NazionaleItalianaSanitari/",
   youtube: "https://www.youtube.com/@NazionaleItalianaSanitari",
+  x: "https://x.com/NazItSanitari",
+  tiktok: "https://www.tiktok.com/@nazionalesanitari",
   calcio: "https://calcio.nazionaleitalianasanitari.it",
 };
 
