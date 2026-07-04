@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const siteUrl = "https://nazionaleitalianasanitari.it";
 export const siteName = "Nazionale Italiana Sanitari";
 export const defaultDescription =
-  "Sport, prevenzione e solidarietà al servizio della salute. Il sito istituzionale della Nazionale Italiana Sanitari racconta missione, eventi, discipline, partner e iniziative di sostegno.";
+  "Sport, prevenzione e solidarieta al servizio della salute. Il sito istituzionale della Nazionale Italiana Sanitari racconta missione, eventi, discipline, partner e iniziative di sostegno.";
 export const ogImage = "/logo/logo.jpg";
 
 export const socialLinks = {
@@ -16,8 +16,8 @@ export const socialLinks = {
 };
 
 export const contactInfo = {
-  email: "info@nazionaleitalianasanitari.it",
-  pressEmail: "stampa@nazionaleitalianasanitari.it",
+  email: "info@nazionaleitalianasanitari.com",
+  pressEmail: "ufficiostampa@nazionaleitalianasanitari.com",
   phone: "+39 06 0000 0000",
   city: "Roma, Italia",
 };
@@ -46,7 +46,7 @@ export const footerColumns = [
     ],
   },
   {
-    title: "Attività",
+    title: "Attivita",
     links: [
       { label: "Eventi", href: "/eventi" },
       { label: "Sponsor", href: "/sponsor" },
@@ -95,7 +95,7 @@ export const disciplines = [
   {
     title: "Calcio",
     description:
-      "La disciplina oggi più visibile del progetto, destinata a vivere anche con un sito dedicato sul futuro subdominio ufficiale.",
+      "La disciplina oggi piu visibile del progetto, destinata a vivere anche con un sito dedicato sul futuro subdominio ufficiale.",
     href: socialLinks.calcio,
     external: true,
     cta: "Vai all'area calcio",
@@ -113,7 +113,7 @@ export const disciplines = [
   {
     title: "Altre discipline",
     description:
-      "Una piattaforma aperta a nuove esperienze sportive coerenti con salute, prevenzione, inclusione e solidarietà.",
+      "Una piattaforma aperta a nuove esperienze sportive coerenti con salute, prevenzione, inclusione e solidarieta.",
     href: "/discipline",
     external: false,
     cta: "Area in espansione",
@@ -123,28 +123,47 @@ export const disciplines = [
 
 export const sponsors = [
   {
-    name: "Medical Therapy",
-    category: "Partner salute",
+    name: "PANTELEIA",
+    category: "Partner tecnico e digitale",
     description:
-      "Realtà vicine al progetto che condividono attenzione alla cura, al benessere e all'impatto sociale.",
+      "Supporto alla presenza digitale, alla struttura del sito istituzionale e alla valorizzazione del progetto NIS.",
+    logoSrc: "/images/sponsor/logo-panteleia.png",
   },
   {
-    name: "Sportika",
-    category: "Partner tecnico",
+    name: "Main Partner",
+    category: "Spazio sponsor principale",
     description:
-      "Collaborazioni tecniche che supportano eventi, visibilità e presenza della Nazionale sul territorio.",
+      "Area riservata a un partner di primo livello a sostegno delle principali iniziative istituzionali e solidali.",
   },
   {
-    name: "CRAI",
-    category: "Partner sostenitore",
+    name: "Partner tecnico",
+    category: "Tecnologia e supporto operativo",
     description:
-      "Brand e imprese che scelgono di affiancare un'iniziativa con valore reputazionale e responsabilità pubblica.",
+      "Slot pensato per realta che contribuiscono a eventi, organizzazione, materiali e sviluppo delle attivita.",
   },
   {
-    name: "LILT Frosinone",
-    category: "Partner territoriale",
+    name: "Partner sanitario",
+    category: "Prevenzione e salute",
     description:
-      "Associazioni e organizzazioni locali con cui attivare eventi, raccolte fondi e progetti di prevenzione.",
+      "Spazio dedicato a partner coerenti con il mondo della prevenzione, della cura e del benessere collettivo.",
+  },
+  {
+    name: "Supporter",
+    category: "Sostegno a eventi e fundraising",
+    description:
+      "Placeholder per aziende e organizzazioni che affiancano campagne, raccolte fondi e appuntamenti territoriali.",
+  },
+  {
+    name: "Media Partner",
+    category: "Comunicazione istituzionale",
+    description:
+      "Area dedicata a collaborazioni editoriali e mediatiche per dare visibilita alle iniziative della Nazionale.",
+  },
+  {
+    name: "Partner digitale",
+    category: "Innovazione e contenuti",
+    description:
+      "Spazio per partner focalizzati su piattaforme, servizi online, creativita e diffusione dei contenuti.",
   },
 ];
 
@@ -154,15 +173,15 @@ export const newsItems = [
     category: "Istituzionale",
     title: "La Nazionale Italiana Sanitari rafforza il suo posizionamento come progetto di sport e salute",
     excerpt:
-      "La piattaforma cresce come spazio di incontro tra professionisti della sanità, partner e cittadini, con un'identità sempre più chiara.",
+      "La piattaforma cresce come spazio di incontro tra professionisti della sanita, partner e cittadini, con un'identita sempre piu chiara.",
     date: "14 giugno 2026",
   },
   {
     slug: "/news",
     category: "Eventi",
-    title: "Nuovi appuntamenti in preparazione per sostenere prevenzione e solidarietà",
+    title: "Nuovi appuntamenti in preparazione per sostenere prevenzione e solidarieta",
     excerpt:
-      "La programmazione 2026 punta su iniziative capaci di unire pubblico, territorio e messaggi di utilità sociale.",
+      "La programmazione 2026 punta su iniziative capaci di unire pubblico, territorio e messaggi di utilita sociale.",
     date: "5 giugno 2026",
   },
   {
@@ -170,7 +189,7 @@ export const newsItems = [
     category: "Discipline",
     title: "Calcio, running e nuove aree: il progetto si apre a una visione multisport",
     excerpt:
-      "La disciplina calcistica resta centrale, ma il sito istituzionale racconta una missione più ampia e in espansione.",
+      "La disciplina calcistica resta centrale, ma il sito istituzionale racconta una missione piu ampia e in espansione.",
     date: "28 maggio 2026",
   },
 ];
@@ -194,7 +213,7 @@ export function buildMetadata({
       "Nazionale Italiana Sanitari",
       "sport e salute",
       "prevenzione",
-      "solidarietà",
+      "solidarieta",
       "eventi benefici",
       "sponsor",
       "5x1000",

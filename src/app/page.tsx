@@ -17,12 +17,6 @@ export const metadata = buildMetadata({
   path: "/",
 });
 
-const missionPoints = [
-  "Promuovere salute e prevenzione attraverso linguaggi sportivi accessibili.",
-  "Creare eventi benefici capaci di coinvolgere istituzioni, partner e cittadini.",
-  "Valorizzare il ruolo sociale dei professionisti della sanita nel progetto.",
-];
-
 export default function Home() {
   const featuredEventImages = [
     "/images/events/frosinone.jpg",
@@ -113,61 +107,6 @@ export default function Home() {
       </section>
 
       <section className="mx-auto max-w-6xl px-6 py-20">
-        <div className="grid gap-10 rounded-[2rem] border border-slate-200 bg-white/92 p-8 shadow-[0_24px_60px_rgba(15,23,42,0.08)] backdrop-blur-sm lg:grid-cols-[1fr_0.95fr] lg:items-center">
-          <div className="order-2 lg:order-1">
-            <SectionTitle
-              eyebrow="Missione"
-              title="Una piattaforma che usa lo sport per generare impatto sociale"
-              description="La Nazionale Italiana Sanitari nasce per trasformare visibilita, relazioni e presenza pubblica in occasioni concrete di prevenzione, sostegno e partecipazione."
-            />
-          </div>
-          <div className="grid gap-4">
-            {missionPoints.map((item) => (
-              <div
-                key={item}
-                className="rounded-[1.5rem] border border-slate-200 bg-slate-50 px-5 py-5 text-base leading-7 text-slate-700"
-              >
-                {item}
-              </div>
-            ))}
-          </div>
-          <div className="order-1 overflow-hidden rounded-[1.75rem] border border-slate-200 bg-slate-950 shadow-[0_18px_42px_rgba(15,23,42,0.12)] lg:order-2">
-            <div className="grid gap-0 md:grid-cols-[1.1fr_0.9fr]">
-              <div className="relative min-h-[320px]">
-                <Image
-                  src="/images/team/lineup.jpg"
-                  alt="Squadra della Nazionale Italiana Sanitari sul campo"
-                  fill
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                  className="object-cover"
-                />
-              </div>
-              <div className="grid gap-0">
-                <div className="relative min-h-[160px]">
-                  <Image
-                    src="/images/team/community.jpg"
-                    alt="Momento di solidarieta e comunita della Nazionale Italiana Sanitari"
-                    fill
-                    sizes="(max-width: 768px) 100vw, 25vw"
-                    className="object-cover"
-                  />
-                </div>
-                <div className="relative min-h-[160px]">
-                  <Image
-                    src="/images/generic/award.jpg"
-                    alt="Rappresentanza istituzionale e attivita benefica della Nazionale Italiana Sanitari"
-                    fill
-                    sizes="(max-width: 768px) 100vw, 25vw"
-                    className="object-cover"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-6xl px-6 py-8">
         <SectionTitle
           eyebrow="Eventi in evidenza"
           title="Appuntamenti che uniscono sport, prevenzione e raccolta fondi"
@@ -289,39 +228,71 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="bg-slate-950 py-20 text-white">
-        <div className="mx-auto max-w-6xl px-6">
-          <SectionTitle
-            eyebrow="Sponsor"
-            title="Partner che scelgono un progetto autorevole e utile"
-            description="La Nazionale Italiana Sanitari dialoga con brand, organizzazioni e realta territoriali che condividono salute, responsabilita sociale e attenzione alle persone."
-            light
-          />
-          <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+      <section className="mx-auto max-w-6xl px-6 py-20">
+        <div className="rounded-[2.25rem] border border-slate-200 bg-white p-8 shadow-[0_24px_60px_rgba(15,23,42,0.08)] md:p-10">
+          <div className="flex items-center gap-4">
+            <span className="h-px flex-1 bg-slate-200" />
+            <p className="text-center text-sm font-semibold uppercase tracking-[0.22em] text-sky-700">
+              I nostri partner
+            </p>
+            <span className="h-px flex-1 bg-slate-200" />
+          </div>
+
+          <h2 className="mx-auto mt-5 max-w-3xl text-center text-3xl font-bold tracking-tight text-slate-950 md:text-4xl">
+            Sponsor e partner che accompagnano la crescita del progetto
+          </h2>
+          <p className="mx-auto mt-4 max-w-3xl text-center text-base leading-7 text-slate-600">
+            Una griglia pensata per ospitare in modo ordinato sponsor istituzionali, partner
+            tecnici, realta sanitarie e supporter del percorso Nazionale Italiana Sanitari.
+          </p>
+
+          <div className="mt-12 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
             {sponsors.map((sponsor) => (
               <Link
                 key={sponsor.name}
                 href="/sponsor"
                 aria-label={`Vai alla sezione sponsor e scopri ${sponsor.name}`}
-                className="group block cursor-pointer rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-[0_18px_42px_rgba(2,12,27,0.24)] transition hover:-translate-y-1 hover:border-sky-300/40 hover:bg-white/8"
+                className="group block cursor-pointer rounded-[1.75rem] border border-slate-200 bg-slate-50 p-6 transition hover:-translate-y-1 hover:border-sky-300 hover:bg-white hover:shadow-[0_20px_44px_rgba(15,23,42,0.1)]"
               >
-                <div className="mb-5 flex h-20 items-center justify-center rounded-[1.25rem] border border-white/8 bg-white/8">
-                  <span className="text-center text-lg font-bold uppercase tracking-[0.12em] text-white">
-                    {sponsor.name}
-                  </span>
+                <div className="mb-5 flex h-24 items-center justify-center rounded-[1.25rem] border border-slate-200 bg-white px-6">
+                  {"logoSrc" in sponsor && sponsor.logoSrc ? (
+                    <Image
+                      src={sponsor.logoSrc}
+                      alt={`Logo ${sponsor.name}`}
+                      width={220}
+                      height={84}
+                      className="h-14 w-auto object-contain"
+                    />
+                  ) : (
+                    <span className="text-center text-base font-bold uppercase tracking-[0.16em] text-slate-950">
+                      {sponsor.name}
+                    </span>
+                  )}
                 </div>
-                <p className="text-sm font-semibold uppercase tracking-[0.16em] text-amber-200">
-                  {sponsor.category}
-                </p>
-                <h3 className="mt-4 text-2xl font-bold tracking-tight text-white">
+                <div className="flex items-center gap-3">
+                  <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-sky-700">
+                    {sponsor.category}
+                  </span>
+                  <span className="h-px flex-1 bg-slate-200" />
+                </div>
+                <h3 className="mt-4 text-2xl font-bold tracking-tight text-slate-950">
                   {sponsor.name}
                 </h3>
-                <p className="mt-4 text-base leading-7 text-slate-300">{sponsor.description}</p>
-                <span className="mt-6 inline-flex text-sm font-semibold uppercase tracking-[0.14em] text-sky-200">
+                <p className="mt-4 text-base leading-7 text-slate-600">{sponsor.description}</p>
+                <span className="mt-6 inline-flex text-sm font-semibold uppercase tracking-[0.14em] text-sky-700">
                   Vai agli sponsor
                 </span>
               </Link>
             ))}
+          </div>
+
+          <div className="mt-10 flex justify-center">
+            <Link
+              href="/sponsor"
+              className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-slate-950 px-6 py-3 text-sm font-semibold uppercase tracking-[0.14em] text-white transition hover:bg-slate-800"
+            >
+              Scopri tutti i partner
+            </Link>
           </div>
         </div>
       </section>

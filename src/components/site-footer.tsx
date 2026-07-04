@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 import { contactInfo, footerColumns, socialLinks, sponsors } from "@/lib/site-data";
@@ -7,42 +8,44 @@ export function SiteFooter() {
     <footer className="mt-auto border-t border-white/10 bg-[linear-gradient(180deg,#020617_0%,#0f172a_100%)] text-white">
       <div className="mx-auto max-w-7xl px-6 py-14">
         <section className="rounded-[2rem] border border-white/10 bg-white/5 p-8 shadow-2xl backdrop-blur-sm">
-          <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-            <div className="max-w-2xl">
-              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-sky-300">
-                Sponsor e partner
-              </p>
-              <h2 className="mt-4 text-3xl font-bold tracking-tight md:text-4xl">
-                Una rete che sostiene il progetto con credibilita e visione
-              </h2>
-            </div>
-            <Link
-              href="/sponsor"
-              className="inline-flex w-fit items-center rounded-full border border-white/15 bg-white/10 px-5 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white transition hover:bg-white/15"
-            >
-              Scopri tutti gli sponsor
-            </Link>
+          <div className="flex items-center gap-4">
+            <span className="h-px flex-1 bg-white/15" />
+            <p className="text-center text-sm font-semibold uppercase tracking-[0.22em] text-sky-300">
+              Sponsor e partner
+            </p>
+            <span className="h-px flex-1 bg-white/15" />
           </div>
 
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {sponsors.map((sponsor, index) => (
+          <h2 className="mx-auto mt-5 max-w-3xl text-center text-3xl font-bold tracking-tight md:text-4xl">
+            Una rete di partner che sostiene il progetto con continuita e credibilita
+          </h2>
+
+          <div className="mt-10 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+            {sponsors.map((sponsor) => (
               <Link
                 key={sponsor.name}
                 href="/sponsor"
-                className="group flex min-h-28 cursor-pointer flex-col justify-between rounded-[1.5rem] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.1)_0%,rgba(255,255,255,0.04)_100%)] p-5 transition hover:border-sky-300/35 hover:bg-white/10"
+                className="group flex min-h-44 cursor-pointer flex-col rounded-[1.75rem] border border-white/10 bg-slate-950/35 p-5 transition hover:-translate-y-1 hover:border-sky-300/40 hover:bg-white/8"
               >
-                <div className="flex items-center justify-between gap-3">
-                  <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-sky-200/80">
-                    {index === 0 ? "Sponsor" : index === 1 ? "Partner" : index === 2 ? "Supporter" : "Partner"}
-                  </span>
-                  <span className="h-px flex-1 bg-white/10" />
+                <div className="flex h-24 items-center justify-center rounded-[1.25rem] border border-white/10 bg-white/95 px-6">
+                  {"logoSrc" in sponsor && sponsor.logoSrc ? (
+                    <Image
+                      src={sponsor.logoSrc}
+                      alt={`Logo ${sponsor.name}`}
+                      width={220}
+                      height={84}
+                      className="h-14 w-auto object-contain"
+                    />
+                  ) : (
+                    <span className="text-center text-base font-bold uppercase tracking-[0.16em] text-slate-950">
+                      {sponsor.name}
+                    </span>
+                  )}
                 </div>
-                <div className="mt-4">
-                  <p className="text-lg font-bold uppercase tracking-[0.08em] text-white">
-                    {sponsor.name}
-                  </p>
-                  <p className="mt-2 text-sm text-slate-300">{sponsor.category}</p>
-                </div>
+                <p className="mt-5 text-sm font-semibold uppercase tracking-[0.16em] text-sky-200">
+                  {sponsor.category}
+                </p>
+                <p className="mt-3 text-sm leading-6 text-slate-300">{sponsor.description}</p>
               </Link>
             ))}
           </div>
@@ -66,7 +69,7 @@ export function SiteFooter() {
           <div className="flex flex-col gap-4 lg:items-end">
             <a
               href={`mailto:${contactInfo.email}`}
-              className="rounded-full bg-sky-400 px-5 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-slate-950 transition hover:bg-sky-300"
+              className="rounded-full bg-sky-400 px-5 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-slate-950 transition hover:bg-sky-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-200"
             >
               Contattaci
             </a>
@@ -74,7 +77,7 @@ export function SiteFooter() {
               href={socialLinks.calcio}
               target="_blank"
               rel="noopener noreferrer"
-              className="rounded-full border border-white/15 bg-white/10 px-5 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white transition hover:bg-white/15"
+              className="rounded-full border border-white/15 bg-white/10 px-5 py-3 text-sm font-semibold uppercase tracking-[0.12em] text-white transition hover:bg-white/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300"
             >
               Area calcio
             </a>
@@ -109,10 +112,10 @@ export function SiteFooter() {
 
         <div className="mt-12 flex flex-col gap-6 border-t border-white/10 pt-6 text-sm text-slate-400">
           <p className="max-w-4xl leading-7">
-            © All rights reserved. Sito realizzato da PANTELEIA - Associazione Promozione
-            Sociale. CF: 96647400587
+            &copy; All rights reserved. Sito realizzato da PANTELEIA - Associazione
+            Promozione Sociale. CF: 96647400587
             <br />
-            Iscrizione RUNTS: Rep. n. 165890 – Det. n. G03684 del 19/03/2026.
+            Iscrizione RUNTS: Rep. n. 165890 &ndash; Det. n. G03684 del 19/03/2026.
           </p>
 
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -132,14 +135,6 @@ export function SiteFooter() {
                 className="transition hover:text-white"
               >
                 Facebook
-              </a>
-              <a
-                href={socialLinks.youtube}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="transition hover:text-white"
-              >
-                YouTube
               </a>
               <a
                 href={socialLinks.x}
