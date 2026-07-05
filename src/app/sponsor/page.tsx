@@ -66,7 +66,7 @@ export default function SponsorPage() {
 
           <div className="mt-12 grid gap-x-10 gap-y-12 sm:grid-cols-2 xl:grid-cols-3">
             {sponsors.map((sponsor) => (
-              <div key={sponsor.name} className="flex items-center justify-center px-4 py-2">
+              <div key={sponsor.name} className="flex flex-col items-center justify-start px-4 py-2">
                 {"logoSrc" in sponsor && sponsor.logoSrc ? (
                   <Image
                     src={sponsor.logoSrc}
@@ -80,6 +80,9 @@ export default function SponsorPage() {
                     {sponsor.name}
                   </span>
                 )}
+                <p className="mt-4 text-center text-sm font-semibold uppercase tracking-[0.18em] text-slate-400">
+                  {sponsor.category}
+                </p>
               </div>
             ))}
           </div>

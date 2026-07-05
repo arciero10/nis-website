@@ -248,7 +248,7 @@ export default function Home() {
 
           <div className="mt-12 grid gap-x-10 gap-y-12 sm:grid-cols-2 xl:grid-cols-3">
             {sponsors.map((sponsor) => (
-              <div key={sponsor.name} className="flex items-center justify-center px-4 py-2">
+              <div key={sponsor.name} className="flex flex-col items-center justify-start px-4 py-2">
                 <div className="flex h-24 items-center justify-center">
                   {"logoSrc" in sponsor && sponsor.logoSrc ? (
                     <Image
@@ -264,6 +264,9 @@ export default function Home() {
                     </span>
                   )}
                 </div>
+                <p className="mt-4 text-center text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">
+                  {sponsor.category}
+                </p>
               </div>
             ))}
           </div>

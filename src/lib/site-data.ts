@@ -125,45 +125,31 @@ export const sponsors = [
   {
     name: "PANTELEIA",
     category: "Partner tecnico e digitale",
-    description:
-      "Supporto alla presenza digitale, alla struttura del sito istituzionale e alla valorizzazione del progetto NIS.",
     logoSrc: "/images/sponsor/logo-panteleia.png",
   },
   {
     name: "Main Partner",
-    category: "Spazio sponsor principale",
-    description:
-      "Area riservata a un partner di primo livello a sostegno delle principali iniziative istituzionali e solidali.",
+    category: "Main Partner",
   },
   {
     name: "Partner tecnico",
-    category: "Tecnologia e supporto operativo",
-    description:
-      "Slot pensato per realta che contribuiscono a eventi, organizzazione, materiali e sviluppo delle attivita.",
+    category: "Partner tecnico",
   },
   {
     name: "Partner sanitario",
-    category: "Prevenzione e salute",
-    description:
-      "Spazio dedicato a partner coerenti con il mondo della prevenzione, della cura e del benessere collettivo.",
+    category: "Partner sanitario",
   },
   {
     name: "Supporter",
-    category: "Sostegno a eventi e fundraising",
-    description:
-      "Placeholder per aziende e organizzazioni che affiancano campagne, raccolte fondi e appuntamenti territoriali.",
+    category: "Supporter",
   },
   {
     name: "Media Partner",
-    category: "Comunicazione istituzionale",
-    description:
-      "Area dedicata a collaborazioni editoriali e mediatiche per dare visibilita alle iniziative della Nazionale.",
+    category: "Media Partner",
   },
   {
     name: "Partner digitale",
-    category: "Innovazione e contenuti",
-    description:
-      "Spazio per partner focalizzati su piattaforme, servizi online, creativita e diffusione dei contenuti.",
+    category: "Partner digitale",
   },
 ];
 
