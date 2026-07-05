@@ -233,18 +233,10 @@ export default function Home() {
           <div className="flex items-center gap-4">
             <span className="h-px flex-1 bg-slate-200" />
             <p className="text-center text-sm font-semibold uppercase tracking-[0.22em] text-sky-700">
-              I nostri partner
+              Partner e sponsor
             </p>
             <span className="h-px flex-1 bg-slate-200" />
           </div>
-
-          <h2 className="mx-auto mt-5 max-w-3xl text-center text-3xl font-bold tracking-tight text-slate-950 md:text-4xl">
-            Sponsor e partner che accompagnano la crescita del progetto
-          </h2>
-          <p className="mx-auto mt-4 max-w-3xl text-center text-base leading-7 text-slate-600">
-            Una griglia pensata per ospitare in modo ordinato sponsor istituzionali, partner
-            tecnici, realta sanitarie e supporter del percorso Nazionale Italiana Sanitari.
-          </p>
 
           <div className="mt-12 grid gap-x-10 gap-y-12 sm:grid-cols-2 xl:grid-cols-3">
             {sponsors.map((sponsor) => (
@@ -269,33 +261,6 @@ export default function Home() {
                 </p>
               </div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-6xl px-6 py-20">
-        <div className="grid gap-8 rounded-[2rem] border border-amber-200 bg-[linear-gradient(120deg,rgba(250,204,21,0.12)_0%,rgba(255,255,255,0.94)_48%,rgba(240,249,255,0.94)_100%)] p-8 shadow-[0_24px_60px_rgba(15,23,42,0.08)] lg:grid-cols-[1fr_0.9fr] lg:items-center">
-          <div>
-            <SectionTitle
-              eyebrow="5x1000"
-              title="Un gesto semplice per dare continuita al progetto"
-              description="La sezione 5x1000 e pensata per facilitare il sostegno al progetto istituzionale della Nazionale Italiana Sanitari."
-            />
-          </div>
-          <div className="rounded-[1.75rem] border border-amber-200 bg-white/90 p-6">
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">
-              Codice fiscale
-            </p>
-            <p className="mt-3 text-3xl font-bold tracking-tight text-slate-950 md:text-4xl">
-              DA INSERIRE
-            </p>
-            <Link
-              href="/5x1000"
-              aria-label="Vai alla pagina 5x1000"
-              className="mt-6 inline-flex rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold uppercase tracking-[0.14em] text-white transition hover:bg-slate-800"
-            >
-              Vai alla sezione 5x1000
-            </Link>
           </div>
         </div>
       </section>
@@ -348,43 +313,6 @@ export default function Home() {
               <p className="mt-5 text-sm font-medium text-slate-500">{item.date}</p>
             </Link>
           ))}
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-6xl px-6 py-20">
-        <div className="grid gap-8 rounded-[2rem] border border-sky-950/15 bg-[linear-gradient(180deg,rgba(15,23,42,0.98)_0%,rgba(12,30,54,0.98)_54%,rgba(10,37,64,0.96)_100%)] p-8 text-white shadow-[0_24px_60px_rgba(15,23,42,0.16)] lg:grid-cols-[1fr_0.9fr] lg:items-center">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-sky-300">
-              Sostieni la Nazionale Italiana Sanitari
-            </p>
-            <h2 className="mt-4 text-3xl font-bold tracking-tight md:text-5xl">
-              Aiutaci a trasformare lo sport in presenza concreta per la salute
-            </h2>
-            <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-300">
-              Donazioni, sponsorship e 5x1000 sono strumenti con cui rendere continuativi eventi,
-              campagne di prevenzione e iniziative solidali sul territorio.
-            </p>
-          </div>
-          <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap lg:justify-end">
-            <Link
-              href="/sostienici"
-              className="inline-flex items-center justify-center rounded-full bg-amber-300 px-6 py-3 text-sm font-semibold uppercase tracking-[0.14em] text-slate-950 transition hover:bg-amber-200"
-            >
-              Dona ora
-            </Link>
-            <Link
-              href="/5x1000"
-              className="inline-flex items-center justify-center rounded-full border border-white/20 bg-white/10 px-6 py-3 text-sm font-semibold uppercase tracking-[0.14em] text-white transition hover:bg-white/15"
-            >
-              5x1000
-            </Link>
-            <Link
-              href="/contatti"
-              className="inline-flex items-center justify-center rounded-full border border-white/20 bg-white/10 px-6 py-3 text-sm font-semibold uppercase tracking-[0.14em] text-white transition hover:bg-white/15"
-            >
-              Contatti
-            </Link>
-          </div>
         </div>
       </section>
     </main>
