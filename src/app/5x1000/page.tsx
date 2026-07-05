@@ -14,13 +14,6 @@ export const metadata = buildMetadata({
 
 const taxCode = "18254491006";
 
-const summaryItems = [
-  "Non ti costa nulla",
-  "Sostieni progetti concreti",
-  "Aiuti le persone piu fragili",
-  "Promuovi salute, prevenzione e solidarieta",
-];
-
 const steps = [
   "Firma nel riquadro “Sostegno degli enti del Terzo Settore” della dichiarazione dei redditi.",
   "Inserisci il codice fiscale della Nazionale Italiana Sanitari.",
@@ -36,7 +29,7 @@ export default function CinquePerMillePage() {
       />
 
       <section className="mx-auto max-w-6xl px-6 py-20">
-        <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr]">
+        <div className="grid items-start gap-8 lg:grid-cols-[1.02fr_0.98fr]">
           <div className="rounded-[2rem] border border-slate-200 bg-white/92 p-8 shadow-[0_24px_60px_rgba(15,23,42,0.08)]">
             <SectionTitle
               eyebrow="Perche farlo"
@@ -51,27 +44,17 @@ export default function CinquePerMillePage() {
                 chi ha piu bisogno.
               </p>
             </div>
-
-            <div className="mt-10 grid gap-4 sm:grid-cols-2">
-              {summaryItems.map((item) => (
-                <div
-                  key={item}
-                  className="rounded-[1.5rem] border border-slate-200 bg-slate-50 px-5 py-5 text-base font-semibold leading-7 text-slate-800"
-                >
-                  {item}
-                </div>
-              ))}
-            </div>
           </div>
 
-          <div className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white p-4 shadow-[0_24px_60px_rgba(15,23,42,0.08)]">
-            <div className="relative overflow-hidden rounded-[1.5rem]">
+          <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-[0_24px_60px_rgba(15,23,42,0.08)] md:p-6">
+            <div className="flex items-center justify-center rounded-[1.5rem] bg-slate-50 p-3 md:p-4">
               <Image
                 src="/images/5x1000-nis.png"
                 alt="Flyer 5x1000 della Nazionale Italiana Sanitari"
                 width={1200}
                 height={1600}
-                className="h-full w-full object-cover"
+                priority
+                className="h-auto w-full max-w-[34rem] object-contain"
               />
             </div>
           </div>

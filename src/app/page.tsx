@@ -246,53 +246,26 @@ export default function Home() {
             tecnici, realta sanitarie e supporter del percorso Nazionale Italiana Sanitari.
           </p>
 
-          <div className="mt-12 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="mt-12 grid gap-x-10 gap-y-12 sm:grid-cols-2 xl:grid-cols-3">
             {sponsors.map((sponsor) => (
-              <Link
-                key={sponsor.name}
-                href="/sponsor"
-                aria-label={`Vai alla sezione sponsor e scopri ${sponsor.name}`}
-                className="group block cursor-pointer rounded-[1.75rem] border border-slate-200 bg-slate-50 p-6 transition hover:-translate-y-1 hover:border-sky-300 hover:bg-white hover:shadow-[0_20px_44px_rgba(15,23,42,0.1)]"
-              >
-                <div className="mb-5 flex h-24 items-center justify-center rounded-[1.25rem] border border-slate-200 bg-white px-6">
+              <div key={sponsor.name} className="flex items-center justify-center px-4 py-2">
+                <div className="flex h-24 items-center justify-center">
                   {"logoSrc" in sponsor && sponsor.logoSrc ? (
                     <Image
                       src={sponsor.logoSrc}
                       alt={`Logo ${sponsor.name}`}
                       width={220}
                       height={84}
-                      className="h-14 w-auto object-contain"
+                      className="h-14 w-auto max-w-full object-contain sm:h-16"
                     />
                   ) : (
-                    <span className="text-center text-base font-bold uppercase tracking-[0.16em] text-slate-950">
+                    <span className="text-center text-sm font-semibold uppercase tracking-[0.22em] text-slate-700">
                       {sponsor.name}
                     </span>
                   )}
                 </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-[11px] font-semibold uppercase tracking-[0.2em] text-sky-700">
-                    {sponsor.category}
-                  </span>
-                  <span className="h-px flex-1 bg-slate-200" />
-                </div>
-                <h3 className="mt-4 text-2xl font-bold tracking-tight text-slate-950">
-                  {sponsor.name}
-                </h3>
-                <p className="mt-4 text-base leading-7 text-slate-600">{sponsor.description}</p>
-                <span className="mt-6 inline-flex text-sm font-semibold uppercase tracking-[0.14em] text-sky-700">
-                  Vai agli sponsor
-                </span>
-              </Link>
+              </div>
             ))}
-          </div>
-
-          <div className="mt-10 flex justify-center">
-            <Link
-              href="/sponsor"
-              className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-slate-950 px-6 py-3 text-sm font-semibold uppercase tracking-[0.14em] text-white transition hover:bg-slate-800"
-            >
-              Scopri tutti i partner
-            </Link>
           </div>
         </div>
       </section>
