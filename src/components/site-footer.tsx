@@ -12,7 +12,7 @@ export function SiteFooter() {
             <div className="flex items-center gap-4">
               <div className="flex h-14 w-36 items-center justify-center rounded-2xl border border-white/10 bg-white/5 px-4">
                 <Image
-                  src="/images/sponsor/logo-panteleia.png"
+                  src="/images/sponsor/logo-panteleia.svg"
                   alt="Logo PANTELEIA"
                   width={180}
                   height={60}

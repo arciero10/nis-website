@@ -228,43 +228,6 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-6 py-20">
-        <div className="rounded-[2.25rem] border border-slate-200 bg-white p-8 shadow-[0_24px_60px_rgba(15,23,42,0.08)] md:p-10">
-          <div className="flex items-center gap-4">
-            <span className="h-px flex-1 bg-slate-200" />
-            <p className="text-center text-sm font-semibold uppercase tracking-[0.22em] text-sky-700">
-              Partner e sponsor
-            </p>
-            <span className="h-px flex-1 bg-slate-200" />
-          </div>
-
-          <div className="mt-12 grid gap-x-10 gap-y-12 sm:grid-cols-2 xl:grid-cols-3">
-            {sponsors.map((sponsor) => (
-              <div key={sponsor.name} className="flex flex-col items-center justify-start px-4 py-2">
-                <div className="flex h-24 items-center justify-center">
-                  {"logoSrc" in sponsor && sponsor.logoSrc ? (
-                    <Image
-                      src={sponsor.logoSrc}
-                      alt={`Logo ${sponsor.name}`}
-                      width={220}
-                      height={84}
-                      className="h-14 w-auto max-w-full object-contain sm:h-16"
-                    />
-                  ) : (
-                    <span className="text-center text-sm font-semibold uppercase tracking-[0.22em] text-slate-700">
-                      {sponsor.name}
-                    </span>
-                  )}
-                </div>
-                <p className="mt-4 text-center text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">
-                  {sponsor.category}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       <section className="mx-auto max-w-6xl px-6 py-8">
         <SectionTitle
           eyebrow="News"
@@ -313,6 +276,43 @@ export default function Home() {
               <p className="mt-5 text-sm font-medium text-slate-500">{item.date}</p>
             </Link>
           ))}
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-6 py-20">
+        <div className="rounded-[2.25rem] border border-slate-200 bg-white p-8 shadow-[0_24px_60px_rgba(15,23,42,0.08)] md:p-10">
+          <div className="flex items-center gap-4">
+            <span className="h-px flex-1 bg-slate-200" />
+            <p className="text-center text-sm font-semibold uppercase tracking-[0.22em] text-sky-700">
+              Partner e sponsor
+            </p>
+            <span className="h-px flex-1 bg-slate-200" />
+          </div>
+
+          <div className="mt-12 grid gap-x-10 gap-y-14 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+            {sponsors.map((sponsor) => (
+              <div key={sponsor.name} className="flex flex-col items-center justify-start px-3 py-2">
+                <div className="flex h-24 w-full items-center justify-center">
+                  {"logoSrc" in sponsor && sponsor.logoSrc ? (
+                    <Image
+                      src={sponsor.logoSrc}
+                      alt={`Logo ${sponsor.name}`}
+                      width={220}
+                      height={84}
+                      className="h-16 w-auto max-w-full object-contain"
+                    />
+                  ) : (
+                    <span className="text-center text-sm font-semibold uppercase tracking-[0.22em] text-slate-700">
+                      {sponsor.name}
+                    </span>
+                  )}
+                </div>
+                <p className="mt-4 text-center text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">
+                  {sponsor.category}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
     </main>
