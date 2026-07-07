@@ -279,8 +279,8 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-6 py-20">
-        <div className="rounded-[2.25rem] border border-slate-200 bg-white p-8 shadow-[0_24px_60px_rgba(15,23,42,0.08)] md:p-10">
+      <section className="mx-auto max-w-7xl px-6 py-28">
+        <div className="rounded-[2.5rem] border border-slate-200/90 bg-white px-8 py-12 shadow-[0_28px_80px_rgba(15,23,42,0.1)] md:px-10 md:py-14 lg:px-14 lg:py-16">
           <div className="flex items-center gap-4">
             <span className="h-px flex-1 bg-slate-200" />
             <p className="text-center text-sm font-semibold uppercase tracking-[0.22em] text-sky-700">
@@ -289,25 +289,31 @@ export default function Home() {
             <span className="h-px flex-1 bg-slate-200" />
           </div>
 
-          <div className="mt-12 grid gap-x-10 gap-y-14 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+          <div className="mt-14 grid gap-x-8 gap-y-14 sm:grid-cols-2 lg:mt-16 lg:grid-cols-3 lg:gap-x-10 lg:gap-y-16">
             {sponsors.map((sponsor) => (
-              <div key={sponsor.name} className="flex flex-col items-center justify-start px-3 py-2">
-                <div className="flex h-24 w-full items-center justify-center">
+              <div
+                key={sponsor.name}
+                className="flex min-h-[18rem] flex-col items-center justify-start px-2 py-2 text-center md:min-h-[19rem] lg:min-h-[20rem]"
+              >
+                <div className="flex h-36 w-full items-center justify-center rounded-[2rem] bg-[radial-gradient(circle_at_center,rgba(248,250,252,1)_0%,rgba(241,245,249,0.9)_58%,rgba(255,255,255,0)_100%)] px-4 md:h-40 md:px-5 lg:h-44">
                   {"logoSrc" in sponsor && sponsor.logoSrc ? (
                     <Image
                       src={sponsor.logoSrc}
                       alt={`Logo ${sponsor.name}`}
-                      width={220}
-                      height={84}
-                      className="h-16 w-auto max-w-full object-contain"
+                      width={280}
+                      height={160}
+                      className="h-auto max-h-[100px] w-auto max-w-[180px] object-contain md:max-h-[120px] md:max-w-[220px] lg:max-h-[150px] lg:max-w-[270px]"
                     />
                   ) : (
-                    <span className="text-center text-sm font-semibold uppercase tracking-[0.22em] text-slate-700">
+                    <span className="text-center text-2xl font-bold uppercase tracking-[0.18em] text-slate-700 md:text-[1.8rem]">
                       {sponsor.name}
                     </span>
                   )}
                 </div>
-                <p className="mt-4 text-center text-sm font-semibold uppercase tracking-[0.18em] text-slate-500">
+                <h3 className="mt-6 text-lg font-bold tracking-tight text-slate-950 md:text-xl">
+                  {sponsor.name}
+                </h3>
+                <p className="mt-2 text-center text-sm font-semibold uppercase tracking-[0.18em] text-slate-500 md:text-[0.95rem]">
                   {sponsor.category}
                 </p>
               </div>
