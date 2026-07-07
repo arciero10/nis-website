@@ -125,7 +125,7 @@ export const sponsors = [
   {
     name: "PANTELEIA",
     category: "Partner tecnico e digitale",
-    logoSrc: "/images/sponsor/logo-panteleia.svg",
+    logoSrc: "/images/sponsor/logo-panteleia.jpg",
   },
   {
     name: "Burger King",
@@ -135,6 +135,7 @@ export const sponsors = [
   {
     name: "CRAI",
     category: "Food Partner",
+    logoSrc: "/images/sponsor/logo-crai.jpg",
   },
   {
     name: "L'Isola della Pizza",
