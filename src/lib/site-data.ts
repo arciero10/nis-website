@@ -123,29 +123,33 @@ export const disciplines = [
 
 export const sponsors = [
   {
+    name: "PANTELEIA",
+    category: "Partner tecnico e digitale",
+    logoSrc: "/images/sponsor/logo-panteleia.svg",
+  },
+  {
     name: "Burger King",
-    category: "Partner",
+    category: "Food Partner",
     logoSrc: "/images/sponsor/logo-burger-king.jpeg",
   },
   {
+    name: "CRAI",
+    category: "Food Partner",
+  },
+  {
     name: "L'Isola della Pizza",
-    category: "Partner",
+    category: "Food Partner",
     logoSrc: "/images/sponsor/logo-isola-pizza.jpeg",
   },
   {
     name: "Limori",
-    category: "Partner",
+    category: "Beverage Partner",
     logoSrc: "/images/sponsor/logo-limoni.jpeg",
   },
   {
     name: "Moretti Bevande",
-    category: "Partner",
+    category: "Beverage & Distribuzione",
     logoSrc: "/images/sponsor/logo-moretti.jpeg",
-  },
-  {
-    name: "PANTELEIA",
-    category: "Partner tecnico e digitale",
-    logoSrc: "/images/sponsor/logo-panteleia.svg",
   },
 ];
 
