@@ -11,25 +11,22 @@ import { socialLinks } from "@/lib/site-data";
 const desktopNavItems = [
   { label: "Home", href: "/" },
   { label: "Chi siamo", href: "/chi-siamo" },
-  { label: "Missione", href: "/missione" },
+  { label: "Progetti", href: "/sostienici" },
+  { label: "Settori", href: "/discipline" },
   { label: "Diventa Socio", href: "/diventa-socio" },
   { label: "Eventi", href: "/eventi" },
-  { label: "Discipline", href: "/discipline" },
-  { label: "Sponsor", href: "/sponsor" },
-  { label: "5x1000", href: "/5x1000" },
+  { label: "News", href: "/news" },
   { label: "Contatti", href: "/contatti" },
 ];
 
 const mobileNavItems = [
   { label: "Home", href: "/" },
   { label: "Chi siamo", href: "/chi-siamo" },
-  { label: "Missione", href: "/missione" },
+  { label: "Progetti", href: "/sostienici" },
+  { label: "Settori", href: "/discipline" },
   { label: "Diventa Socio", href: "/diventa-socio" },
   { label: "Eventi", href: "/eventi" },
-  { label: "Discipline", href: "/discipline" },
-  { label: "Sponsor", href: "/sponsor" },
-  { label: "5x1000", href: "/5x1000" },
-  { label: "Sostienici", href: "/sostienici" },
+  { label: "News", href: "/news" },
   { label: "Contatti", href: "/contatti" },
 ];
 
