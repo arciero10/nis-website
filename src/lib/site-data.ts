@@ -26,6 +26,7 @@ export const navItems = [
   { label: "Home", href: "/" },
   { label: "Chi siamo", href: "/chi-siamo" },
   { label: "Missione", href: "/missione" },
+  { label: "Diventa Socio", href: "/diventa-socio" },
   { label: "Eventi", href: "/eventi" },
   { label: "Discipline", href: "/discipline" },
   { label: "Sponsor", href: "/sponsor" },
