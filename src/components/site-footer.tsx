@@ -57,6 +57,14 @@ export function SiteFooter() {
               >
                 TikTok
               </a>
+              <a
+                href={socialLinks.youtube}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="transition hover:text-white"
+              >
+                YouTube
+              </a>
             </div>
           </div>
 

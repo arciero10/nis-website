@@ -35,6 +35,7 @@ const socialNavItems = [
   { label: "Facebook", href: socialLinks.facebook, icon: "facebook" },
   { label: "X", href: socialLinks.x, icon: "x" },
   { label: "TikTok", href: socialLinks.tiktok, icon: "tiktok" },
+  { label: "YouTube", href: socialLinks.youtube, icon: "youtube" },
 ] as const;
 
 function SocialIcon({ platform }: { platform: (typeof socialNavItems)[number]["icon"] }) {
@@ -63,6 +64,12 @@ function SocialIcon({ platform }: { platform: (typeof socialNavItems)[number]["i
       return (
         <svg viewBox="0 0 24 24" aria-hidden="true" className="h-4 w-4 fill-current">
           <path d="M15.6 4c.3 1.8 1.4 3.3 3.1 4.1v2.5c-1.3 0-2.5-.4-3.6-1.1V15a4.9 4.9 0 1 1-4.9-4.9c.3 0 .7 0 1 .1v2.6a2.5 2.5 0 1 0 1.4 2.2V4h3Z" />
+        </svg>
+      );
+    case "youtube":
+      return (
+        <svg viewBox="0 0 24 24" aria-hidden="true" className="h-4 w-4 fill-current">
+          <path d="M21.4 7.2a2.8 2.8 0 0 0-2-2C17.6 4.7 12 4.7 12 4.7s-5.6 0-7.4.5a2.8 2.8 0 0 0-2 2A29.4 29.4 0 0 0 2 12a29.4 29.4 0 0 0 .6 4.8 2.8 2.8 0 0 0 2 2c1.8.5 7.4.5 7.4.5s5.6 0 7.4-.5a2.8 2.8 0 0 0 2-2A29.4 29.4 0 0 0 22 12a29.4 29.4 0 0 0-.6-4.8ZM10 15.6V8.4l6.2 3.6L10 15.6Z" />
         </svg>
       );
   }
