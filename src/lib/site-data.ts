@@ -25,7 +25,7 @@ export const contactInfo = {
 export const navItems = [
   { label: "Home", href: "/" },
   { label: "Chi siamo", href: "/chi-siamo" },
-  { label: "Progetti", href: "/sostienici" },
+  { label: "Progetti", href: "/progetti" },
   { label: "Settori", href: "/discipline" },
   { label: "Diventa Socio", href: "/diventa-socio" },
   { label: "Eventi", href: "/eventi" },

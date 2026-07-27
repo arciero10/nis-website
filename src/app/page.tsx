@@ -105,15 +105,26 @@ function Icon({ type }: { type: string }) {
     case "health":
       return (
         <svg viewBox="0 0 32 32" aria-hidden="true" className="h-8 w-8 fill-none stroke-current">
-          <path d="M16 27s-9-5.7-9-13a5 5 0 0 1 9-2.9A5 5 0 0 1 25 14c0 7.3-9 13-9 13Z" strokeWidth="1.8" />
+          <path
+            d="M16 27s-9-5.7-9-13a5 5 0 0 1 9-2.9A5 5 0 0 1 25 14c0 7.3-9 13-9 13Z"
+            strokeWidth="1.8"
+          />
           <path d="M16 10v8M12 14h8" strokeWidth="1.8" strokeLinecap="round" />
         </svg>
       );
     case "hands":
       return (
         <svg viewBox="0 0 32 32" aria-hidden="true" className="h-8 w-8 fill-none stroke-current">
-          <path d="M7 17.5 12.5 12a3 3 0 0 1 4.2 0l1.1 1.1a3 3 0 0 1 0 4.2L15 20" strokeWidth="1.8" strokeLinecap="round" />
-          <path d="m25 17.5-5.5-5.5a3 3 0 0 0-4.2 0l-1.1 1.1a3 3 0 0 0 0 4.2L17 20" strokeWidth="1.8" strokeLinecap="round" />
+          <path
+            d="M7 17.5 12.5 12a3 3 0 0 1 4.2 0l1.1 1.1a3 3 0 0 1 0 4.2L15 20"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+          />
+          <path
+            d="m25 17.5-5.5-5.5a3 3 0 0 0-4.2 0l-1.1 1.1a3 3 0 0 0 0 4.2L17 20"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+          />
           <path d="M10.5 22.5h11" strokeWidth="1.8" strokeLinecap="round" />
         </svg>
       );
@@ -130,7 +141,11 @@ function Icon({ type }: { type: string }) {
       return (
         <svg viewBox="0 0 32 32" aria-hidden="true" className="h-8 w-8 fill-none stroke-current">
           <path d="m5 12 11-5 11 5-11 5Z" strokeWidth="1.8" strokeLinejoin="round" />
-          <path d="M10 15.5V21c0 1.9 2.7 3.5 6 3.5s6-1.6 6-3.5v-5.5" strokeWidth="1.8" strokeLinecap="round" />
+          <path
+            d="M10 15.5V21c0 1.9 2.7 3.5 6 3.5s6-1.6 6-3.5v-5.5"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+          />
           <path d="M27 12v8" strokeWidth="1.8" strokeLinecap="round" />
         </svg>
       );
@@ -138,7 +153,12 @@ function Icon({ type }: { type: string }) {
       return (
         <svg viewBox="0 0 32 32" aria-hidden="true" className="h-8 w-8 fill-none stroke-current">
           <circle cx="20" cy="8" r="2.5" strokeWidth="1.8" />
-          <path d="m14 25 3-7 4-2 2 3 4 2" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+          <path
+            d="m14 25 3-7 4-2 2 3 4 2"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
           <path d="m18 12 3 2 3-1" strokeWidth="1.8" strokeLinecap="round" />
           <path d="m10 18 5-1" strokeWidth="1.8" strokeLinecap="round" />
         </svg>
@@ -146,7 +166,14 @@ function Icon({ type }: { type: string }) {
     case "racket":
       return (
         <svg viewBox="0 0 32 32" aria-hidden="true" className="h-8 w-8 fill-none stroke-current">
-          <ellipse cx="13" cy="13" rx="6.5" ry="8" strokeWidth="1.8" transform="rotate(-25 13 13)" />
+          <ellipse
+            cx="13"
+            cy="13"
+            rx="6.5"
+            ry="8"
+            strokeWidth="1.8"
+            transform="rotate(-25 13 13)"
+          />
           <path d="m17.5 19.5 6 6" strokeWidth="1.8" strokeLinecap="round" />
           <path d="m10 8 5 9M8 12h10M11 6l3 12" strokeWidth="1.2" />
         </svg>
@@ -354,7 +381,7 @@ export default function Home() {
               persone piu fragili.
             </p>
             <Link
-              href="/sostienici"
+              href="/progetti/il-primo-battito"
               className="mt-8 inline-flex items-center justify-center rounded-full bg-slate-950 px-6 py-3 text-sm font-semibold uppercase tracking-[0.15em] text-white transition hover:bg-slate-800"
             >
               Scopri il progetto
@@ -363,19 +390,24 @@ export default function Home() {
 
           <div className="rounded-[2.25rem] border border-emerald-200 bg-[linear-gradient(180deg,rgba(16,185,129,0.08)_0%,rgba(255,255,255,1)_100%)] p-8 shadow-[0_24px_60px_rgba(15,23,42,0.08)]">
             <div className="inline-flex rounded-full bg-emerald-50 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-emerald-700">
-              Raccolta fondi
+              Risultato concreto
             </div>
             <h3 className="mt-6 text-2xl font-bold tracking-tight text-slate-950">
-              Obiettivo raccolta fondi
+              50.000 euro raccolti
             </h3>
-            <p className="mt-4 text-4xl font-bold tracking-tight text-slate-950">
-              Importo da definire
-            </p>
-            <p className="mt-5 text-base leading-7 text-slate-600">
-              Card pronta per essere aggiornata con il target ufficiale del progetto benefico.
-            </p>
-            <div className="mt-8 h-2 rounded-full bg-slate-100">
-              <div className="h-2 w-1/3 rounded-full bg-[linear-gradient(90deg,#0b7a3c_0%,#ffffff_50%,#c61f2b_100%)]" />
+            <div className="mt-6 grid gap-4">
+              {[
+                "331 mq interessati",
+                "6 grandi stanze di degenza",
+                "2 piccole stanze di degenza",
+              ].map((item) => (
+                <div
+                  key={item}
+                  className="rounded-[1.5rem] border border-emerald-200 bg-white/85 px-5 py-4 text-sm font-semibold uppercase tracking-[0.12em] text-slate-700"
+                >
+                  {item}
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -413,7 +445,11 @@ export default function Home() {
                 {content}
               </a>
             ) : (
-              <Link key={sector.title} href={sector.href} aria-label={`Vai al settore ${sector.title}`}>
+              <Link
+                key={sector.title}
+                href={sector.href}
+                aria-label={`Vai al settore ${sector.title}`}
+              >
                 {content}
               </Link>
             );

@@ -11,7 +11,7 @@ import { socialLinks } from "@/lib/site-data";
 const desktopNavItems = [
   { label: "Home", href: "/" },
   { label: "Chi siamo", href: "/chi-siamo" },
-  { label: "Progetti", href: "/sostienici" },
+  { label: "Progetti", href: "/progetti" },
   { label: "Settori", href: "/discipline" },
   { label: "Diventa Socio", href: "/diventa-socio" },
   { label: "Eventi", href: "/eventi" },
@@ -22,7 +22,7 @@ const desktopNavItems = [
 const mobileNavItems = [
   { label: "Home", href: "/" },
   { label: "Chi siamo", href: "/chi-siamo" },
-  { label: "Progetti", href: "/sostienici" },
+  { label: "Progetti", href: "/progetti" },
   { label: "Settori", href: "/discipline" },
   { label: "Diventa Socio", href: "/diventa-socio" },
   { label: "Eventi", href: "/eventi" },
