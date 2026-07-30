@@ -37,11 +37,11 @@ export function SiteHeader() {
   }, [pathname]);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/10 bg-slate-950/92 backdrop-blur-xl">
-      <div className="relative mx-auto flex max-w-7xl items-center gap-3 px-4 py-3 sm:gap-4 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-50 border-b border-white/10 bg-[#061426]/95 backdrop-blur-xl">
+      <div className="relative mx-auto grid max-w-7xl grid-cols-[auto_1fr_auto] items-center px-4 py-2.5 sm:px-6 lg:px-8">
         <Link
           href="/"
-          className="flex min-w-0 items-center gap-3 pr-2 transition hover:opacity-95 lg:gap-4"
+          className="flex min-w-0 items-center transition hover:opacity-95"
           aria-label="Vai alla home della Nazionale Italiana Sanitari"
         >
           <Image
@@ -49,37 +49,30 @@ export function SiteHeader() {
             alt="Logo ufficiale Nazionale Italiana Sanitari"
             width={72}
             height={72}
-            className="h-12 w-12 shrink-0 rounded-xl object-cover sm:h-14 sm:w-14"
+            className="h-11 w-11 shrink-0 rounded-lg object-cover sm:h-12 sm:w-12"
           />
         </Link>
 
-        <nav className="ml-3 hidden flex-1 items-center gap-1 xl:flex">
+        <nav className="hidden items-center justify-center gap-1 xl:flex">
           {desktopNavItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="rounded-full px-3 py-2 text-sm font-medium text-slate-200 transition hover:bg-white/5 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300"
+              className="rounded-full px-3.5 py-2 text-sm font-medium text-slate-200 transition hover:bg-white/7 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300"
             >
               {item.label}
             </Link>
           ))}
         </nav>
 
-        <div className="hidden items-center gap-2 lg:flex">
-          <Link
-            href="/sostienici"
-            className="rounded-full bg-amber-300 px-5 py-2.5 text-sm font-semibold uppercase tracking-[0.12em] text-slate-950 transition hover:bg-amber-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-100"
-          >
-            Dona ora
-          </Link>
-        </div>
+        <div className="hidden h-12 w-12 xl:block" aria-hidden="true" />
 
         <button
           type="button"
           aria-label={isMobileMenuOpen ? "Chiudi il menu principale" : "Apri il menu principale"}
           aria-expanded={isMobileMenuOpen}
           onClick={() => setIsMobileMenuOpen((current) => !current)}
-          className="ml-auto inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 xl:hidden"
+          className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 xl:hidden"
         >
           <div className="flex flex-col gap-1.5">
             <span
@@ -117,15 +110,6 @@ export function SiteHeader() {
                   ))}
                 </nav>
 
-                <div className="mt-4 grid gap-3">
-                  <Link
-                    href="/sostienici"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="inline-flex items-center justify-center rounded-full bg-amber-300 px-5 py-3.5 text-center text-sm font-semibold uppercase tracking-[0.12em] text-slate-950 transition hover:bg-amber-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-100"
-                  >
-                    Dona ora
-                  </Link>
-                </div>
               </div>
             </div>
           </div>

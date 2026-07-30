@@ -1,7 +1,6 @@
-import Image from "next/image";
 import Link from "next/link";
 
-import { socialLinks } from "@/lib/site-data";
+import { contactInfo, socialLinks } from "@/lib/site-data";
 
 const socialFooterItems = [
   { label: "Instagram", href: socialLinks.instagram, icon: "instagram" },
@@ -10,6 +9,20 @@ const socialFooterItems = [
   { label: "TikTok", href: socialLinks.tiktok, icon: "tiktok" },
   { label: "YouTube", href: socialLinks.youtube, icon: "youtube" },
 ] as const;
+
+const quickLinks = [
+  { label: "Home", href: "/" },
+  { label: "Chi siamo", href: "/chi-siamo" },
+  { label: "Progetti", href: "/progetti" },
+  { label: "Eventi", href: "/eventi" },
+  { label: "Diventa Socio", href: "/diventa-socio" },
+  { label: "Contatti", href: "/contatti" },
+];
+
+const legalLinks = [
+  { label: "Privacy Policy", href: "/privacy-policy" },
+  { label: "Cookie Policy", href: "/cookie-policy" },
+];
 
 function SocialIcon({ platform }: { platform: (typeof socialFooterItems)[number]["icon"] }) {
   switch (platform) {
@@ -50,24 +63,60 @@ function SocialIcon({ platform }: { platform: (typeof socialFooterItems)[number]
 
 export function SiteFooter() {
   return (
-    <footer className="mt-auto border-t border-white/10 bg-[linear-gradient(180deg,#020617_0%,#0f172a_100%)] text-white">
-      <div className="mx-auto max-w-7xl px-6 py-12">
-        <div className="flex flex-col gap-8">
-          <div className="flex flex-col gap-6 border-b border-white/10 pb-8 md:flex-row md:items-center md:justify-between">
-            <div className="flex items-center gap-4">
-              <Image
-                src="/images/nis/logo-nis.jpg"
-                alt="Logo ufficiale Nazionale Italiana Sanitari"
-                width={72}
-                height={72}
-                className="h-14 w-14 rounded-xl object-cover"
-              />
-              <p className="text-sm font-semibold uppercase tracking-[0.16em] text-slate-300">
-                Nazionale Italiana Sanitari
-              </p>
-            </div>
+    <footer className="mt-auto border-t border-white/10 bg-[linear-gradient(180deg,#061426_0%,#020617_100%)] text-white">
+      <div className="mx-auto max-w-7xl px-6 py-8 lg:py-10">
+        <div className="grid grid-cols-2 gap-7 border-b border-white/10 pb-7 md:grid-cols-2 lg:grid-cols-[1.15fr_0.8fr_1.2fr_1.1fr] lg:gap-9 lg:pb-9">
+          <div>
+            <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-sky-200">
+              Link rapidi
+            </h2>
+            <nav className="mt-4 grid gap-y-3 text-sm text-slate-300 sm:grid-cols-2 sm:gap-x-6 lg:mt-5">
+              {quickLinks.map((item) => (
+                <Link key={item.href} href={item.href} className="transition hover:text-white">
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
 
-            <div className="flex flex-wrap gap-3">
+          <div>
+            <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-sky-200">
+              Legale
+            </h2>
+            <nav className="mt-4 grid gap-3 text-sm text-slate-300 lg:mt-5">
+              {legalLinks.map((item) => (
+                <Link key={item.href} href={item.href} className="transition hover:text-white">
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
+
+          <div className="col-span-2 md:col-span-1">
+            <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-sky-200">
+              Contatti
+            </h2>
+            <div className="mt-4 grid gap-3 text-sm text-slate-300 lg:mt-5">
+              <a
+                href={`mailto:${contactInfo.email}`}
+                className="break-words transition hover:text-white"
+              >
+                {contactInfo.email}
+              </a>
+              <a
+                href={`mailto:${contactInfo.pressEmail}`}
+                className="break-words transition hover:text-white"
+              >
+                {contactInfo.pressEmail}
+              </a>
+            </div>
+          </div>
+
+          <div className="col-span-2 md:col-span-1">
+            <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-sky-200">
+              Social
+            </h2>
+            <div className="mt-4 flex flex-wrap gap-2.5 lg:mt-5 lg:gap-3">
               {socialFooterItems.map((item) => (
                 <a
                   key={item.label}
@@ -75,31 +124,23 @@ export function SiteFooter() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={`Apri ${item.label} in una nuova scheda`}
-                  className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/12 bg-white/6 text-slate-100 transition hover:border-sky-300/40 hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300"
+                  className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/6 px-3.5 py-2 text-sm text-slate-100 transition hover:border-sky-300/40 hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300"
                 >
                   <SocialIcon platform={item.icon} />
+                  <span>{item.label}</span>
                 </a>
               ))}
             </div>
           </div>
+        </div>
 
-          <div className="flex flex-col gap-5 text-sm text-slate-400 md:flex-row md:items-end md:justify-between">
-            <p className="max-w-4xl leading-7">
-              &copy; All rights reserved. Sito realizzato da PANTELEIA - Associazione
-              Promozione Sociale. CF: 96647400587
-              <br />
-              Iscrizione RUNTS: Rep. n. 165890 &ndash; Det. n. G03684 del 19/03/2026.
-            </p>
-
-            <div className="flex flex-wrap gap-4">
-              <Link href="/privacy-policy" className="transition hover:text-white">
-                Privacy Policy
-              </Link>
-              <Link href="/cookie-policy" className="transition hover:text-white">
-                Cookie Policy
-              </Link>
-            </div>
-          </div>
+        <div className="pt-5 text-sm leading-7 text-slate-400 lg:pt-7">
+          <p>
+            &copy; All rights reserved. Sito realizzato da PANTELEIA - Associazione Promozione
+            Sociale. CF: 96647400587
+            <br />
+            Iscrizione RUNTS: Rep. n. 165890 &ndash; Det. n. G03684 del 19/03/2026.
+          </p>
         </div>
       </div>
     </footer>

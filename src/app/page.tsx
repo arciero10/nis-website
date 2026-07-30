@@ -93,11 +93,11 @@ const sectors = [
 ];
 
 const impactItems = [
-  "Fondi raccolti",
-  "Progetti finanziati",
-  "Sanitari aderenti",
-  "Eventi organizzati",
-  "Beneficiari raggiunti",
+  { label: "Fondi raccolti", value: "€ 50.000+", icon: "heart" },
+  { label: "Progetti finanziati", value: "In aggiornamento", icon: "project" },
+  { label: "Sanitari aderenti", value: "In aggiornamento", icon: "people" },
+  { label: "Eventi organizzati", value: "In aggiornamento", icon: "calendar" },
+  { label: "Beneficiari raggiunti", value: "In aggiornamento", icon: "hands" },
 ];
 
 function Icon({ type }: { type: string }) {
@@ -202,6 +202,31 @@ function Icon({ type }: { type: string }) {
           <path d="M11 18h4M17 18h4M11 22h4" strokeWidth="1.6" strokeLinecap="round" />
         </svg>
       );
+    case "heart":
+      return (
+        <svg viewBox="0 0 32 32" aria-hidden="true" className="h-8 w-8 fill-none stroke-current">
+          <path
+            d="M16 27s-9.5-5.8-9.5-13.2a5.3 5.3 0 0 1 9.5-3.2 5.3 5.3 0 0 1 9.5 3.2C25.5 21.2 16 27 16 27Z"
+            strokeWidth="1.8"
+          />
+          <path d="M11 16h3l1.6-3.8 2.8 7.4L20 16h3" strokeWidth="1.8" strokeLinecap="round" />
+        </svg>
+      );
+    case "project":
+      return (
+        <svg viewBox="0 0 32 32" aria-hidden="true" className="h-8 w-8 fill-none stroke-current">
+          <rect x="6" y="7" width="20" height="18" rx="3" strokeWidth="1.8" />
+          <path d="M11 13h10M11 18h6M21 18l2 2 4-4" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      );
+    case "people":
+      return (
+        <svg viewBox="0 0 32 32" aria-hidden="true" className="h-8 w-8 fill-none stroke-current">
+          <circle cx="16" cy="11" r="4" strokeWidth="1.8" />
+          <path d="M8.5 25c1.1-4.1 3.6-6.2 7.5-6.2s6.4 2.1 7.5 6.2" strokeWidth="1.8" strokeLinecap="round" />
+          <path d="M8 14.5a3 3 0 1 0-1.3-5.7M24 14.5a3 3 0 1 1 1.3-5.7" strokeWidth="1.6" strokeLinecap="round" />
+        </svg>
+      );
     default:
       return null;
   }
@@ -209,14 +234,14 @@ function Icon({ type }: { type: string }) {
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[linear-gradient(180deg,#06192a_0%,#0a2036_18%,#f8fafc_18%,#eef2f7_100%)] text-slate-900">
+    <main className="min-h-screen bg-[linear-gradient(180deg,#06192a_0%,#0a2036_14%,#f8fafc_14%,#eef2f7_100%)] text-slate-900">
       <section className="relative overflow-hidden border-b border-white/10 bg-[linear-gradient(135deg,#06182a_0%,#0d2d49_58%,#071c30_100%)]">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.16),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(16,185,129,0.16),transparent_24%)]" />
         <div className="absolute inset-x-0 bottom-0 h-2 bg-[linear-gradient(90deg,#0b7a3c_0%,#0b7a3c_33%,#f5f5f5_33%,#f5f5f5_66%,#c61f2b_66%,#c61f2b_100%)]" />
 
-        <div className="relative mx-auto grid min-h-[82vh] max-w-7xl gap-14 px-6 py-16 lg:grid-cols-[0.95fr_1.05fr] lg:items-center lg:py-20">
-          <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-4 rounded-[1.75rem] border border-white/12 bg-white/8 px-5 py-4 backdrop-blur-sm">
+        <div className="relative mx-auto grid min-h-[58vh] max-w-7xl gap-10 px-6 py-12 lg:grid-cols-[0.95fr_1.05fr] lg:items-center lg:py-12">
+          <div className="max-w-3xl text-center lg:text-left">
+            <div className="inline-flex items-center gap-4 rounded-[1.75rem] border border-white/12 bg-white/8 px-5 py-4 text-left backdrop-blur-sm">
               <Image
                 src="/images/nis/logo-nis.jpg"
                 alt="Logo ufficiale Nazionale Italiana Sanitari"
@@ -242,18 +267,12 @@ export default function Home() {
               prevenzione, solidarieta e progetti concreti a favore delle persone piu fragili.
             </p>
 
-            <div className="mt-10 flex flex-col justify-center gap-4 sm:flex-row sm:flex-wrap">
+            <div className="mt-10 flex justify-center">
               <Link
                 href="/sostienici"
-                className="inline-flex items-center justify-center rounded-full bg-amber-300 px-8 py-4 text-sm font-semibold uppercase tracking-[0.16em] text-slate-950 shadow-[0_18px_36px_rgba(251,191,36,0.22)] transition hover:bg-amber-200"
+                className="inline-flex min-h-14 min-w-[14rem] items-center justify-center rounded-full bg-amber-300 px-10 py-5 text-base font-bold uppercase tracking-[0.18em] text-slate-950 shadow-[0_22px_46px_rgba(251,191,36,0.28)] transition hover:-translate-y-0.5 hover:bg-amber-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-100"
               >
-                Dona ora
-              </Link>
-              <Link
-                href="/chi-siamo"
-                className="inline-flex items-center justify-center rounded-full border border-white/18 bg-white/10 px-7 py-4 text-sm font-semibold uppercase tracking-[0.16em] text-white transition hover:bg-white/15"
-              >
-                Scopri chi siamo
+                DONA ORA
               </Link>
             </div>
 
@@ -329,6 +348,37 @@ export default function Home() {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-[linear-gradient(135deg,#04111f_0%,#0b2540_62%,#04111f_100%)] py-12 text-white">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="flex items-center gap-4">
+            <span className="h-px flex-1 bg-white/12" />
+            <p className="text-center text-sm font-semibold uppercase tracking-[0.22em] text-sky-300">
+              Il nostro impatto
+            </p>
+            <span className="h-px flex-1 bg-white/12" />
+          </div>
+
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+            {impactItems.map((item) => (
+              <div
+                key={item.label}
+                className="rounded-[1.75rem] border border-white/10 bg-white/7 px-5 py-6 shadow-[0_22px_48px_rgba(2,12,27,0.2)] backdrop-blur-sm"
+              >
+                <div className="inline-flex rounded-2xl bg-sky-300/12 p-3 text-sky-200">
+                  <Icon type={item.icon} />
+                </div>
+                <p className="mt-5 text-3xl font-bold tracking-tight text-white lg:text-[2rem]">
+                  {item.value}
+                </p>
+                <p className="mt-3 text-sm font-semibold uppercase tracking-[0.16em] text-sky-100/78">
+                  {item.label}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -454,34 +504,6 @@ export default function Home() {
               </Link>
             );
           })}
-        </div>
-      </section>
-
-      <section className="bg-[linear-gradient(135deg,#071827_0%,#0e2a45_64%,#071827_100%)] py-20 text-white">
-        <div className="mx-auto max-w-7xl px-6">
-          <div className="flex items-center gap-4">
-            <span className="h-px flex-1 bg-white/12" />
-            <p className="text-center text-sm font-semibold uppercase tracking-[0.22em] text-sky-300">
-              Il nostro impatto
-            </p>
-            <span className="h-px flex-1 bg-white/12" />
-          </div>
-
-          <div className="mt-10 grid gap-5 md:grid-cols-2 xl:grid-cols-5">
-            {impactItems.map((item) => (
-              <div
-                key={item}
-                className="rounded-[1.75rem] border border-white/10 bg-white/6 px-6 py-7 backdrop-blur-sm"
-              >
-                <p className="text-sm font-semibold uppercase tracking-[0.18em] text-sky-200">
-                  {item}
-                </p>
-                <p className="mt-5 text-3xl font-bold tracking-tight text-white">
-                  In aggiornamento
-                </p>
-              </div>
-            ))}
-          </div>
         </div>
       </section>
 
