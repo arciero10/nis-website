@@ -4,7 +4,7 @@ export const siteUrl = "https://nazionaleitalianasanitari.it";
 export const siteName = "Nazionale Italiana Sanitari";
 export const defaultDescription =
   "Sport, prevenzione e solidarieta al servizio della salute. Il sito istituzionale della Nazionale Italiana Sanitari racconta missione, eventi, discipline, partner e iniziative di sostegno.";
-export const ogImage = "/logo/logo.jpg";
+export const ogImage = "/images/nis/logo-nis.jpg";
 
 export const socialLinks = {
   instagram: "https://www.instagram.com/nazionaleitalianasanitari",
@@ -48,7 +48,7 @@ export const footerColumns = [
     links: [
       { label: "Eventi", href: "/eventi" },
       { label: "Sponsor", href: "/sponsor" },
-      { label: "Sostienici", href: "/sostienici" },
+      { label: "Dona ora", href: "/sostienici" },
       { label: "5x1000", href: "/5x1000" },
     ],
   },

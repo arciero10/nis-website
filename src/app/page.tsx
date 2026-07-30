@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { SectionTitle } from "@/components/section-title";
-import { buildMetadata, siteName, socialLinks, sponsors } from "@/lib/site-data";
+import { buildMetadata, siteName, socialLinks } from "@/lib/site-data";
 
 export const metadata = buildMetadata({
   title: siteName,
@@ -218,7 +218,7 @@ export default function Home() {
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-4 rounded-[1.75rem] border border-white/12 bg-white/8 px-5 py-4 backdrop-blur-sm">
               <Image
-                src="/logo/logo.jpg"
+                src="/images/nis/logo-nis.jpg"
                 alt="Logo ufficiale Nazionale Italiana Sanitari"
                 width={88}
                 height={88}
@@ -242,18 +242,18 @@ export default function Home() {
               prevenzione, solidarieta e progetti concreti a favore delle persone piu fragili.
             </p>
 
-            <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:flex-wrap">
-              <Link
-                href="/chi-siamo"
-                className="inline-flex items-center justify-center rounded-full bg-white px-7 py-4 text-sm font-semibold uppercase tracking-[0.16em] text-slate-950 transition hover:bg-slate-100"
-              >
-                Scopri chi siamo
-              </Link>
+            <div className="mt-10 flex flex-col justify-center gap-4 sm:flex-row sm:flex-wrap">
               <Link
                 href="/sostienici"
-                className="inline-flex items-center justify-center rounded-full bg-emerald-400 px-7 py-4 text-sm font-semibold uppercase tracking-[0.16em] text-slate-950 transition hover:bg-emerald-300"
+                className="inline-flex items-center justify-center rounded-full bg-amber-300 px-8 py-4 text-sm font-semibold uppercase tracking-[0.16em] text-slate-950 shadow-[0_18px_36px_rgba(251,191,36,0.22)] transition hover:bg-amber-200"
               >
-                Sostieni i progetti
+                Dona ora
+              </Link>
+              <Link
+                href="/chi-siamo"
+                className="inline-flex items-center justify-center rounded-full border border-white/18 bg-white/10 px-7 py-4 text-sm font-semibold uppercase tracking-[0.16em] text-white transition hover:bg-white/15"
+              >
+                Scopri chi siamo
               </Link>
             </div>
 
@@ -489,7 +489,7 @@ export default function Home() {
         <div className="grid gap-8 rounded-[2.5rem] border border-emerald-200 bg-[linear-gradient(120deg,rgba(16,185,129,0.12)_0%,rgba(255,255,255,0.98)_46%,rgba(240,249,255,0.94)_100%)] p-8 shadow-[0_28px_70px_rgba(15,23,42,0.08)] lg:grid-cols-[1fr_0.92fr] lg:items-center lg:p-10">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.22em] text-emerald-700">
-              Sostieni la NIS
+              Dona ora
             </p>
             <h2 className="mt-5 text-4xl font-bold tracking-tight text-slate-950 md:text-5xl">
               Ogni donazione diventa cura.
@@ -519,43 +519,6 @@ export default function Home() {
                 Salute, solidarieta, futuro
               </p>
             </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-7xl px-6 py-24">
-        <div className="rounded-[2.5rem] border border-slate-200/90 bg-white px-8 py-12 shadow-[0_28px_80px_rgba(15,23,42,0.1)] md:px-10 md:py-14 lg:px-14 lg:py-16">
-          <div className="flex items-center gap-4">
-            <span className="h-px flex-1 bg-slate-200" />
-            <p className="text-center text-sm font-semibold uppercase tracking-[0.22em] text-sky-700">
-              Partner e sponsor
-            </p>
-            <span className="h-px flex-1 bg-slate-200" />
-          </div>
-
-          <div className="mt-14 grid gap-x-8 gap-y-14 sm:grid-cols-2 lg:mt-16 lg:grid-cols-3 lg:gap-x-10 lg:gap-y-16">
-            {sponsors.map((sponsor) => (
-              <div
-                key={sponsor.name}
-                className="flex min-h-[18rem] flex-col items-center justify-start px-2 py-2 text-center md:min-h-[19rem] lg:min-h-[20rem]"
-              >
-                <div className="flex h-36 w-full items-center justify-center rounded-[2rem] bg-[radial-gradient(circle_at_center,rgba(248,250,252,1)_0%,rgba(241,245,249,0.9)_58%,rgba(255,255,255,0)_100%)] px-4 md:h-40 md:px-5 lg:h-44">
-                  <Image
-                    src={sponsor.logoSrc}
-                    alt={`Logo ${sponsor.name}`}
-                    width={280}
-                    height={160}
-                    className="h-auto max-h-[100px] w-auto max-w-[180px] object-contain md:max-h-[120px] md:max-w-[220px] lg:max-h-[150px] lg:max-w-[270px]"
-                  />
-                </div>
-                <h3 className="mt-6 text-lg font-bold tracking-tight text-slate-950 md:text-xl">
-                  {sponsor.name}
-                </h3>
-                <p className="mt-2 text-center text-sm font-semibold uppercase tracking-[0.18em] text-slate-500 md:text-[0.95rem]">
-                  {sponsor.category}
-                </p>
-              </div>
-            ))}
           </div>
         </div>
       </section>

@@ -6,16 +6,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { socialLinks } from "@/lib/site-data";
-
 const desktopNavItems = [
   { label: "Home", href: "/" },
   { label: "Chi siamo", href: "/chi-siamo" },
   { label: "Progetti", href: "/progetti" },
   { label: "Settori", href: "/discipline" },
-  { label: "Diventa Socio", href: "/diventa-socio" },
   { label: "Eventi", href: "/eventi" },
   { label: "News", href: "/news" },
+  { label: "Diventa Socio", href: "/diventa-socio" },
   { label: "Contatti", href: "/contatti" },
 ];
 
@@ -24,56 +22,11 @@ const mobileNavItems = [
   { label: "Chi siamo", href: "/chi-siamo" },
   { label: "Progetti", href: "/progetti" },
   { label: "Settori", href: "/discipline" },
-  { label: "Diventa Socio", href: "/diventa-socio" },
   { label: "Eventi", href: "/eventi" },
   { label: "News", href: "/news" },
+  { label: "Diventa Socio", href: "/diventa-socio" },
   { label: "Contatti", href: "/contatti" },
 ];
-
-const socialNavItems = [
-  { label: "Instagram", href: socialLinks.instagram, icon: "instagram" },
-  { label: "Facebook", href: socialLinks.facebook, icon: "facebook" },
-  { label: "X", href: socialLinks.x, icon: "x" },
-  { label: "TikTok", href: socialLinks.tiktok, icon: "tiktok" },
-  { label: "YouTube", href: socialLinks.youtube, icon: "youtube" },
-] as const;
-
-function SocialIcon({ platform }: { platform: (typeof socialNavItems)[number]["icon"] }) {
-  switch (platform) {
-    case "instagram":
-      return (
-        <svg viewBox="0 0 24 24" aria-hidden="true" className="h-4 w-4 fill-none stroke-current">
-          <rect x="3.5" y="3.5" width="17" height="17" rx="5" strokeWidth="1.7" />
-          <circle cx="12" cy="12" r="4" strokeWidth="1.7" />
-          <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
-        </svg>
-      );
-    case "facebook":
-      return (
-        <svg viewBox="0 0 24 24" aria-hidden="true" className="h-4 w-4 fill-current">
-          <path d="M13.3 20v-7h2.4l.4-2.8h-2.8V8.4c0-.8.3-1.4 1.5-1.4h1.4V4.5c-.2 0-1-.1-2-.1-2 0-3.4 1.2-3.4 3.6v2.2H8.5V13h2.3v7h2.5Z" />
-        </svg>
-      );
-    case "x":
-      return (
-        <svg viewBox="0 0 24 24" aria-hidden="true" className="h-4 w-4 fill-current">
-          <path d="M18.9 4H21l-4.7 5.4L22 20h-4.5l-3.5-5.2L9.5 20H7.4l5-5.8L2 4h4.6L9.8 8.8 13.9 4h2.1Zm-1.6 14.3h1.2L6 5.6H4.7l12.6 12.7Z" />
-        </svg>
-      );
-    case "tiktok":
-      return (
-        <svg viewBox="0 0 24 24" aria-hidden="true" className="h-4 w-4 fill-current">
-          <path d="M15.6 4c.3 1.8 1.4 3.3 3.1 4.1v2.5c-1.3 0-2.5-.4-3.6-1.1V15a4.9 4.9 0 1 1-4.9-4.9c.3 0 .7 0 1 .1v2.6a2.5 2.5 0 1 0 1.4 2.2V4h3Z" />
-        </svg>
-      );
-    case "youtube":
-      return (
-        <svg viewBox="0 0 24 24" aria-hidden="true" className="h-4 w-4 fill-current">
-          <path d="M21.4 7.2a2.8 2.8 0 0 0-2-2C17.6 4.7 12 4.7 12 4.7s-5.6 0-7.4.5a2.8 2.8 0 0 0-2 2A29.4 29.4 0 0 0 2 12a29.4 29.4 0 0 0 .6 4.8 2.8 2.8 0 0 0 2 2c1.8.5 7.4.5 7.4.5s5.6 0 7.4-.5a2.8 2.8 0 0 0 2-2A29.4 29.4 0 0 0 22 12a29.4 29.4 0 0 0-.6-4.8ZM10 15.6V8.4l6.2 3.6L10 15.6Z" />
-        </svg>
-      );
-  }
-}
 
 export function SiteHeader() {
   const pathname = usePathname();
@@ -92,17 +45,12 @@ export function SiteHeader() {
           aria-label="Vai alla home della Nazionale Italiana Sanitari"
         >
           <Image
-            src="/logo/logo.jpg"
+            src="/images/nis/logo-nis.jpg"
             alt="Logo ufficiale Nazionale Italiana Sanitari"
-            width={52}
-            height={52}
-            className="h-11 w-11 shrink-0 rounded-xl sm:h-12 sm:w-12 lg:h-[54px] lg:w-[54px]"
+            width={72}
+            height={72}
+            className="h-12 w-12 shrink-0 rounded-xl object-cover sm:h-14 sm:w-14"
           />
-          <div className="min-w-0">
-            <p className="max-w-[10.5rem] text-sm font-semibold uppercase leading-tight tracking-[0.12em] text-white sm:max-w-[13rem] sm:text-[0.92rem] lg:max-w-[17rem] lg:text-[0.98rem] lg:tracking-[0.16em]">
-              Nazionale Italiana Sanitari
-            </p>
-          </div>
         </Link>
 
         <nav className="ml-3 hidden flex-1 items-center gap-1 xl:flex">
@@ -118,24 +66,6 @@ export function SiteHeader() {
         </nav>
 
         <div className="hidden items-center gap-2 lg:flex">
-          {socialNavItems.map((item) => (
-            <a
-              key={item.label}
-              href={item.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`Apri ${item.label} in una nuova scheda`}
-              className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/12 bg-white/6 text-slate-200 transition hover:border-sky-300/40 hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300"
-            >
-              <SocialIcon platform={item.icon} />
-            </a>
-          ))}
-          <Link
-            href="/sostienici"
-            className="rounded-full border border-white/15 bg-white/10 px-4 py-2.5 text-sm font-semibold uppercase tracking-[0.12em] text-white transition hover:bg-white/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300"
-          >
-            Sostienici
-          </Link>
           <Link
             href="/sostienici"
             className="rounded-full bg-amber-300 px-5 py-2.5 text-sm font-semibold uppercase tracking-[0.12em] text-slate-950 transition hover:bg-amber-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-100"
@@ -187,40 +117,13 @@ export function SiteHeader() {
                   ))}
                 </nav>
 
-                <div className="mt-4 rounded-[1.5rem] border border-white/8 bg-slate-900/50 p-4">
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-sky-300">
-                    Social ufficiali
-                  </p>
-                  <div className="mt-3 flex flex-wrap gap-3">
-                    {socialNavItems.map((item) => (
-                      <a
-                        key={item.label}
-                        href={item.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label={`Apri ${item.label} in una nuova scheda`}
-                        className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/12 bg-white/6 text-white transition hover:bg-white/12 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300"
-                      >
-                        <SocialIcon platform={item.icon} />
-                      </a>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="mt-4 grid gap-3 min-[430px]:grid-cols-2">
+                <div className="mt-4 grid gap-3">
                   <Link
                     href="/sostienici"
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="inline-flex items-center justify-center rounded-full bg-amber-300 px-5 py-3.5 text-center text-sm font-semibold uppercase tracking-[0.12em] text-slate-950 transition hover:bg-amber-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-100"
                   >
                     Dona ora
-                  </Link>
-                  <Link
-                    href="/chi-siamo"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/8 px-5 py-3.5 text-center text-sm font-semibold uppercase tracking-[0.12em] text-white transition hover:bg-white/12 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300"
-                  >
-                    Scopri il progetto
                   </Link>
                 </div>
               </div>
