@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const siteUrl = "https://nazionaleitalianasanitari.it";
 export const siteName = "Nazionale Italiana Sanitari";
 export const defaultDescription =
-  "Sport, prevenzione e solidarieta al servizio della salute. Il sito istituzionale della Nazionale Italiana Sanitari racconta missione, eventi, discipline, partner e iniziative di sostegno.";
+  "Sport, prevenzione e solidarieta al servizio della salute. Il sito istituzionale della Nazionale Italiana Sanitari racconta missione, progetti benefici, eventi, discipline e iniziative di sostegno.";
 export const ogImage = "/images/nis/logo-nis.jpg";
 
 export const socialLinks = {
@@ -27,9 +27,9 @@ export const navItems = [
   { label: "Chi siamo", href: "/chi-siamo" },
   { label: "Progetti", href: "/progetti" },
   { label: "Settori", href: "/discipline" },
-  { label: "Diventa Socio", href: "/diventa-socio" },
   { label: "Eventi", href: "/eventi" },
   { label: "News", href: "/news" },
+  { label: "Diventa Socio", href: "/diventa-socio" },
   { label: "Contatti", href: "/contatti" },
 ];
 
@@ -200,7 +200,6 @@ export function buildMetadata({
       "prevenzione",
       "solidarieta",
       "eventi benefici",
-      "sponsor",
       "5x1000",
       "donazioni",
     ],

@@ -14,7 +14,6 @@ const quickLinks = [
   { label: "Home", href: "/" },
   { label: "Chi siamo", href: "/chi-siamo" },
   { label: "Progetti", href: "/progetti" },
-  { label: "Eventi", href: "/eventi" },
   { label: "Diventa Socio", href: "/diventa-socio" },
   { label: "Contatti", href: "/contatti" },
 ];
@@ -65,34 +64,8 @@ export function SiteFooter() {
   return (
     <footer className="mt-auto border-t border-white/10 bg-[linear-gradient(180deg,#061426_0%,#020617_100%)] text-white">
       <div className="mx-auto max-w-7xl px-6 py-8 lg:py-10">
-        <div className="grid grid-cols-2 gap-7 border-b border-white/10 pb-7 md:grid-cols-2 lg:grid-cols-[1.15fr_0.8fr_1.2fr_1.1fr] lg:gap-9 lg:pb-9">
+        <div className="grid gap-7 border-b border-white/10 pb-7 sm:grid-cols-2 lg:grid-cols-4 lg:gap-9 lg:pb-9">
           <div>
-            <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-sky-200">
-              Link rapidi
-            </h2>
-            <nav className="mt-4 grid gap-y-3 text-sm text-slate-300 sm:grid-cols-2 sm:gap-x-6 lg:mt-5">
-              {quickLinks.map((item) => (
-                <Link key={item.href} href={item.href} className="transition hover:text-white">
-                  {item.label}
-                </Link>
-              ))}
-            </nav>
-          </div>
-
-          <div>
-            <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-sky-200">
-              Legale
-            </h2>
-            <nav className="mt-4 grid gap-3 text-sm text-slate-300 lg:mt-5">
-              {legalLinks.map((item) => (
-                <Link key={item.href} href={item.href} className="transition hover:text-white">
-                  {item.label}
-                </Link>
-              ))}
-            </nav>
-          </div>
-
-          <div className="col-span-2 md:col-span-1">
             <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-sky-200">
               Contatti
             </h2>
@@ -112,25 +85,50 @@ export function SiteFooter() {
             </div>
           </div>
 
-          <div className="col-span-2 md:col-span-1">
+          <div>
             <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-sky-200">
-              Social
+              Link rapidi
             </h2>
-            <div className="mt-4 flex flex-wrap gap-2.5 lg:mt-5 lg:gap-3">
+            <nav className="mt-4 grid gap-3 text-sm text-slate-300 lg:mt-5">
+              {quickLinks.map((item) => (
+                <Link key={item.href} href={item.href} className="transition hover:text-white">
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
+
+          <div>
+            <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-sky-200">
+              Seguici
+            </h2>
+            <nav className="mt-4 grid gap-3 text-sm text-slate-300 lg:mt-5">
               {socialFooterItems.map((item) => (
                 <a
                   key={item.label}
                   href={item.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label={`Apri ${item.label} in una nuova scheda`}
-                  className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/6 px-3.5 py-2 text-sm text-slate-100 transition hover:border-sky-300/40 hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300"
+                  className="inline-flex items-center gap-2 transition hover:text-white"
                 >
                   <SocialIcon platform={item.icon} />
                   <span>{item.label}</span>
                 </a>
               ))}
-            </div>
+            </nav>
+          </div>
+
+          <div>
+            <h2 className="text-sm font-semibold uppercase tracking-[0.18em] text-sky-200">
+              Legale
+            </h2>
+            <nav className="mt-4 grid gap-3 text-sm text-slate-300 lg:mt-5">
+              {legalLinks.map((item) => (
+                <Link key={item.href} href={item.href} className="transition hover:text-white">
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
           </div>
         </div>
 
