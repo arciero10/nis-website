@@ -22,6 +22,12 @@ export default function Home(){return <>
 
   <section className="home-section project-section"><div className="shell"><ProjectFeature/></div></section>
 
+  <section className="brand-divider" aria-label="NIS is NICE">
+    <div className="shell brand-divider-inner">
+      <Image src="/images/brand/nis-is-nice.png" alt="NIS is NICE - Nazionale Italiana Sanitari" width={1942} height={809} sizes="(max-width: 720px) calc(100vw - 48px), 820px"/>
+    </div>
+  </section>
+
   <section className="home-section soft sectors-section"><div className="shell">
     <div className="section-head"><div><div className="eyebrow">I NOSTRI SETTORI</div><h2>Diversi sport. Un unico obiettivo.</h2></div><Link href="/settori" className="section-link">Tutti i settori <span aria-hidden="true">→</span></Link></div>
     <SectorGrid/>
