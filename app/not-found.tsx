@@ -1,0 +1,1 @@
+import Link from "next/link";export default function NotFound(){return <section className="section" style={{paddingTop:150}}><div className="shell"><h1>Pagina non trovata</h1><Link className="btn btn-blue" href="/">TORNA ALLA HOME</Link></div></section>}

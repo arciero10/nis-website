@@ -1,0 +1,22 @@
+{
+  "colors": {
+    "navy": "#041D3B",
+    "navy2": "#082A55",
+    "blue": "#0967FF",
+    "green": "#0AA84F",
+    "red": "#EF1D2E",
+    "soft": "#F3F8FE",
+    "ink": "#071F49",
+    "muted": "#4D6380"
+  },
+  "maxWidth": 1540,
+  "breakpoints": {
+    "tablet": 1100,
+    "mobile": 720
+  },
+  "radius": {
+    "small": 5,
+    "card": 10,
+    "pill": 999
+  }
+}

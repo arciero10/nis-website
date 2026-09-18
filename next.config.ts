@@ -1,10 +1,3 @@
 import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
-  output: "standalone",
-  turbopack: {
-    root: process.cwd(),
-  },
-};
-
+const nextConfig: NextConfig = { images: { unoptimized: true } };
 export default nextConfig;
