@@ -3,7 +3,7 @@ export default function SocialIcon({name}:{name:string}){
 
   if(name==="Instagram") return <svg {...common}><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>;
   if(name==="Facebook") return <svg {...common} fill="currentColor" stroke="none"><path d="M14.1 8.3h3.1l.5-3.3h-3.6c-3.5 0-5.3 2-5.3 5.6v2.1H6v3.2h2.8V22h3.8v-6.1h3.4l.5-3.2h-3.9v-1.8c0-1.8.5-2.6 1.5-2.6Z"/></svg>;
-  if(name==="X") return <svg {...common}><path d="M5 4 19 20M19 4 5 20"/></svg>;
+  if(name==="X") return <svg {...common} fill="currentColor" stroke="none"><path d="M18.24 2.25h3.31l-7.23 8.26 8.51 11.24h-6.66l-5.21-6.82-5.97 6.82H1.68l7.73-8.84L1.25 2.25h6.83l4.71 6.23 5.45-6.23Zm-1.16 17.52h1.83L7.08 4.13H5.12l11.96 15.64Z"/></svg>;
   if(name==="TikTok") return <svg {...common}><path d="M14 3v11.2a4.4 4.4 0 1 1-3.7-4.3"/><path d="M14 3c.5 3 2.2 4.7 5 5"/></svg>;
   return <svg {...common}><rect x="2" y="5" width="20" height="14" rx="4"/><path d="m10 9 5 3-5 3Z" fill="currentColor" stroke="none"/></svg>;
 }
