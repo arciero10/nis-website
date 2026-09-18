@@ -54,8 +54,8 @@ export const impactMetrics = [
 ];
 
 export const socialLinks = [
-  {label:"Instagram",href:"#"},
-  {label:"Facebook",href:"#"},
+  {label:"Instagram",href:"https://www.instagram.com/nazionaleitalianasanitari/"},
+  {label:"Facebook",href:"https://www.facebook.com/NazionaleItalianaSanitari/"},
   {label:"X",href:"https://x.com/NazItSanitari"},
   {label:"TikTok",href:"https://www.tiktok.com/@nazionalesanitari"},
   {label:"YouTube",href:"https://www.youtube.com/@NazionaleItalianaSanitari"},
