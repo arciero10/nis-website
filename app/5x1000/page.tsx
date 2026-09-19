@@ -6,6 +6,7 @@ import CopyTaxCode from "@/components/CopyTaxCode";
 export const metadata:Metadata={
   title:"5x1000 | Nazionale Italiana Sanitari",
   description:"Destina il tuo 5x1000 alla Nazionale Italiana Sanitari. Un gesto gratuito per sostenere attività solidali e di prevenzione.",
+  alternates:{canonical:"/5x1000"},
 };
 
 export default function Page(){return <>

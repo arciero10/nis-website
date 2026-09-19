@@ -1,14 +1,35 @@
-import Link from "next/link";
+import type {Metadata} from "next";
 import PageHero from "@/components/PageHero";
 import Icon from "@/components/Icon";
 import {site} from "@/data/site";
 
+export const metadata:Metadata={
+  title:"Trasparenza | Nazionale Italiana Sanitari",
+  description:"Dati identificativi e documentazione di trasparenza della Nazionale Italiana Sanitari.",
+  alternates:{canonical:"/trasparenza"},
+};
+
+const sections=[
+  {title:"Organi sociali",icon:"people",text:"Nessun atto o documento ufficiale relativo agli organi sociali è attualmente pubblicato in questa sezione."},
+  {title:"Documenti",icon:"document",text:"Nessun documento istituzionale è attualmente pubblicato in questa sezione."},
+  {title:"Bilanci e rendiconti",icon:"document",text:"Nessun bilancio o rendiconto è attualmente pubblicato in questa sezione."},
+  {title:"Contributi e liberalità",icon:"heart",text:"Nessun prospetto relativo a contributi o liberalità è attualmente pubblicato in questa sezione."},
+  {title:"Adempimenti di trasparenza",icon:"shield",text:"La sezione sarà aggiornata con documenti verificati quando saranno disponibili o quando previsti dagli obblighi applicabili."},
+];
+
 export default function Page(){return <>
-  <PageHero eyebrow="TRASPARENZA" title="Trasparenza." accent="Responsabilità." intro="Informazioni istituzionali e riferimenti della Nazionale Italiana Sanitari." image="/images/hero-contact.jpg"/>
-  <section className="section soft"><div className="shell transparency-grid transparency-grid-live">
-    <div className="doc-card"><Icon name="document" size={42}/><h2>Codice fiscale</h2><p>{site.cf}</p></div>
-    <div className="doc-card"><Icon name="people" size={42}/><h2>Iscrizione RUNTS</h2><p>{site.runts}</p></div>
-    <Link href="/privacy-policy" className="doc-card"><Icon name="shield" size={42}/><h2>Privacy Policy</h2><p>Consulta l’informativa sul trattamento dei dati.</p></Link>
-    <Link href="/cookie-policy" className="doc-card"><Icon name="document" size={42}/><h2>Cookie Policy</h2><p>Consulta le informazioni sui cookie.</p></Link>
+  <PageHero eyebrow="TRASPARENZA" title="Trasparenza." accent="Responsabilità." intro="Informazioni istituzionali e documenti verificati della Nazionale Italiana Sanitari." image="/images/hero-contact.jpg"/>
+  <section className="section soft">
+    <div className="shell transparency-identity">
+      <div className="eyebrow">DATI IDENTIFICATIVI</div>
+      <h2>NAZIONALE ITALIANA SANITARI</h2>
+      <p><strong>Codice fiscale:</strong> {site.cf}</p>
+    </div>
+  </section>
+  <section className="section"><div className="shell transparency-sections">
+    {sections.map(section=><article className="transparency-section" key={section.title}>
+      <Icon name={section.icon} size={38}/>
+      <div><h2>{section.title}</h2><p>{section.text}</p></div>
+    </article>)}
   </div></section>
 </>}

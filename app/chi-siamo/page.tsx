@@ -4,6 +4,7 @@ import PageHero from "@/components/PageHero";
 export const metadata:Metadata={
   title:"Chi siamo | Nazionale Italiana Sanitari",
   description:"La Nazionale Italiana Sanitari unisce professionisti della salute, sport e solidarietà per sostenere progetti concreti.",
+  alternates:{canonical:"/chi-siamo"},
 };
 
 const founderStatements = [

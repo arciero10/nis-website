@@ -1,8 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
+import type {Metadata} from "next";
 import MetricStrip from "@/components/MetricStrip";
 import ProjectFeature from "@/components/ProjectFeature";
 import SectorGrid from "@/components/SectorGrid";
+
+export const metadata:Metadata={alternates:{canonical:"/"}};
 
 export default function Home(){return <>
   <section className="home-hero">

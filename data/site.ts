@@ -7,8 +7,7 @@ export const site = {
   founded: "26 settembre 2025",
   email: "info@nazionaleitalianasanitari.com",
   pressEmail: "ufficiostampa@nazionaleitalianasanitari.com",
-  cf: "96647400587",
-  runts: "Rep. n. 165890 - Det. n. G03684 del 19/03/2026",
+  cf: "18254491006",
 };
 
 export const nav = [
