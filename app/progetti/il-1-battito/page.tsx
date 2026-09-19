@@ -2,6 +2,7 @@ import type {Metadata} from "next";
 import Image from "next/image";
 import Link from "next/link";
 import MetricStrip from "@/components/MetricStrip";
+import ProjectGallery from "@/components/ProjectGallery";
 
 const paypalUrl="https://www.paypal.com/fundraiser/charity/6169624";
 const imageBase="/images/progetti/il-primo-battito";
@@ -21,7 +22,9 @@ export const metadata:Metadata={
 
 export default function Page(){return <>
   <section className="battito-hero">
-    <Image src={`${imageBase}/consegna-policlinico-1.jpg`} alt="Consegna del contributo del progetto Il 1° Battito al Policlinico Umberto I di Roma" fill priority sizes="100vw"/>
+    <div className="battito-hero-image">
+      <Image src={`${imageBase}/consegna-policlinico-1.jpg`} alt="Consegna del contributo del progetto Il 1° Battito al Policlinico Umberto I di Roma" fill priority sizes="100vw"/>
+    </div>
     <div className="battito-hero-overlay"/>
     <div className="shell battito-hero-content">
       <div className="eyebrow white">PROGETTO NIS</div>
@@ -61,11 +64,7 @@ export default function Page(){return <>
         <div className="eyebrow">LA CONSEGNA</div>
         <h2 className="section-title">Il progetto diventa realtà.</h2>
       </div>
-      <div className="battito-gallery">
-        {galleryImages.map(image=><figure key={image.src}>
-          <Image src={image.src} alt={image.alt} width={image.width} height={image.height} sizes="(max-width: 720px) calc(100vw - 40px), 50vw"/>
-        </figure>)}
-      </div>
+      <ProjectGallery images={galleryImages}/>
     </div>
   </section>
 

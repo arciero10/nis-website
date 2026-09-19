@@ -40,7 +40,7 @@ export default function Home(){return <>
     <div className="section-head"><div><div className="eyebrow">NEWS ED EVENTI</div><h2>Le attività della nostra squadra.</h2></div></div>
     <div className="home-cards home-cards-essential">
       <Link href="/progetti/il-1-battito" className="info-card">
-        <div className="media"><Image src="/images/child-battito.jpg" alt="Il progetto Il 1° Battito" fill sizes="(max-width: 720px) calc(100vw - 40px), 50vw"/></div>
+        <div className="media"><Image className="battito-card-image" src="/images/progetti/il-primo-battito/consegna-policlinico-2.jpg" alt="Consegna del contributo del progetto Il 1° Battito al Policlinico Umberto I" fill sizes="(max-width: 720px) calc(100vw - 40px), 50vw"/></div>
         <div className="body"><div className="eyebrow">PROGETTI</div><h3>Il 1° Battito</h3><p>Il progetto NIS dedicato alla salute di donne e bambini.</p><strong>Scopri il progetto <span aria-hidden="true">→</span></strong></div>
       </Link>
       <Link href="/eventi" className="info-card">
