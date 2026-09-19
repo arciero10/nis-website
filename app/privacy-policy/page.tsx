@@ -11,7 +11,7 @@ export const metadata:Metadata={
 export default function Page(){return <>
   <PageHero eyebrow="INFORMAZIONI LEGALI" title="Privacy" accent="Policy." intro="Informazioni sul trattamento dei dati personali attraverso il sito della Nazionale Italiana Sanitari." image="/images/hero-contact.jpg"/>
   <section className="section"><div className="shell legal-content">
-    <p className="legal-updated">Ultimo aggiornamento: 18 settembre 2026</p>
+    <p className="legal-updated">Ultimo aggiornamento: 19 settembre 2026</p>
     <h2>Titolare del trattamento</h2>
     <p><strong>Nazionale Italiana Sanitari</strong><br/>Codice fiscale: {site.cf}</p>
     <p>Per richieste relative alla protezione dei dati personali è possibile scrivere a <a href={`mailto:${site.email}`}>{site.email}</a>. Non sono pubblicati sul sito una sede legale, una PEC o un diverso indirizzo privacy verificato.</p>

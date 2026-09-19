@@ -10,7 +10,7 @@ export const metadata:Metadata={
 export default function Page(){return <>
   <PageHero eyebrow="INFORMAZIONI LEGALI" title="Cookie" accent="Policy." intro="Informazioni sulle tecnologie utilizzate dal sito della Nazionale Italiana Sanitari." image="/images/hero-contact.jpg"/>
   <section className="section"><div className="shell legal-content">
-    <p className="legal-updated">Ultimo aggiornamento: 18 settembre 2026</p>
+    <p className="legal-updated">Ultimo aggiornamento: 19 settembre 2026</p>
     <h2>Esito della verifica</h2>
     <p>Il codice attualmente pubblicato non installa cookie applicativi e non contiene Google Analytics, Google Tag Manager, Meta Pixel, strumenti pubblicitari o di profilazione, video YouTube incorporati, mappe Google incorporate o altri script di tracciamento di terze parti.</p>
     <h2>Cookie tecnici</h2>
