@@ -18,7 +18,7 @@ export const nav = [
   {label:"Eventi",href:"/eventi"},
   {label:"News",href:"/news"},
   {label:"5x1000",href:"/5x1000"},
-  {label:"Diventa Socio",href:"/be-nis-be-nice"},
+  {label:"Diventa Socio",href:"/diventa-socio"},
   {label:"Contatti",href:"/contatti"},
 ];
 

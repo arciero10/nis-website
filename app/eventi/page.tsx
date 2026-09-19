@@ -1,5 +1,8 @@
 import Link from "next/link";
 import PageHero from "@/components/PageHero";
+import type {Metadata} from "next";
+
+export const metadata:Metadata={title:"Eventi | Nazionale Italiana Sanitari",description:"Gli eventi sportivi, solidali e di prevenzione della Nazionale Italiana Sanitari.",alternates:{canonical:"/eventi"}};
 
 export default function Page(){return <>
   <PageHero eyebrow="EVENTI" title="Incontrarsi per" accent="generare impatto." intro="Eventi sportivi, iniziative solidali, giornate di prevenzione e appuntamenti associativi. Occasioni per condividere valori, costruire reti e fare la differenza, insieme." image="/images/hero-events.jpg"/>

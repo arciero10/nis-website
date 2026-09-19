@@ -1,5 +1,7 @@
 import PageHero from "@/components/PageHero";
 import SectorGrid from "@/components/SectorGrid";
+import type {Metadata} from "next";
+export const metadata:Metadata={title:"Settori | Nazionale Italiana Sanitari",description:"Sport, formazione, eventi e volontariato al servizio della salute e della solidarietà.",alternates:{canonical:"/settori"}};
 export default function Page(){return <>
 <PageHero eyebrow="SETTORI" title="Un’unica squadra." accent="Tanti modi di fare la differenza." intro="Sport, formazione, eventi e volontariato sono strumenti al servizio della salute e della solidarietà. Insieme trasformiamo la passione in progetti concreti per una vita migliore, per tutti." image="/images/hero-sectors.jpg"/>
 <section className="section soft"><div className="shell"><SectorGrid/></div></section>

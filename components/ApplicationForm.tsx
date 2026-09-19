@@ -86,41 +86,41 @@ export default function ApplicationForm(){
 
     <div className="form-grid">
       <label className="field">Nome *
-        <input name="firstName" autoComplete="given-name" maxLength={80} {...fieldProps("firstName")}/>
+        <input name="firstName" autoComplete="given-name" maxLength={80} required {...fieldProps("firstName")}/>
         {errors.firstName&&<span className="field-error" id="firstName-error">{errors.firstName}</span>}
       </label>
       <label className="field">Cognome *
-        <input name="lastName" autoComplete="family-name" maxLength={80} {...fieldProps("lastName")}/>
+        <input name="lastName" autoComplete="family-name" maxLength={80} required {...fieldProps("lastName")}/>
         {errors.lastName&&<span className="field-error" id="lastName-error">{errors.lastName}</span>}
       </label>
       <label className="field">Email *
-        <input name="email" type="email" inputMode="email" autoComplete="email" maxLength={160} {...fieldProps("email")}/>
+        <input name="email" type="email" inputMode="email" autoComplete="email" maxLength={160} required {...fieldProps("email")}/>
         {errors.email&&<span className="field-error" id="email-error">{errors.email}</span>}
       </label>
       <label className="field">Telefono
         <input name="phone" type="tel" inputMode="tel" autoComplete="tel" maxLength={40}/>
       </label>
       <label className="field">Professione / ruolo *
-        <input name="profession" autoComplete="organization-title" maxLength={120} {...fieldProps("profession")}/>
+        <input name="profession" autoComplete="organization-title" maxLength={120} required {...fieldProps("profession")}/>
         {errors.profession&&<span className="field-error" id="profession-error">{errors.profession}</span>}
       </label>
-      <label className="field">Ambito / settore sanitario
+      <label className="field">Ambito sanitario
         <input name="healthSector" maxLength={120}/>
       </label>
       <label className="field">Città *
-        <input name="city" autoComplete="address-level2" maxLength={100} {...fieldProps("city")}/>
+        <input name="city" autoComplete="address-level2" maxLength={100} required {...fieldProps("city")}/>
         {errors.city&&<span className="field-error" id="city-error">{errors.city}</span>}
       </label>
-      <label className="field">Disciplina o area di interesse
+      <label className="field">Disciplina / area di interesse
         <input name="interestArea" maxLength={140}/>
       </label>
       <label className="field full">Motivazione / messaggio *
-        <textarea name="message" maxLength={2000} placeholder="Raccontaci la tua motivazione e quale contributo vorresti portare alla NIS." {...fieldProps("message")}/>
+        <textarea name="message" maxLength={2000} required placeholder="Raccontaci la tua motivazione e quale contributo vorresti portare alla NIS." {...fieldProps("message")}/>
         {errors.message&&<span className="field-error" id="message-error">{errors.message}</span>}
       </label>
       <div className="field full privacy-field">
         <label className="privacy-check">
-          <input name="privacy" type="checkbox" {...fieldProps("privacy")}/>
+          <input name="privacy" type="checkbox" required {...fieldProps("privacy")}/>
           <span>Dichiaro di aver letto la <Link href="/privacy-policy">Privacy Policy</Link> e acconsento al trattamento dei dati personali ai fini della gestione della candidatura.</span>
         </label>
         {errors.privacy&&<span className="field-error" id="privacy-error">{errors.privacy}</span>}

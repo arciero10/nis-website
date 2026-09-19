@@ -21,7 +21,6 @@ export const metadata:Metadata={
   openGraph:{
     type:"website",
     locale:"it_IT",
-    url:"/",
     title:"Nazionale Italiana Sanitari",
     description:"In campo per la salute. Uniti per la vita.",
     siteName:"Nazionale Italiana Sanitari",

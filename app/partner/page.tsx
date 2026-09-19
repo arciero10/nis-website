@@ -1,5 +1,7 @@
 import PageHero from "@/components/PageHero";
 import Icon from "@/components/Icon";
+import type {Metadata} from "next";
+export const metadata:Metadata={title:"Partner | Nazionale Italiana Sanitari",description:"Collabora con NIS per sostenere progetti ad alto impatto sociale.",alternates:{canonical:"/partner"}};
 export default function Page(){return <>
 <PageHero eyebrow="AZIENDE E PARTNER" title="Una rete di valori." accent="Un impatto più grande." intro="NIS costruisce partnership con aziende, strutture sanitarie, enti e professionisti che condividono la volontà di generare valore sociale concreto e verificabile." image="/images/hero-about.jpg"/>
 <section className="section soft"><div className="shell value-grid"><div className="value-card"><div className="orb"><Icon name="handshake"/></div><div><h3>Partnership</h3><p>Progetti condivisi e opportunità di collaborazione.</p></div></div><div className="value-card"><div className="orb"><Icon name="heart"/></div><div><h3>Corporate giving</h3><p>Sostegno economico a progetti e raccolte fondi.</p></div></div><div className="value-card"><div className="orb"><Icon name="people"/></div><div><h3>Volontariato aziendale</h3><p>Persone e competenze al servizio delle iniziative NIS.</p></div></div><div className="value-card"><div className="orb"><Icon name="calendar"/></div><div><h3>Sponsorizzazioni</h3><p>Supporto a eventi e iniziative coerenti con la missione.</p></div></div></div></section>

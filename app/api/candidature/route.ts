@@ -51,6 +51,7 @@ export async function POST(request:Request){
 
   const apiKey=process.env.RESEND_API_KEY;
   const from=process.env.NIS_APPLICATION_FROM_EMAIL;
+  // Delivery stays disabled until both provider credentials are configured.
   if(!apiKey||!from){
     return NextResponse.json({message:"Il servizio di invio candidature non è ancora attivo. Riprova più tardi o contatta info@nazionaleitalianasanitari.com."},{status:503});
   }

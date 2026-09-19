@@ -1,6 +1,9 @@
 import Link from "next/link";
 import PageHero from "@/components/PageHero";
 import FundraisingCard from "@/components/FundraisingCard";
+import type {Metadata} from "next";
+
+export const metadata:Metadata={title:"Dona | Nazionale Italiana Sanitari",description:"Scopri come sostenere i progetti della Nazionale Italiana Sanitari.",alternates:{canonical:"/dona"}};
 
 export default function Page(){return <>
   <PageHero eyebrow="DONA ORA" title="Sostieni un progetto" accent="che lascia il segno." intro="Il tuo contributo aiuta la Nazionale Italiana Sanitari a trasformare sport, competenze e solidarietà in iniziative concrete." image="/images/hero-support.jpg"/>
