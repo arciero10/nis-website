@@ -11,7 +11,7 @@ const pdfPath="/documenti/organigramma-nis-2026.pdf";
 
 const governanceRoles=[
   {role:"Presidente",name:"Joseph Fiore",details:["Socio Fondatore","Manager Sanitario"]},
-  {role:"Vicepresidente",name:"Prof. Luca Cipriano",details:["Socio Fondatore • Presidente Onorario","Ginecologia e Ostetricia"]},
+  {role:"Vicepresidente",name:"Prof. Luca Cipriano",details:["Socio Fondatore • Presidente Onorario","Ginecologo"]},
   {role:"Tesoriere",name:"Edoardo Marcucci",details:["Socio Fondatore","Notaio"]},
   {role:"Direzione Generale",name:"Ludovica Rossetti",details:["Manager Sanitario"],description:"Riceve gli indirizzi del Consiglio Direttivo e ne coordina l’attuazione operativa."},
   {role:"Segreteria del Direttivo",name:"Denise Donniacuo",details:["Responsabile Segreteria del Direttivo"],description:"Supporto organizzativo e documentale al Consiglio Direttivo."},
@@ -32,18 +32,19 @@ const mediaTeam=[
 
 const sectors=[
   {name:"Calcio",roles:[{label:"Responsabile di Settore",name:"Dott. Alfonso D’Anna",detail:"Ginecologo"},{label:"Team Manager",name:"Dott. Giovanni Vozzi",detail:"Ginecologo"},{label:"Segreteria Operativa",name:"Lucia Del Ferraro",detail:"Ostetrica"}]},
-  {name:"Running",roles:[{label:"Responsabile di Settore",name:"Marco Cerrodu",detail:"Fisioterapista"},{label:"Team Manager",name:"Da nominare"},{label:"Segreteria Operativa",name:"Da nominare"}]},
+  {name:"Running",roles:[{label:"Responsabile di Settore",name:"Marco Cerroni",detail:"Fisioterapista"},{label:"Team Manager",name:"Da nominare"},{label:"Segreteria Operativa",name:"Da nominare"}]},
   {name:"Tennis",roles:[{label:"Responsabile di Settore",name:"Dott.ssa Fabiana Monti",detail:"Neonatologa"},{label:"Team Manager",name:"Da nominare"},{label:"Segreteria Operativa",name:"Da nominare"}]},
   {name:"Pet Therapy & Equitazione",roles:[{label:"Responsabile di Settore",name:"Dott.ssa Novella Buscemi",detail:"Ginecologa"},{label:"Team Manager",name:"Eleni Pasqualini",detail:"Operatrice Didattica FISE UD1"},{label:"Segreteria Operativa",name:"Da nominare"}]},
   {name:"Golf",roles:[{label:"Responsabile di Settore",name:"Massimo Rossi",detail:"Consulente del lavoro specializzato nel settore sanitario"},{label:"Team Manager",name:"Da nominare"},{label:"Segreteria Operativa",name:"Da nominare"}]},
 ];
 
 const scientific=[
-  {area:"Oncologia",name:"Dott.ssa Cristina Fiore",detail:"Responsabile Medico - Pianificazione e Coordinamento delle Campagne di Screening"},
-  {area:"Dermatologia",name:"Dott. Mauro La Pietra",detail:"Componente del Board Medico-Scientifico"},
-  {area:"Chirurgia Senologica",name:"Dott. Dimitrios Varvaras",detail:"Componente del Board Medico-Scientifico"},
-  {area:"Ambito Ostetrico",name:"Prof. Luca Cipriano",detail:"Ginecologia e Ostetricia - componente del Board Medico-Scientifico"},
-  {area:"Anatomia Patologica",name:"Dott.ssa Antonella Rossetti",detail:"Componente del Board Medico-Scientifico"},
+  {area:"Oncologia",name:"Dott.ssa Cristina Fiore",detail:"Responsabile Medico - Pianificazione e Coordinamento Campagne di Screening"},
+  {area:"Dermatologo",name:"Dott. Mauro La Pietra",detail:"Componente del Board Medico-Scientifico"},
+  {area:"Chirurgo Senologo",name:"Dott. Dimitrios Varvaras",detail:"Componente del Board Medico-Scientifico"},
+  {area:"Ginecologo",name:"Prof. Luca Cipriano",detail:"Componente del Board Medico-Scientifico"},
+  {area:"Anatomopatologa",name:"Dott.ssa Antonella Rossetti",detail:"Componente del Board Medico-Scientifico"},
+  {area:"Embriologa",name:"Dott.ssa Emilia Rega",detail:"Componente del Board Medico-Scientifico"},
   {area:"Altre Branche",name:"Board in evoluzione",detail:"Gli altri membri saranno inseriti nel corso dell’anno."},
 ];
 
@@ -88,29 +89,9 @@ export default function OrganigrammaPage(){return <>
           <ul>{council.map(name=><li key={name}>{name}</li>)}</ul>
         </div>
         <div className="org-entry-grid org-management-grid">{governanceRoles.slice(3).map(person=><PersonEntry key={person.role} {...person}/>)}</div>
-      </div>
-    </section>
-
-    <section className="org-editorial-section org-section-tinted" id="direzione">
-      <div className="shell org-content-width">
-        <SectionHeader title="Direzione e funzioni operative" intro="Le funzioni che trasformano gli indirizzi associativi in attività, eventi e comunicazione."/>
-        <div className="org-subsection">
-          <h3>Area Eventi</h3>
-          <div className="org-entry-grid">{eventTeam.map(person=><PersonEntry key={person.name} {...person}/>)}</div>
-          <p className="org-coordination-note"><strong>Coordinamento eventi:</strong> Flavio Moretti • Camilla Cardinali • Sara Mastracchio</p>
-        </div>
-        <div className="org-subsection">
-          <h3>Comunicazione &amp; Media</h3>
-          <div className="org-entry-grid">{mediaTeam.map(person=><PersonEntry key={person.name} {...person}/>)}</div>
-        </div>
-      </div>
-    </section>
-
-    <section className="org-editorial-section" id="valori">
-      <div className="shell org-content-width">
-        <SectionHeader title="Comitato Spirito e Valori NIS" intro="Il Comitato custodisce e promuove i valori, i comportamenti e lo spirito che identificano la Nazionale Italiana Sanitari."/>
-        <div className="org-values-layout">
-          <div className="org-entry-grid">
+        <div className="org-committee-section">
+          <div className="org-subsection-heading"><h3>Comitato Spirito e Valori NIS</h3><p>Il Comitato custodisce e promuove i valori, i comportamenti e lo spirito che identificano la NIS.</p></div>
+          <div className="org-entry-grid org-committee-list">
             <PersonEntry role="Presidente" name="Dott. Alfonso D’Anna" details={["Ginecologo"]}/>
             <PersonEntry role="Componente" name="Dott. Giovanni Vozzi" details={["Ginecologo"]}/>
             <PersonEntry role="Composizione in corso" name="3 componenti da nominare" details={[]}/>
@@ -119,7 +100,24 @@ export default function OrganigrammaPage(){return <>
       </div>
     </section>
 
-    <section className="org-editorial-section org-section-tinted" id="settori">
+    <section className="org-editorial-section org-section-tinted" id="direzione">
+      <div className="shell org-content-width">
+        <SectionHeader title="Direzione e funzioni operative" intro="Le funzioni che trasformano gli indirizzi associativi in attività, eventi e comunicazione."/>
+        <div className="org-operations-columns">
+          <div className="org-subsection org-operation-column">
+            <h3>Area Eventi</h3>
+            <div className="org-entry-grid">{eventTeam.map(person=><PersonEntry key={person.name} {...person}/>)}</div>
+          </div>
+          <div className="org-subsection org-operation-column">
+            <h3>Comunicazione &amp; Media</h3>
+            <div className="org-entry-grid">{mediaTeam.map(person=><PersonEntry key={person.name} {...person}/>)}</div>
+          </div>
+        </div>
+        <p className="org-coordination-note"><strong>Coordinamento eventi:</strong> Flavio Moretti → Camilla Cardinali → Sara Mastracchio</p>
+      </div>
+    </section>
+
+    <section className="org-editorial-section" id="settori">
       <div className="shell org-content-width">
         <SectionHeader title="Board dei Settori NIS" intro="Presidente, Vicepresidente, Direttore Generale e Responsabili di Settore condividono programmi e attività."/>
         <div className="org-board-composition">
@@ -138,7 +136,7 @@ export default function OrganigrammaPage(){return <>
 
     <section className="org-editorial-section" id="scienza">
       <div className="shell org-content-width">
-        <SectionHeader title="Board Medico-Scientifico" intro="Organo tecnico-consultivo che contribuisce alla definizione della strategia medico-scientifica e alla programmazione delle iniziative di prevenzione della NIS."/>
+        <SectionHeader title="Board Medico-Scientifico" intro="L’organo tecnico-consultivo che contribuisce a definire la strategia medico-scientifica dell’Associazione."/>
         <p className="org-science-objective"><strong>Obiettivo</strong><span>Rappresentanza di almeno 15 branche specialistiche</span></p>
         <div className="org-scientific-register">
           {scientific.map(item=><article key={item.area}><p>{item.area}</p><h3>{item.name}</h3><span>{item.detail}</span></article>)}
