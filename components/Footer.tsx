@@ -11,6 +11,7 @@ const quickLinks = [
   {label:"Eventi",href:"/eventi"},
   {label:"5x1000",href:"/5x1000"},
   {label:"Diventa Socio",href:"/diventa-socio"},
+  {label:"BE NIS. BE NICE.",href:"/diventa-socio"},
   {label:"Contatti",href:"/contatti"},
 ];
 

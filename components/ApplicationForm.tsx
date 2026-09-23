@@ -30,7 +30,17 @@ function validate(form:HTMLFormElement):FormErrors{
   return errors;
 }
 
-export default function ApplicationForm(){
+type ApplicationFormProps={
+  eyebrow?:string;
+  title?:string;
+  intro?:string;
+};
+
+export default function ApplicationForm({
+  eyebrow="DIVENTA PARTE DEL CAMBIAMENTO",
+  title="Invia la tua candidatura",
+  intro="Raccontaci chi sei e come vorresti contribuire alle attività della Nazionale Italiana Sanitari.",
+}:ApplicationFormProps){
   const [errors,setErrors]=useState<FormErrors>({});
   const [status,setStatus]=useState<"idle"|"sending"|"success"|"error">("idle");
   const [serverMessage,setServerMessage]=useState("");
@@ -80,9 +90,9 @@ export default function ApplicationForm(){
   });
 
   return <form className="form-side dark application-form" noValidate onSubmit={handleSubmit}>
-    <div className="eyebrow white">DIVENTA PARTE DEL CAMBIAMENTO</div>
-    <h2 className="section-title">Invia la tua candidatura</h2>
-    <p className="application-intro">Raccontaci chi sei e come vorresti contribuire alle attività della Nazionale Italiana Sanitari.</p>
+    <div className="eyebrow white">{eyebrow}</div>
+    <h2 className="section-title">{title}</h2>
+    <p className="application-intro">{intro}</p>
 
     <div className="form-grid">
       <label className="field">Nome *

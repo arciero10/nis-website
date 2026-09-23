@@ -50,6 +50,11 @@ export default function Home(){return <>
     </div>
   </div></section>
 
+  <section className="community-home-band"><div className="shell community-home-band-inner">
+    <div><div className="eyebrow white">BE NIS. BE NICE.</div><h2>Entra nella Community NIS</h2><p>Medici, sanitari, sportivi, studenti, sostenitori e famiglie: scegli il modo più adatto per vivere e sostenere la community NIS.</p></div>
+    <Link href="/diventa-socio" className="btn community-home-button">SCOPRI BE NIS. BE NICE.</Link>
+  </div></section>
+
   <section className="donate-cta"><div className="shell donate-cta-inner"><div><div className="eyebrow white">SOSTIENI I PROGETTI NIS</div><h2>Ogni contributo può diventare cura, prevenzione e futuro.</h2></div><Link href="https://www.paypal.com/fundraiser/charity/6169624" target="_blank" rel="noopener noreferrer" className="btn btn-blue">DONA ORA</Link></div></section>
 </>}
 
