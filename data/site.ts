@@ -13,6 +13,7 @@ export const site = {
 export const nav = [
   {label:"Home",href:"/"},
   {label:"Chi siamo",href:"/chi-siamo"},
+  {label:"Organigramma",href:"/organigramma"},
   {label:"Progetti",href:"/progetti"},
   {label:"Settori",href:"/settori"},
   {label:"Eventi",href:"/eventi"},

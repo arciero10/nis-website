@@ -6,6 +6,7 @@ import CookieSettings from "./CookieSettings";
 const quickLinks = [
   {label:"Home",href:"/"},
   {label:"Chi siamo",href:"/chi-siamo"},
+  {label:"Organigramma",href:"/organigramma"},
   {label:"Progetti",href:"/progetti"},
   {label:"Eventi",href:"/eventi"},
   {label:"5x1000",href:"/5x1000"},

@@ -7,6 +7,7 @@ export default function sitemap():MetadataRoute.Sitemap{
   const routes=[
     "",
     "/chi-siamo",
+    "/organigramma",
     "/progetti",
     "/progetti/il-1-battito",
     "/progetti/prevenzione",
