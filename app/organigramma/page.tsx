@@ -10,24 +10,24 @@ export const metadata:Metadata={
 const pdfPath="/documenti/organigramma-nis-2026.pdf";
 
 const governanceRoles=[
-  {role:"Presidente",name:"Joseph Fiore",details:["Socio Fondatore","Manager Sanitario"]},
-  {role:"Vicepresidente",name:"Prof. Luca Cipriano",details:["Socio Fondatore • Presidente Onorario","Ginecologo"]},
-  {role:"Tesoriere",name:"Edoardo Marcucci",details:["Socio Fondatore","Notaio"]},
-  {role:"Direzione Generale",name:"Ludovica Rossetti",details:["Manager Sanitario"],description:"Riceve gli indirizzi del Consiglio Direttivo e ne coordina l’attuazione operativa."},
-  {role:"Segreteria del Direttivo",name:"Denise Donniacuo",details:["Responsabile Segreteria del Direttivo"],description:"Supporto organizzativo e documentale al Consiglio Direttivo."},
+  {role:"Presidente",name:"Joseph Fiore",details:["Socio Fondatore","Manager Sanitario"],description:"Rappresentanza istituzionale e indirizzo strategico dell’Associazione."},
+  {role:"Vicepresidente",name:"Prof. Luca Cipriano",details:["Socio Fondatore • Presidente Onorario","Ginecologo"],description:"Supporto alla Presidenza e alle attività istituzionali dell’Associazione."},
+  {role:"Tesoriere",name:"Edoardo Marcucci",details:["Socio Fondatore","Notaio"],description:"Presidio amministrativo e gestione economica dell’Associazione."},
+  {role:"Direzione Generale",name:"Ludovica Rossetti",details:["Manager Sanitario"],description:"Coordina l’attuazione operativa degli indirizzi del Consiglio Direttivo."},
+  {role:"Segreteria del Direttivo",name:"Denise Donniacuo",details:["Responsabile Segreteria del Direttivo"],description:"Assicura il supporto organizzativo e documentale al Consiglio Direttivo."},
 ];
 
 const council=["Joseph Fiore","Prof. Luca Cipriano","Edoardo Marcucci","Ludovica Rossetti","Flavio Moretti","Patrizio Pasqualini","Dott.ssa Cristina Fiore"];
 
 const eventTeam=[
-  {role:"Direttore Organizzazione Eventi",name:"Flavio Moretti",details:["Membro del Consiglio Direttivo","Manager Food & Beverage"],description:"Coordina l’organizzazione complessiva degli eventi NIS, assicurando pianificazione, logistica e coerenza operativa."},
-  {role:"Direzione Artistica — Eventi & Design",name:"Camilla Cardinali",details:[],description:"Cura il concept visivo, l’immagine, gli allestimenti e la direzione artistica degli eventi e dei progetti NIS."},
-  {role:"Coordinamento Operativo",name:"Sara Mastracchio",details:["Coordinatrice Operativa Eventi & Produzione"],description:"Coordina l’esecuzione operativa degli eventi, le produzioni e gli allestimenti."},
+  {role:"Direttore Organizzazione Eventi",name:"Flavio Moretti",details:["Membro del Consiglio Direttivo","Manager Food & Beverage"],description:"Sovrintende alla pianificazione, alla logistica e alla realizzazione degli eventi NIS."},
+  {role:"Direzione Artistica — Eventi & Design",name:"Camilla Cardinali",details:[],description:"Cura l’identità visiva, gli allestimenti e la direzione artistica delle iniziative NIS."},
+  {role:"Coordinamento Operativo",name:"Sara Mastracchio",details:["Coordinatrice Operativa Eventi & Produzione"],description:"Coordina la produzione e l’esecuzione operativa degli eventi."},
 ];
 
 const mediaTeam=[
-  {role:"Responsabile Ufficio Stampa",name:"Patrizio Pasqualini",details:["Membro del Consiglio Direttivo","Assicuratore e Giornalista"],description:"Coordina la comunicazione istituzionale della NIS, i rapporti con la stampa e le relazioni con i media."},
-  {role:"IT Manager & Videomaker",name:"Alessandro Arciero",details:[],description:"Gestisce il supporto tecnologico, gli strumenti digitali e la produzione video a supporto della comunicazione istituzionale e dell’Ufficio Stampa NIS."},
+  {role:"Responsabile Ufficio Stampa",name:"Patrizio Pasqualini",details:["Membro del Consiglio Direttivo","Assicuratore e Giornalista"],description:"Coordina la comunicazione istituzionale e i rapporti con stampa e media."},
+  {role:"IT Manager & Videomaker",name:"Alessandro Arciero",details:[],description:"Gestisce gli strumenti digitali e la produzione video per la comunicazione NIS."},
 ];
 
 const sectors=[
@@ -57,8 +57,8 @@ function PdfPanel(){return <div className="org-pdf-panel">
 </div>}
 
 function PersonEntry({role,name,details,description}:{role:string;name:string;details:string[];description?:string}){return <article className="org-person-entry">
-  <p className="org-entry-role">{role}</p>
   <h3>{name}</h3>
+  <p className="org-entry-role">{role}</p>
   {details.length>0&&<p className="org-entry-details">{details.join(" · ")}</p>}
   {description&&<p className="org-entry-description">{description}</p>}
 </article>}
@@ -73,7 +73,6 @@ export default function OrganigrammaPage(){return <>
     <div className="org-page-header-overlay" aria-hidden="true"/>
     <div className="shell org-page-header-inner">
       <h1>Organigramma</h1>
-      <p>Governance, direzione, settori e area medico-scientifica</p>
     </div>
   </header>
 
@@ -94,7 +93,7 @@ export default function OrganigrammaPage(){return <>
           <div className="org-entry-grid org-committee-list">
             <PersonEntry role="Presidente" name="Dott. Alfonso D’Anna" details={["Ginecologo"]}/>
             <PersonEntry role="Componente" name="Dott. Giovanni Vozzi" details={["Ginecologo"]}/>
-            <PersonEntry role="Composizione in corso" name="3 componenti da nominare" details={[]}/>
+            <PersonEntry role="Composizione in corso" name="3 componenti da nominare" details={["Nomine in via di definizione"]}/>
           </div>
         </div>
       </div>
@@ -113,18 +112,12 @@ export default function OrganigrammaPage(){return <>
             <div className="org-entry-grid">{mediaTeam.map(person=><PersonEntry key={person.name} {...person}/>)}</div>
           </div>
         </div>
-        <p className="org-coordination-note"><strong>Coordinamento eventi:</strong> Flavio Moretti → Camilla Cardinali → Sara Mastracchio</p>
       </div>
     </section>
 
     <section className="org-editorial-section" id="settori">
       <div className="shell org-content-width">
-        <SectionHeader title="Board dei Settori NIS" intro="Presidente, Vicepresidente, Direttore Generale e Responsabili di Settore condividono programmi e attività."/>
-        <div className="org-board-composition">
-          <div><p>Composizione del Board</p><h3>Joseph Fiore · Prof. Luca Cipriano · Ludovica Rossetti</h3><span>Responsabili di tutti i Settori NIS</span></div>
-          <div><p>Ruoli</p><span>Presidente · Vicepresidente · Direttore Generale · Responsabili di Settore</span></div>
-        </div>
-        <div className="org-standard-structure"><strong>Struttura standard</strong><span>Responsabile di Settore → Team Manager → Segreteria Operativa</span></div>
+        <SectionHeader title="Board dei Settori NIS" intro="La struttura operativa dei settori sportivi della Nazionale Italiana Sanitari."/>
         <div className="org-sector-register">
           {sectors.map(sector=><article className="org-sector-row" key={sector.name}>
             <h3>{sector.name}</h3>
@@ -146,9 +139,4 @@ export default function OrganigrammaPage(){return <>
     </section>
   </div>
 
-  <section className="org-document-footer">
-    <div className="shell org-content-width">
-      <div className="org-document-footer-title"><strong>BE NIS. BE NICE.</strong><span>PERSONE • SALUTE • VALORI • COMUNITÀ</span></div>
-    </div>
-  </section>
 </>}
