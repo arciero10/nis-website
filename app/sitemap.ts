@@ -16,6 +16,7 @@ export default function sitemap():MetadataRoute.Sitemap{
     ...sectors.map(sector=>`/settori/${sector.slug}`),
     "/eventi",
     "/news",
+    "/dicono-di-noi",
     "/5x1000",
     "/diventa-socio",
     "/contatti",

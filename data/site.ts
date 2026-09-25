@@ -18,6 +18,7 @@ export const nav = [
   {label:"Settori",href:"/settori"},
   {label:"Eventi",href:"/eventi"},
   {label:"News",href:"/news"},
+  {label:"Dicono di noi",href:"/dicono-di-noi"},
   {label:"5x1000",href:"/5x1000"},
   {label:"Diventa Socio",href:"/diventa-socio"},
   {label:"Contatti",href:"/contatti"},

@@ -226,3 +226,32 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible,
 @media(hover:hover) and (pointer:fine){.founder-statement-with-photo{transition:transform 220ms ease,box-shadow 220ms ease}.founder-statement-with-photo:hover{transform:translateY(-4px);box-shadow:0 12px 28px rgba(8,42,85,.1)}}
 @media(max-width:720px){.founder-photo{aspect-ratio:4/5}.founder-statement-with-photo blockquote{padding-top:24px}}
 @media(prefers-reduced-motion:reduce){.founder-statement-with-photo{transition:none!important}.founder-statement-with-photo:hover{transform:none}}
+
+/* News ufficiali NIS */
+.nis-news-section{padding:64px 0;background:#fff}
+.nis-news-heading{margin-bottom:28px;padding-bottom:18px;display:flex;align-items:flex-end;justify-content:space-between;gap:30px;border-bottom:1px solid #b8c7d6}
+.nis-news-heading>div:first-child>p{margin:0 0 6px;color:#287950;font-size:12px;font-weight:900;letter-spacing:.7px}
+.nis-news-heading h2{margin:0;color:#102f50;font-size:34px;line-height:1.2}
+.nis-news-filters{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:7px}
+.nis-news-filters button{min-height:44px;padding:8px 14px;border:1px solid #9fb3c7;border-radius:3px;background:#fff;color:#294d70;font:inherit;font-size:13px;font-weight:800;cursor:pointer}
+.nis-news-filters button[aria-pressed="true"]{border-color:#26734b;background:#26734b;color:#fff}
+.nis-news-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
+.nis-news-card{min-width:0;display:flex;flex-direction:column;overflow:hidden;border:1px solid #cbd8e4;border-radius:5px;background:#fff;box-shadow:0 5px 15px rgba(8,42,85,.05)}
+.nis-news-media{position:relative;aspect-ratio:16/9;overflow:hidden;background:#e7eef5}
+.nis-news-media img{object-fit:cover;object-position:center top}
+.nis-news-media-contain{background:#03172f}.nis-news-media-contain img{padding:28px;object-fit:contain}
+.nis-news-content{padding:22px;display:flex;flex:1;flex-direction:column}
+.nis-news-meta{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:13px;color:#61758a;font-size:12px;line-height:1.35}
+.nis-news-meta strong{color:#287950;text-transform:uppercase;letter-spacing:.45px}.nis-news-meta time{text-align:right}
+.nis-news-card h2{margin:0 0 12px;color:#102f50;font-size:21px;line-height:1.34}.nis-news-card p{margin:0 0 20px;color:#526a81;font-size:15px;line-height:1.62}
+.nis-news-link{min-height:44px;margin-top:auto;display:inline-flex;align-items:center;gap:7px;color:#0c61b8;font-size:14px;font-weight:900;text-decoration:none}
+
+/* Rassegna stampa */
+.press-card h2{margin:0 0 12px;color:#102f50;font-size:21px;line-height:1.34}
+.press-card-source-logo-dark-ink img{filter:brightness(0) saturate(100%) invert(20%) sepia(24%) saturate(1227%) hue-rotate(169deg) brightness(88%) contrast(93%)}
+
+@media(min-width:1101px) and (max-width:1280px){.header-row{grid-template-columns:150px minmax(0,1fr) 150px;gap:16px}.desktop-nav{gap:12px}.desktop-nav a{font-size:12px}.header-balance{width:120px}}
+@media(hover:hover) and (pointer:fine){.nis-news-card{transition:transform 220ms ease,box-shadow 220ms ease,border-color 220ms ease}.nis-news-card:hover{transform:translateY(-4px);border-color:#8eabc6;box-shadow:0 11px 24px rgba(8,42,85,.09)}.nis-news-link:hover{text-decoration:underline;text-underline-offset:4px}.nis-news-filters button:hover{border-color:#26734b;color:#26734b}.nis-news-filters button[aria-pressed="true"]:hover{color:#fff}}
+@media(max-width:1100px){.nis-news-heading{align-items:flex-start;flex-direction:column}.nis-news-filters{justify-content:flex-start}.nis-news-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:720px){.nis-news-section{padding:48px 0}.nis-news-heading{margin-bottom:22px}.nis-news-heading h2{font-size:29px}.nis-news-filters{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.nis-news-filters button{width:100%;padding-inline:9px}.nis-news-grid{grid-template-columns:minmax(0,1fr);gap:18px}.nis-news-content{padding:19px 18px}.nis-news-card h2{font-size:20px}.nis-news-meta{align-items:flex-start}.nis-news-media-contain img{padding:22px}}
+@media(prefers-reduced-motion:reduce){.nis-news-card{transition:none!important}}

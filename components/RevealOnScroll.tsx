@@ -9,6 +9,7 @@ const revealGroups=[
   ".sector-card",
   ".info-card",
   ".press-card",
+  ".nis-news-card",
   ".community-home-band-inner > *",
   ".donate-cta-inner > *",
   ".project-highlight > *",
