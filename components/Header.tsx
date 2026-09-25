@@ -9,7 +9,7 @@ export default function Header(){
   return <header className="site-header">
     <div className="shell header-row">
       <Link href="/" className="logo-lockup" aria-label="NIS - Home" onClick={()=>setOpen(false)}>
-        <Image src="/images/nis/logo-nis.jpg" width={210} height={210} alt="Nazionale Italiana Sanitari"/>
+        <Image src="/logo/nis-logo-square.png" width={210} height={210} alt="Nazionale Italiana Sanitari" priority/>
       </Link>
       <nav className="desktop-nav" aria-label="Navigazione principale">{nav.map(n=><Link key={n.href} href={n.href}>{n.label}</Link>)}</nav>
       <span className="header-balance" aria-hidden="true"/>
