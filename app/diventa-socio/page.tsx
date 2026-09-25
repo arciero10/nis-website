@@ -6,8 +6,8 @@ import {join} from "node:path";
 import ApplicationForm from "@/components/ApplicationForm";
 
 export const metadata:Metadata={
-  title:"Be NIS. Be NICE. | Nazionale Italiana Sanitari",
-  description:"Scopri il programma associativo e di supporto della Nazionale Italiana Sanitari e tutte le modalità per entrare nella Community NIS.",
+  title:"Diventa socio NIS | Entra nella Community",
+  description:"Invia la tua candidatura e scopri come entrare nella Community della Nazionale Italiana Sanitari attraverso il programma associativo NIS.",
   alternates:{canonical:"/diventa-socio"},
 };
 

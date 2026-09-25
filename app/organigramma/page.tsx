@@ -3,8 +3,8 @@ import Image from "next/image";
 import Icon from "@/components/Icon";
 
 export const metadata:Metadata={
-  title:"Organigramma | Nazionale Italiana Sanitari",
-  description:"Scopri la struttura istituzionale, operativa, valoriale e medico-scientifica della Nazionale Italiana Sanitari.",
+  title:"Organigramma NIS | Struttura e governance",
+  description:"Consulta l’organigramma della Nazionale Italiana Sanitari: Presidenza, Consiglio Direttivo, aree operative, settori e Board Medico-Scientifico.",
   alternates:{canonical:"/organigramma"},
 };
 

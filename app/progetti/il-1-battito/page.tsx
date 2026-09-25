@@ -14,8 +14,8 @@ const galleryImages=[
 ];
 
 export const metadata:Metadata={
-  title:"Il 1° Battito | Nazionale Italiana Sanitari",
-  description:"Il progetto NIS che ha raccolto 50.000 euro per l’Oncoematologia Pediatrica dell’Ospedale Umberto I di Roma.",
+  title:"Il 1° Battito | Progetto NIS per l’Umberto I",
+  description:"Il progetto della Nazionale Italiana Sanitari che ha raccolto 50.000 euro per l’Oncoematologia Pediatrica dell’Ospedale Umberto I di Roma.",
   alternates:{canonical:"/progetti/il-1-battito"},
 };
 

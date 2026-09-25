@@ -2,8 +2,8 @@ import type {Metadata} from "next";
 import PageHero from "@/components/PageHero";
 
 export const metadata:Metadata={
-  title:"Chi siamo | Nazionale Italiana Sanitari",
-  description:"La Nazionale Italiana Sanitari unisce professionisti della salute, sport e solidarietà per sostenere progetti concreti.",
+  title:"Chi siamo | Missione e valori della NIS",
+  description:"Conosci la Nazionale Italiana Sanitari, la sua missione e i valori che uniscono professionisti della salute attraverso sport, prevenzione e solidarietà.",
   alternates:{canonical:"/chi-siamo"},
 };
 

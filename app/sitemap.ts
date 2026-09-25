@@ -5,7 +5,7 @@ const baseUrl="https://www.nazionaleitalianasanitari.com";
 
 export default function sitemap():MetadataRoute.Sitemap{
   const routes=[
-    "",
+    "/",
     "/chi-siamo",
     "/organigramma",
     "/progetti",

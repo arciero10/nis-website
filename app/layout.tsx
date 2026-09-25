@@ -6,11 +6,12 @@ import RevealOnScroll from "@/components/RevealOnScroll";
 
 const productionOrigin="https://www.nazionaleitalianasanitari.com";
 const ogImage="https://www.nazionaleitalianasanitari.com/og-nis-social.png";
-const siteDescription="Sport, salute e solidarietà per sostenere progetti concreti, prevenzione e iniziative dedicate alle persone.";
+const siteTitle="Nazionale Italiana Sanitari | Sport, Salute e Solidarietà";
+const siteDescription="La Nazionale Italiana Sanitari unisce professionisti della salute, sport e solidarietà per sostenere progetti concreti di prevenzione, cura e inclusione.";
 
 export const metadata:Metadata={
   metadataBase:new URL(productionOrigin),
-  title:"Nazionale Italiana Sanitari",
+  title:siteTitle,
   description:siteDescription,
   manifest:"/site.webmanifest",
   icons:{
@@ -26,7 +27,7 @@ export const metadata:Metadata={
     type:"website",
     locale:"it_IT",
     url:productionOrigin,
-    title:"Nazionale Italiana Sanitari",
+    title:siteTitle,
     description:siteDescription,
     siteName:"Nazionale Italiana Sanitari",
     images:[
@@ -40,7 +41,7 @@ export const metadata:Metadata={
   },
   twitter:{
     card:"summary_large_image",
-    title:"Nazionale Italiana Sanitari",
+    title:siteTitle,
     description:siteDescription,
     site:"@NazItSanitari",
     images:[ogImage],

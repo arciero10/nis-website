@@ -2,7 +2,7 @@ import Link from "next/link";
 import PageHero from "@/components/PageHero";
 import type {Metadata} from "next";
 
-export const metadata:Metadata={title:"News | Nazionale Italiana Sanitari",description:"Notizie, progetti e attività ufficiali della Nazionale Italiana Sanitari.",alternates:{canonical:"/news"}};
+export const metadata:Metadata={title:"News NIS | Attività, progetti e iniziative",description:"Leggi le notizie ufficiali della Nazionale Italiana Sanitari su progetti, prevenzione, eventi, attività sportive e iniziative solidali.",alternates:{canonical:"/news"}};
 
 export default function Page(){return <>
   <PageHero eyebrow="NEWS" title="Le storie, i progetti," accent="le persone." intro="Comunicati, attività NIS, prevenzione, eventi e partnership. Uno spazio editoriale per raccontare l’impatto dell’Associazione." image="/images/hero-news.jpg"/>

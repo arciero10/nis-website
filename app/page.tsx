@@ -5,9 +5,26 @@ import MetricStrip from "@/components/MetricStrip";
 import ProjectFeature from "@/components/ProjectFeature";
 import SectorGrid from "@/components/SectorGrid";
 
-export const metadata:Metadata={alternates:{canonical:"/"}};
+const organizationJsonLd={
+  "@context":"https://schema.org",
+  "@type":"Organization",
+  name:"Nazionale Italiana Sanitari",
+  url:"https://www.nazionaleitalianasanitari.com",
+  logo:"https://www.nazionaleitalianasanitari.com/logo/nis-logo-square.png",
+  sameAs:[
+    "https://www.facebook.com/NazionaleItalianaSanitari/",
+    "https://www.instagram.com/nazionaleitalianasanitari/",
+  ],
+};
+
+export const metadata:Metadata={
+  title:"Nazionale Italiana Sanitari | Sport, Salute e Solidarietà",
+  description:"La Nazionale Italiana Sanitari unisce professionisti della salute, sport e solidarietà per sostenere progetti concreti di prevenzione, cura e inclusione.",
+  alternates:{canonical:"https://www.nazionaleitalianasanitari.com/"},
+};
 
 export default function Home(){return <>
+  <script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(organizationJsonLd).replace(/</g,"\\u003c")}}/>
   <section className="home-hero">
     <Image className="home-bg-image" src="/images/hero-home.jpg" alt="Professionisti sanitari, sportivi e volontari NIS" fill priority sizes="100vw"/>
     <div className="home-overlay"/>
