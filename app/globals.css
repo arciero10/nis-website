@@ -218,3 +218,11 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible,
 .press-card-source-fallback:before{content:"";position:absolute;top:25px;bottom:25px;left:0;width:4px;background:#245f98}
 .press-card-source-fallback span{max-width:90%;color:#173f66;font-size:24px;font-weight:900;line-height:1.15;text-align:center}
 @media(max-width:720px){.press-card-source{height:128px;padding:22px}.press-card-source-logo{height:70px}.press-card-source-fallback span{font-size:22px}}
+
+/* Ritratto fondatore */
+.founder-statement-with-photo{border-top-width:0;box-shadow:0 8px 22px rgba(8,42,85,.065)}
+.founder-photo{position:relative;width:100%;aspect-ratio:4/5;overflow:hidden;border-bottom:1px solid var(--line);background:#e8eef4}
+.founder-photo img{object-fit:cover;object-position:center top}
+@media(hover:hover) and (pointer:fine){.founder-statement-with-photo{transition:transform 220ms ease,box-shadow 220ms ease}.founder-statement-with-photo:hover{transform:translateY(-4px);box-shadow:0 12px 28px rgba(8,42,85,.1)}}
+@media(max-width:720px){.founder-photo{aspect-ratio:4/5}.founder-statement-with-photo blockquote{padding-top:24px}}
+@media(prefers-reduced-motion:reduce){.founder-statement-with-photo{transition:none!important}.founder-statement-with-photo:hover{transform:none}}

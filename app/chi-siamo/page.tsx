@@ -1,4 +1,5 @@
 import type {Metadata} from "next";
+import Image from "next/image";
 import PageHero from "@/components/PageHero";
 
 export const metadata:Metadata={
@@ -12,6 +13,8 @@ const founderStatements = [
     name:"Prof. Dott. Luca Cipriano",
     role:"Vicepresidente, Socio Fondatore e Presidente Onorario NIS",
     qualification:"Ginecologo",
+    image:"/images/luca-cipriano.jpg",
+    imageAlt:"Ritratto del Prof. Dott. Luca Cipriano",
     paragraphs:[
       "Ogni giorno, come medici, viviamo la cura come una missione. Con la NIS abbiamo scelto di portare questa missione anche fuori dagli ospedali, indossando una maglia che unisce tutti gli operatori sanitari italiani.",
       "La NIS rappresenta un segno di fiducia nella vita, un inno all’unione e alla speranza.",
@@ -69,7 +72,10 @@ export default function Page(){return <>
         <p>I soci fondatori hanno sottolineato il valore umano e simbolico dell’iniziativa.</p>
       </div>
       <div className="founder-statements">
-        {founderStatements.map(founder=><article className="founder-statement" key={founder.name}>
+        {founderStatements.map(founder=><article className={`founder-statement${founder.image?" founder-statement-with-photo":""}`} key={founder.name}>
+          {founder.image&&<div className="founder-photo">
+            <Image src={founder.image} alt={founder.imageAlt} fill sizes="(max-width: 1100px) calc(100vw - 40px), 33vw"/>
+          </div>}
           <blockquote>
             <span className="quote-mark" aria-hidden="true">“</span>
             {founder.paragraphs.map(paragraph=><p key={paragraph}>{paragraph}</p>)}
