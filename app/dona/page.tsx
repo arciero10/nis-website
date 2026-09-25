@@ -1,7 +1,6 @@
 import Image from "next/image";
 import type {Metadata} from "next";
-
-const paypalUrl="https://www.paypal.com/fundraiser/charity/6169624";
+import PayPalDonationActions from "@/components/PayPalDonationActions";
 
 export const metadata:Metadata={
   title:"Dona | Nazionale Italiana Sanitari",
@@ -18,12 +17,12 @@ export default function Page(){return <section className="donation-page">
       <div className="eyebrow white">DONA ORA</div>
       <h1>Sostieni la Nazionale Italiana Sanitari</h1>
       <p className="donation-intro">Il tuo contributo sostiene i progetti di salute, prevenzione, sport e solidarietà della Nazionale Italiana Sanitari.</p>
-      <div className="donation-actions">
-        <a className="btn btn-blue donation-paypal donation-paypal-desktop" href={paypalUrl} target="_blank" rel="noopener noreferrer">CONTINUA SU PAYPAL</a>
-        <a className="btn btn-blue donation-paypal donation-paypal-mobile" href={paypalUrl} rel="noopener noreferrer">CONTINUA SU PAYPAL</a>
-      </div>
-      <p className="donation-note">Verrai indirizzato alla pagina ufficiale PayPal della Nazionale Italiana Sanitari.</p>
-      <a className="donation-browser-link" href={paypalUrl} rel="noopener noreferrer">Se PayPal apre l’app senza mostrare la raccolta, continua dal browser</a>
+      <PayPalDonationActions/>
+      <p className="donation-note">Se l’app PayPal si apre sulla home, torna indietro e scegli “Apri nel browser”.</p>
+      <section className="donation-help" aria-labelledby="donation-help-title">
+        <h2 id="donation-help-title">Problemi con l’app PayPal?</h2>
+        <p>Su alcuni iPhone l’app PayPal può aprirsi senza mostrare direttamente la raccolta. In questo caso copia il link e aprilo manualmente in Safari o Chrome.</p>
+      </section>
     </div>
   </div>
 </section>}
