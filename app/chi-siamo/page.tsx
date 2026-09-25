@@ -15,6 +15,8 @@ const founderStatements = [
     qualification:"Ginecologo",
     image:"/images/luca-cipriano.jpg",
     imageAlt:"Ritratto del Prof. Dott. Luca Cipriano",
+    imageKind:"portrait",
+    imagePosition:"center top",
     paragraphs:[
       "Ogni giorno, come medici, viviamo la cura come una missione. Con la NIS abbiamo scelto di portare questa missione anche fuori dagli ospedali, indossando una maglia che unisce tutti gli operatori sanitari italiani.",
       "La NIS rappresenta un segno di fiducia nella vita, un inno all’unione e alla speranza.",
@@ -24,6 +26,10 @@ const founderStatements = [
     name:"Dott. Joseph Fiore",
     role:"Presidente e Socio Fondatore NIS",
     qualification:"Manager Sanitario",
+    image:"/images/brand/nis-is-nice.png",
+    imageAlt:"NIS is NICE - Nazionale Italiana Sanitari",
+    imageKind:"brand",
+    imagePosition:"center",
     paragraphs:[
       "La Nazionale Italiana Sanitari è nata dal desiderio profondo di fare qualcosa di positivo e concreto, mettendo in campo la parte più bella di noi: la capacità di prenderci cura.",
       "Vogliamo trasmettere e coltivare valori autentici — l’impegno, la solidarietà, il rispetto, la speranza — perché solo così possiamo costruire qualcosa che resti.",
@@ -34,6 +40,10 @@ const founderStatements = [
     name:"Notaio Edoardo Marcucci",
     role:"Tesoriere e Socio Fondatore NIS",
     qualification:"Notaio",
+    image:"/images/edoardo-marcucci.JPG",
+    imageAlt:"Ritratto del Notaio Edoardo Marcucci",
+    imageKind:"portrait",
+    imagePosition:"20% top",
     paragraphs:[
       "Questo progetto è un atto d’amore verso la vita e verso chi la difende ogni giorno.",
       "Partecipare alla sua nascita come socio fondatore è un privilegio che porta con sé un impegno etico e concreto: garantire che ogni iniziativa sia trasparente, sostenibile e realmente utile a chi ne ha più bisogno.",
@@ -72,10 +82,16 @@ export default function Page(){return <>
         <p>I soci fondatori hanno sottolineato il valore umano e simbolico dell’iniziativa.</p>
       </div>
       <div className="founder-statements">
-        {founderStatements.map(founder=><article className={`founder-statement${founder.image?" founder-statement-with-photo":""}`} key={founder.name}>
-          {founder.image&&<div className="founder-photo">
-            <Image src={founder.image} alt={founder.imageAlt} fill sizes="(max-width: 1100px) calc(100vw - 40px), 33vw"/>
-          </div>}
+        {founderStatements.map(founder=><article className="founder-statement founder-statement-with-photo" key={founder.name}>
+          <div className={`founder-photo founder-photo-${founder.imageKind}`}>
+            <Image
+              src={founder.image}
+              alt={founder.imageAlt}
+              fill
+              sizes="(max-width: 720px) calc(100vw - 40px), (max-width: 1100px) calc(50vw - 36px), 420px"
+              style={{objectPosition:founder.imagePosition}}
+            />
+          </div>
           <blockquote>
             <span className="quote-mark" aria-hidden="true">“</span>
             {founder.paragraphs.map(paragraph=><p key={paragraph}>{paragraph}</p>)}
