@@ -16,7 +16,7 @@ const founderStatements = [
     image:"/images/luca-cipriano.jpg",
     imageAlt:"Ritratto del Prof. Dott. Luca Cipriano",
     imageKind:"portrait",
-    imagePosition:"center top",
+    imagePosition:"center",
     paragraphs:[
       "Ogni giorno, come medici, viviamo la cura come una missione. Con la NIS abbiamo scelto di portare questa missione anche fuori dagli ospedali, indossando una maglia che unisce tutti gli operatori sanitari italiani.",
       "La NIS rappresenta un segno di fiducia nella vita, un inno all’unione e alla speranza.",
@@ -43,7 +43,7 @@ const founderStatements = [
     image:"/images/edoardo-marcucci.JPG",
     imageAlt:"Ritratto del Notaio Edoardo Marcucci",
     imageKind:"portrait",
-    imagePosition:"20% top",
+    imagePosition:"center",
     paragraphs:[
       "Questo progetto è un atto d’amore verso la vita e verso chi la difende ogni giorno.",
       "Partecipare alla sua nascita come socio fondatore è un privilegio che porta con sé un impegno etico e concreto: garantire che ogni iniziativa sia trasparente, sostenibile e realmente utile a chi ne ha più bisogno.",
