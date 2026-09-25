@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import {FormEvent,useState} from "react";
+import {FormEvent,useRef,useState} from "react";
 
 type FieldName="firstName"|"lastName"|"email"|"phone"|"profession"|"healthSector"|"city"|"interestArea"|"message"|"privacy";
 type FormErrors=Partial<Record<FieldName,string>>;
@@ -43,14 +43,14 @@ export default function ApplicationForm({
 }:ApplicationFormProps){
   const [errors,setErrors]=useState<FormErrors>({});
   const [status,setStatus]=useState<"idle"|"sending"|"success"|"error">("idle");
-  const [serverMessage,setServerMessage]=useState("");
+  const submissionInFlight=useRef(false);
 
   async function handleSubmit(event:FormEvent<HTMLFormElement>){
     event.preventDefault();
+    if(submissionInFlight.current) return;
     const form=event.currentTarget;
     const nextErrors=validate(form);
     setErrors(nextErrors);
-    setServerMessage("");
 
     if(Object.keys(nextErrors).length){
       setStatus("idle");
@@ -60,6 +60,7 @@ export default function ApplicationForm({
       return;
     }
 
+    submissionInFlight.current=true;
     setStatus("sending");
     const data=Object.fromEntries(new FormData(form).entries());
 
@@ -69,15 +70,14 @@ export default function ApplicationForm({
         headers:{"Content-Type":"application/json"},
         body:JSON.stringify({...data,privacy:data.privacy==="on"}),
       });
-      const result=await response.json() as {message?:string};
-      if(!response.ok) throw new Error(result.message||"Non è stato possibile inviare la candidatura.");
+      if(!response.ok) throw new Error("Application request failed");
 
       form.reset();
       setErrors({});
       setStatus("success");
-    }catch(error){
+    }catch{
+      submissionInFlight.current=false;
       setStatus("error");
-      setServerMessage(error instanceof Error?error.message:"Non è stato possibile inviare la candidatura. Riprova più tardi.");
     }
   }
 
@@ -89,7 +89,7 @@ export default function ApplicationForm({
     },
   });
 
-  return <form className="form-side dark application-form" noValidate onSubmit={handleSubmit}>
+  return <form className="form-side dark application-form" noValidate onSubmit={handleSubmit} aria-busy={status==="sending"}>
     <div className="eyebrow white">{eyebrow}</div>
     <h2 className="section-title">{title}</h2>
     <p className="application-intro">{intro}</p>
@@ -135,16 +135,21 @@ export default function ApplicationForm({
         </label>
         {errors.privacy&&<span className="field-error" id="privacy-error">{errors.privacy}</span>}
       </div>
+      <div className="application-honeypot" aria-hidden="true">
+        <label htmlFor="application-website">Sito web</label>
+        <input id="application-website" name="website" type="text" tabIndex={-1} autoComplete="off"/>
+      </div>
     </div>
 
-    <button type="submit" className="btn btn-blue application-submit" disabled={status==="sending"}>
-      {status==="sending"?"INVIO IN CORSO...":"INVIA CANDIDATURA"}
+    <button type="submit" className="btn btn-blue application-submit" disabled={status==="sending"||status==="success"}>
+      {status==="sending"?"Invio candidatura in corso...":status==="success"?"CANDIDATURA INVIATA":"INVIA CANDIDATURA"}
     </button>
 
     {status==="success"&&<div className="form-status success" role="status">
-      <strong>Candidatura inviata correttamente.</strong>
-      <span>Grazie per aver scelto di entrare in contatto con la Nazionale Italiana Sanitari. Il nostro team valuterà la tua richiesta e ti ricontatterà.</span>
+      Candidatura inviata correttamente. Grazie per aver scelto di entrare in contatto con la Nazionale Italiana Sanitari.
     </div>}
-    {status==="error"&&<div className="form-status error" role="alert">{serverMessage}</div>}
+    {status==="error"&&<div className="form-status error" role="alert">
+      Non è stato possibile inviare la candidatura. Riprova tra qualche minuto oppure scrivi a <a href="mailto:info@nazionaleitalianasanitari.com">info@nazionaleitalianasanitari.com</a>.
+    </div>}
   </form>;
 }
