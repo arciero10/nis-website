@@ -10,14 +10,16 @@ function formatDate(date:string){
 
 function ArticleCard({article,featured=false}:{article:NewsArticle;featured?:boolean}){
   return <article className={`press-card${featured?" press-card-featured":""}`}>
-    {article.image&&<div className="press-card-media">
-      <Image src={article.image} alt={article.imageAlt??""} fill sizes={featured?"(max-width: 720px) calc(100vw - 40px), (max-width: 1100px) 50vw, 33vw":"(max-width: 720px) calc(100vw - 40px), (max-width: 1100px) 50vw, 33vw"}/>
-    </div>}
+    <div className={`press-card-source${article.sourceLogo?"":" press-card-source-fallback"}`}>
+      {article.sourceLogo
+        ?<Image src={article.sourceLogo} alt={`Logo ${article.sourceName}`} width={260} height={90} sizes="(max-width: 720px) 55vw, 220px"/>
+        :<span>{article.sourceName}</span>}
+    </div>
     <div className="press-card-content">
-      <div className="press-card-meta"><strong>{article.source}</strong><time dateTime={article.date}>{formatDate(article.date)}</time></div>
+      <div className="press-card-meta"><strong>{article.sourceName}</strong><time dateTime={article.date}>{formatDate(article.date)}</time></div>
       <h3>{article.title}</h3>
       <p>{article.excerpt}</p>
-      <a className="press-card-link" href={article.url} target="_blank" rel="noopener noreferrer" aria-label={`Leggi l’articolo su ${article.source}`}>
+      <a className="press-card-link" href={article.url} target="_blank" rel="noopener noreferrer" aria-label={`Leggi l’articolo su ${article.sourceName}`}>
         Leggi l’articolo <span aria-hidden="true">↗</span>
       </a>
     </div>
