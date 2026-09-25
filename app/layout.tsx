@@ -5,12 +5,13 @@ import Footer from "@/components/Footer";
 import RevealOnScroll from "@/components/RevealOnScroll";
 
 const productionOrigin="https://www.nazionaleitalianasanitari.com";
-const ogImage="/og-image-v2.jpg";
+const ogImage="https://www.nazionaleitalianasanitari.com/og-image-v3.jpg";
+const siteDescription="Sport, salute e solidarietà per sostenere progetti concreti, prevenzione e iniziative dedicate alle persone.";
 
 export const metadata:Metadata={
   metadataBase:new URL(productionOrigin),
   title:"Nazionale Italiana Sanitari",
-  description:"In campo per la salute. Uniti per la vita.",
+  description:siteDescription,
   manifest:"/site.webmanifest",
   icons:{
     icon:[
@@ -24,8 +25,9 @@ export const metadata:Metadata={
   openGraph:{
     type:"website",
     locale:"it_IT",
+    url:productionOrigin,
     title:"Nazionale Italiana Sanitari",
-    description:"In campo per la salute. Uniti per la vita.",
+    description:siteDescription,
     siteName:"Nazionale Italiana Sanitari",
     images:[
       {
@@ -39,10 +41,10 @@ export const metadata:Metadata={
   twitter:{
     card:"summary_large_image",
     title:"Nazionale Italiana Sanitari",
-    description:"In campo per la salute. Uniti per la vita.",
+    description:siteDescription,
     site:"@NazItSanitari",
     images:[ogImage],
-    },
+  },
 };
 
 export default function RootLayout({children}:{children:React.ReactNode}){
