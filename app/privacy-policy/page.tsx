@@ -28,7 +28,7 @@ export default function Page(){return <>
     <h2>Trasferimenti fuori dallo Spazio Economico Europeo</h2>
     <p>Nel codice attualmente attivo non sono stati individuati servizi analytics, marketing o incorporamenti di terze parti che comportino trasferimenti di dati. Prima dell’attivazione di un eventuale provider email dovranno essere verificate e documentate la localizzazione del trattamento e le relative garanzie per gli eventuali trasferimenti extra UE.</p>
     <h2>Donazioni e servizi esterni</h2>
-    <p>I pulsanti “Dona ora” aprono il sito esterno di PayPal. Il sito NIS non raccoglie né conserva direttamente dati di pagamento, credenziali o informazioni finanziarie. Il trattamento effettuato da PayPal avviene secondo l’informativa del relativo fornitore dopo che l’utente sceglie di aprire il collegamento esterno.</p>
+    <p>I pulsanti “Dona ora” conducono alla pagina informativa interna dedicata alla donazione, dalla quale è possibile proseguire verso il sito esterno di PayPal. Il sito NIS non raccoglie né conserva direttamente dati di pagamento, credenziali o informazioni finanziarie. Il trattamento effettuato da PayPal avviene secondo l’informativa del relativo fornitore dopo che l’utente sceglie di aprire il collegamento esterno.</p>
     <h2>Diritti dell’interessato</h2>
     <p>L’interessato può chiedere accesso, rettifica, cancellazione, limitazione o portabilità dei dati, opporsi al trattamento e revocare il consenso senza pregiudicare la liceità del trattamento precedente alla revoca. Può inoltre proporre reclamo al Garante per la protezione dei dati personali.</p>
     <h2>Come esercitare i diritti</h2>

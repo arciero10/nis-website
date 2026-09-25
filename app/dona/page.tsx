@@ -1,14 +1,29 @@
-import Link from "next/link";
-import PageHero from "@/components/PageHero";
-import FundraisingCard from "@/components/FundraisingCard";
+import Image from "next/image";
 import type {Metadata} from "next";
 
-export const metadata:Metadata={title:"Dona | Nazionale Italiana Sanitari",description:"Scopri come sostenere i progetti della Nazionale Italiana Sanitari.",alternates:{canonical:"/dona"}};
+const paypalUrl="https://www.paypal.com/fundraiser/charity/6169624";
 
-export default function Page(){return <>
-  <PageHero eyebrow="DONA ORA" title="Sostieni un progetto" accent="che lascia il segno." intro="Il tuo contributo aiuta la Nazionale Italiana Sanitari a trasformare sport, competenze e solidarietà in iniziative concrete." image="/images/hero-support.jpg"/>
-  <section className="section soft"><div className="shell support-donation">
-    <div className="project-text"><div className="eyebrow">SOSTIENI NIS</div><h2 className="section-title">Dona con consapevolezza.</h2><p>Per ricevere le modalità di donazione e tutte le informazioni sulla destinazione del contributo, contatta direttamente la segreteria NIS.</p><a className="btn btn-blue" href="mailto:info@nazionaleitalianasanitari.com?subject=Richiesta%20informazioni%20donazione">RICHIEDI LE MODALITÀ DI DONAZIONE</a><Link className="text-link" href="/progetti/il-1-battito">Scopri Il 1° Battito →</Link></div>
-    <FundraisingCard/>
-  </div></section>
-</>}
+export const metadata:Metadata={
+  title:"Dona | Nazionale Italiana Sanitari",
+  description:"Sostieni i progetti di salute, prevenzione, sport e solidarietà della Nazionale Italiana Sanitari.",
+  alternates:{canonical:"/dona"},
+};
+
+export default function Page(){return <section className="donation-page">
+  <div className="shell donation-layout">
+    <div className="donation-brand" aria-hidden="true">
+      <Image src="/logo/nis-logo-square.png" alt="" width={240} height={240} priority/>
+    </div>
+    <div className="donation-content">
+      <div className="eyebrow white">DONA ORA</div>
+      <h1>Sostieni la Nazionale Italiana Sanitari</h1>
+      <p className="donation-intro">Il tuo contributo sostiene i progetti di salute, prevenzione, sport e solidarietà della Nazionale Italiana Sanitari.</p>
+      <div className="donation-actions">
+        <a className="btn btn-blue donation-paypal donation-paypal-desktop" href={paypalUrl} target="_blank" rel="noopener noreferrer">CONTINUA SU PAYPAL</a>
+        <a className="btn btn-blue donation-paypal donation-paypal-mobile" href={paypalUrl} rel="noopener noreferrer">CONTINUA SU PAYPAL</a>
+      </div>
+      <p className="donation-note">Verrai indirizzato alla pagina ufficiale PayPal della Nazionale Italiana Sanitari.</p>
+      <a className="donation-browser-link" href={paypalUrl} rel="noopener noreferrer">Se PayPal apre l’app senza mostrare la raccolta, continua dal browser</a>
+    </div>
+  </div>
+</section>}

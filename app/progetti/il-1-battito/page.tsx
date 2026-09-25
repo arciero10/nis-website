@@ -4,7 +4,6 @@ import Link from "next/link";
 import MetricStrip from "@/components/MetricStrip";
 import ProjectGallery from "@/components/ProjectGallery";
 
-const paypalUrl="https://www.paypal.com/fundraiser/charity/6169624";
 const imageBase="/images/progetti/il-primo-battito";
 
 const galleryImages=[
@@ -72,7 +71,7 @@ export default function Page(){return <>
     <div className="shell battito-closing-inner">
       <p>Per la Nazionale Italiana Sanitari, ogni partita va oltre il risultato sul campo. Ogni evento è un’occasione per costruire qualcosa che rimanga nel tempo, lasciando un segno dove ce n’è più bisogno.</p>
       <strong>Per la vita noi giochiamo, per i bambini noi lottiamo.</strong>
-      <Link href={paypalUrl} target="_blank" rel="noopener noreferrer" className="btn btn-blue">DONA ORA</Link>
+      <Link href="/dona" className="btn btn-blue">DONA ORA</Link>
     </div>
   </section>
 </>}

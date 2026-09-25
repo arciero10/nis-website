@@ -16,7 +16,7 @@ export default function Home(){return <>
       <div className="brand-sub">Perché fare del bene è bello.</div>
       <h2 className="home-title">In campo per la salute.<br/>Uniti per la <span>vita.</span></h2>
       <p>La Nazionale Italiana Sanitari unisce professionisti della salute, sport e solidarietà per costruire progetti che migliorano concretamente la vita delle persone.</p>
-      <div className="hero-actions hero-actions-single"><Link href="https://www.paypal.com/fundraiser/charity/6169624" target="_blank" rel="noopener noreferrer" className="btn btn-blue hero-donate">DONA ORA</Link></div>
+      <div className="hero-actions hero-actions-single"><Link href="/dona" className="btn btn-blue hero-donate">DONA ORA</Link></div>
     </div>
     <div className="tricolor-swoosh"/>
   </section>
@@ -55,6 +55,6 @@ export default function Home(){return <>
     <Link href="/diventa-socio" className="btn community-home-button">SCOPRI BE NIS. BE NICE.</Link>
   </div></section>
 
-  <section className="donate-cta"><div className="shell donate-cta-inner"><div><div className="eyebrow white">SOSTIENI I PROGETTI NIS</div><h2>Ogni contributo può diventare cura, prevenzione e futuro.</h2></div><Link href="https://www.paypal.com/fundraiser/charity/6169624" target="_blank" rel="noopener noreferrer" className="btn btn-blue">DONA ORA</Link></div></section>
+  <section className="donate-cta"><div className="shell donate-cta-inner"><div><div className="eyebrow white">SOSTIENI I PROGETTI NIS</div><h2>Ogni contributo può diventare cura, prevenzione e futuro.</h2></div><Link href="/dona" className="btn btn-blue">DONA ORA</Link></div></section>
 </>}
 
