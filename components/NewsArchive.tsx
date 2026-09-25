@@ -12,7 +12,7 @@ function ArticleCard({article,featured=false}:{article:NewsArticle;featured?:boo
   return <article className={`press-card${featured?" press-card-featured":""}`}>
     <div className={`press-card-source${article.sourceLogo?"":" press-card-source-fallback"}`}>
       {article.sourceLogo
-        ?<Image src={article.sourceLogo} alt={`Logo ${article.sourceName}`} width={260} height={90} sizes="(max-width: 720px) 55vw, 220px"/>
+        ?<span className="press-card-source-logo"><Image src={article.sourceLogo} alt={`Logo ${article.sourceName}`} fill sizes="(max-width: 720px) 55vw, 260px"/></span>
         :<span>{article.sourceName}</span>}
     </div>
     <div className="press-card-content">
