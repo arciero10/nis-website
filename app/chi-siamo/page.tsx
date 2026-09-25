@@ -10,7 +10,8 @@ export const metadata:Metadata={
 const founderStatements = [
   {
     name:"Prof. Dott. Luca Cipriano",
-    role:"Presidente Onorario e Socio Fondatore NIS",
+    role:"Vicepresidente, Socio Fondatore e Presidente Onorario NIS",
+    qualification:"Ginecologo",
     paragraphs:[
       "Ogni giorno, come medici, viviamo la cura come una missione. Con la NIS abbiamo scelto di portare questa missione anche fuori dagli ospedali, indossando una maglia che unisce tutti gli operatori sanitari italiani.",
       "La NIS rappresenta un segno di fiducia nella vita, un inno all’unione e alla speranza.",
@@ -18,7 +19,8 @@ const founderStatements = [
   },
   {
     name:"Dott. Joseph Fiore",
-    role:"Manager Sanitario, Presidente Esecutivo e Socio Fondatore NIS",
+    role:"Presidente e Socio Fondatore NIS",
+    qualification:"Manager Sanitario",
     paragraphs:[
       "La Nazionale Italiana Sanitari è nata dal desiderio profondo di fare qualcosa di positivo e concreto, mettendo in campo la parte più bella di noi: la capacità di prenderci cura.",
       "Vogliamo trasmettere e coltivare valori autentici — l’impegno, la solidarietà, il rispetto, la speranza — perché solo così possiamo costruire qualcosa che resti.",
@@ -28,6 +30,7 @@ const founderStatements = [
   {
     name:"Notaio Edoardo Marcucci",
     role:"Tesoriere e Socio Fondatore NIS",
+    qualification:"Notaio",
     paragraphs:[
       "Questo progetto è un atto d’amore verso la vita e verso chi la difende ogni giorno.",
       "Partecipare alla sua nascita come socio fondatore è un privilegio che porta con sé un impegno etico e concreto: garantire che ogni iniziativa sia trasparente, sostenibile e realmente utile a chi ne ha più bisogno.",
@@ -73,7 +76,8 @@ export default function Page(){return <>
           </blockquote>
           <footer>
             <h3>{founder.name}</h3>
-            <p>{founder.role}</p>
+            <p className="founder-role">{founder.role}</p>
+            <p className="founder-qualification">{founder.qualification}</p>
           </footer>
         </article>)}
       </div>

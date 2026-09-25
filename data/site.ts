@@ -24,9 +24,9 @@ export const nav = [
 ];
 
 export const founders = [
-  {name:"Dott. Joseph Fiore",role:"Presidente Esecutivo e Socio Fondatore"},
-  {name:"Prof. Luca Cipriano",role:"Presidente Onorario e Socio Fondatore"},
-  {name:"Edoardo Marcucci",role:"Segretario, Tesoriere e Socio Fondatore"},
+  {name:"Dott. Joseph Fiore",role:"Presidente e Socio Fondatore NIS",qualification:"Manager Sanitario"},
+  {name:"Prof. Dott. Luca Cipriano",role:"Vicepresidente, Socio Fondatore e Presidente Onorario NIS",qualification:"Ginecologo"},
+  {name:"Notaio Edoardo Marcucci",role:"Tesoriere e Socio Fondatore NIS",qualification:"Notaio"},
 ];
 
 export const sectors = [
