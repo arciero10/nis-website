@@ -8,6 +8,7 @@ const revealGroups=[
   ".project-feature > *",
   ".sector-card",
   ".info-card",
+  ".press-card",
   ".community-home-band-inner > *",
   ".donate-cta-inner > *",
   ".project-highlight > *",

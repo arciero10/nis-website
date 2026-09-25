@@ -1,12 +1,10 @@
-import Link from "next/link";
 import PageHero from "@/components/PageHero";
+import NewsArchive from "@/components/NewsArchive";
 import type {Metadata} from "next";
 
-export const metadata:Metadata={title:"News NIS | Attività, progetti e iniziative",description:"Leggi le notizie ufficiali della Nazionale Italiana Sanitari su progetti, prevenzione, eventi, attività sportive e iniziative solidali.",alternates:{canonical:"/news"}};
+export const metadata:Metadata={title:"News e Rassegna stampa | Nazionale Italiana Sanitari",description:"Notizie, eventi e rassegna stampa della Nazionale Italiana Sanitari: sport, salute, prevenzione e solidarietà.",alternates:{canonical:"/news"}};
 
 export default function Page(){return <>
-  <PageHero eyebrow="NEWS" title="Le storie, i progetti," accent="le persone." intro="Comunicati, attività NIS, prevenzione, eventi e partnership. Uno spazio editoriale per raccontare l’impatto dell’Associazione." image="/images/hero-news.jpg"/>
-  <section className="section soft"><div className="shell news-feature-list">
-    <Link href="/progetti/il-1-battito" className="info-card"><div className="media" style={{backgroundImage:"url('/images/progetti/il-primo-battito/consegna-policlinico-2.jpg')",backgroundSize:"cover",backgroundPosition:"center top"}}/><div className="body"><div className="eyebrow">PROGETTI</div><h2>Il 1° Battito</h2><p>Sport, salute e solidarietà per sostenere donne e bambini.</p><strong>Scopri il progetto →</strong></div></Link>
-  </div></section>
+  <PageHero eyebrow="NEWS & MEDIA" title="News &" accent="Rassegna stampa" intro="Le notizie, gli eventi e gli articoli dedicati alla Nazionale Italiana Sanitari." image="/images/hero-news.jpg"/>
+  <NewsArchive/>
 </>}
