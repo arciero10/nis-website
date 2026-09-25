@@ -18,6 +18,7 @@ export default function Icon({name,size=32}:{name:string,size?:number}){
     euro:<><path d="M18 7a7 7 0 1 0 0 10M4 10h10M4 14h9"/></>,
     project:<><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 4v16M8 10h13M14 10v10"/></>,
     room:<><path d="M4 21V4a1 1 0 0 1 1-1h11a1 1 0 0 1 1 1v17M2 21h20"/><path d="M13 12h.01"/></>,
+    medical:<><path d="M9 3h6v6h6v6h-6v6H9v-6H3V9h6z"/><path d="M5 12h3l1.5-3 3 6 1.5-3h5"/></>,
   };
   return <svg {...c}>{paths[name]||paths.heart}</svg>
 }

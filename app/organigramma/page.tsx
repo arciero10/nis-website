@@ -1,5 +1,6 @@
 import type {Metadata} from "next";
 import Image from "next/image";
+import Icon from "@/components/Icon";
 
 export const metadata:Metadata={
   title:"Organigramma | Nazionale Italiana Sanitari",
@@ -63,8 +64,8 @@ function PersonEntry({role,name,details,description}:{role:string;name:string;de
   {description&&<p className="org-entry-description">{description}</p>}
 </article>}
 
-function SectionHeader({title,intro}:{title:string;intro:string}){return <header className="org-section-header">
-  <h2>{title}</h2><p>{intro}</p>
+function SectionHeader({title,intro,icon}:{title:string;intro:string;icon:string}){return <header className="org-section-header">
+  <span className="org-section-icon" aria-hidden="true"><Icon name={icon} size={24}/></span><h2>{title}</h2><p>{intro}</p>
 </header>}
 
 export default function OrganigrammaPage(){return <>
@@ -81,7 +82,7 @@ export default function OrganigrammaPage(){return <>
 
     <section className="org-editorial-section" id="governance">
       <div className="shell org-content-width">
-        <SectionHeader title="Presidenza e Consiglio Direttivo" intro="Il vertice istituzionale della Nazionale Italiana Sanitari."/>
+        <SectionHeader title="Presidenza e Consiglio Direttivo" intro="Il vertice istituzionale della Nazionale Italiana Sanitari." icon="shield"/>
         <div className="org-entry-grid org-governance-leaders">{governanceRoles.slice(0,3).map(person=><PersonEntry key={person.role} {...person}/>)}</div>
         <div className="org-council">
           <div className="org-subheading"><p>Consiglio Direttivo</p><h3>Componenti</h3></div>
@@ -89,7 +90,7 @@ export default function OrganigrammaPage(){return <>
         </div>
         <div className="org-entry-grid org-management-grid">{governanceRoles.slice(3).map(person=><PersonEntry key={person.role} {...person}/>)}</div>
         <div className="org-committee-section">
-          <div className="org-subsection-heading"><h3>Comitato Spirito e Valori NIS</h3><p>Il Comitato custodisce e promuove i valori, i comportamenti e lo spirito che identificano la NIS.</p></div>
+          <div className="org-subsection-heading"><h3><Icon name="heart" size={20}/><span>Comitato Spirito e Valori NIS</span></h3><p>Il Comitato custodisce e promuove i valori, i comportamenti e lo spirito che identificano la NIS.</p></div>
           <div className="org-entry-grid org-committee-list">
             <PersonEntry role="Presidente" name="Dott. Alfonso D’Anna" details={["Ginecologo"]}/>
             <PersonEntry role="Componente" name="Dott. Giovanni Vozzi" details={["Ginecologo"]}/>
@@ -101,14 +102,14 @@ export default function OrganigrammaPage(){return <>
 
     <section className="org-editorial-section org-section-tinted" id="direzione">
       <div className="shell org-content-width">
-        <SectionHeader title="Direzione e funzioni operative" intro="Le funzioni che trasformano gli indirizzi associativi in attività, eventi e comunicazione."/>
+        <SectionHeader title="Direzione e funzioni operative" intro="Le funzioni che trasformano gli indirizzi associativi in attività, eventi e comunicazione." icon="project"/>
         <div className="org-operations-columns">
           <div className="org-subsection org-operation-column">
-            <h3>Area Eventi</h3>
+            <h3><Icon name="calendar" size={20}/><span>Area Eventi</span></h3>
             <div className="org-entry-grid">{eventTeam.map(person=><PersonEntry key={person.name} {...person}/>)}</div>
           </div>
           <div className="org-subsection org-operation-column">
-            <h3>Comunicazione &amp; Media</h3>
+            <h3><Icon name="mail" size={20}/><span>Comunicazione &amp; Media</span></h3>
             <div className="org-entry-grid">{mediaTeam.map(person=><PersonEntry key={person.name} {...person}/>)}</div>
           </div>
         </div>
@@ -117,10 +118,10 @@ export default function OrganigrammaPage(){return <>
 
     <section className="org-editorial-section" id="settori">
       <div className="shell org-content-width">
-        <SectionHeader title="Board dei Settori NIS" intro="La struttura operativa dei settori sportivi della Nazionale Italiana Sanitari."/>
+        <SectionHeader title="Board dei Settori NIS" intro="La struttura operativa dei settori sportivi della Nazionale Italiana Sanitari." icon="ball"/>
         <div className="org-sector-register">
           {sectors.map(sector=><article className="org-sector-row" key={sector.name}>
-            <h3>{sector.name}</h3>
+            <h3><Icon name="ball" size={17}/><span>{sector.name}</span></h3>
             {sector.roles.map(role=><div key={role.label}><p>{role.label}</p><strong className={role.name==="Da nominare"?"org-unassigned":""}>{role.name}</strong>{role.detail&&<span>{role.detail}</span>}</div>)}
           </article>)}
         </div>
@@ -129,12 +130,11 @@ export default function OrganigrammaPage(){return <>
 
     <section className="org-editorial-section" id="scienza">
       <div className="shell org-content-width">
-        <SectionHeader title="Board Medico-Scientifico" intro="L’organo tecnico-consultivo che contribuisce a definire la strategia medico-scientifica dell’Associazione."/>
+        <SectionHeader title="Board Medico-Scientifico" intro="L’organo tecnico-consultivo che contribuisce a definire la strategia medico-scientifica dell’Associazione." icon="medical"/>
         <p className="org-science-objective"><strong>Obiettivo</strong><span>Rappresentanza di almeno 15 branche specialistiche</span></p>
         <div className="org-scientific-register">
           {scientific.map(item=><article key={item.area}><p>{item.area}</p><h3>{item.name}</h3><span>{item.detail}</span></article>)}
         </div>
-        <div className="org-mandate-note"><h3>Mandato del Board</h3><p>Definire gli indirizzi medico-scientifici delle iniziative NIS, contribuire alla programmazione delle campagne di prevenzione e garantire rigore, appropriatezza e multidisciplinarietà nei contenuti sanitari dell’Associazione.</p></div>
       </div>
     </section>
   </div>
