@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 import RevealOnScroll from "@/components/RevealOnScroll";
 
 const productionOrigin="https://www.nazionaleitalianasanitari.com";
-const ogImage="https://www.nazionaleitalianasanitari.com/og-image-v3.jpg";
+const ogImage="https://www.nazionaleitalianasanitari.com/og-nis-social.png";
 const siteDescription="Sport, salute e solidarietà per sostenere progetti concreti, prevenzione e iniziative dedicate alle persone.";
 
 export const metadata:Metadata={
