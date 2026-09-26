@@ -14,7 +14,9 @@ export type PressArticle={
   url:string;
 };
 
-export const pressArticles:PressArticle[]=[
+const pressSourceOrder=["Il Sole 24 Ore","Rai News","La Repubblica","ANSA","Corriere dello Sport"];
+
+export const pressArticles:PressArticle[]=([
   {
     id:"laziopress-consegna-50000",
     title:"La Nazionale Italiana Sanitari consegna 50.000 euro al Policlinico Umberto I per l’Oncoematologia Pediatrica",
@@ -117,4 +119,10 @@ export const pressArticles:PressArticle[]=[
     excerpt:"Il quotidiano racconta la nascita della NIS e il progetto che unisce professionisti sanitari, attività sportiva e iniziative concrete di solidarietà.",
     url:"https://www.ilsole24ore.com/art/nasce-nazionale-italiana-sanitari-progetto-sport-e-solidarieta-AHSWtI9C",
   },
-];
+] satisfies PressArticle[]).sort((first,second)=>{
+  const firstIndex=pressSourceOrder.indexOf(first.sourceName);
+  const secondIndex=pressSourceOrder.indexOf(second.sourceName);
+  const firstRank=firstIndex===-1?pressSourceOrder.length:firstIndex;
+  const secondRank=secondIndex===-1?pressSourceOrder.length:secondIndex;
+  return firstRank-secondRank;
+});

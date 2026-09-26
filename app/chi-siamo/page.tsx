@@ -26,9 +26,9 @@ const founderStatements = [
     name:"Dott. Joseph Fiore",
     role:"Presidente e Socio Fondatore NIS",
     qualification:"Manager Sanitario",
-    image:"/images/brand/nis-is-nice.png",
-    imageAlt:"NIS is NICE - Nazionale Italiana Sanitari",
-    imageKind:"brand",
+    image:"/images/joseph-fiore.jpeg",
+    imageAlt:"Ritratto del Dott. Joseph Fiore",
+    imageKind:"portrait",
     imagePosition:"center",
     paragraphs:[
       "La Nazionale Italiana Sanitari è nata dal desiderio profondo di fare qualcosa di positivo e concreto, mettendo in campo la parte più bella di noi: la capacità di prenderci cura.",
