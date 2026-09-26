@@ -16,6 +16,7 @@ const orgPhotos:Record<string,string>={
   "Dott.ssa Antonella Rossetti":"/images/foto organigramma/antonella-rossetti.jpeg",
   "Camilla Cardinali":"/images/foto organigramma/camilla-cardinali.jpeg",
   "Dott.ssa Cristina Fiore":"/images/foto organigramma/cristina-fiore.jpeg",
+  "Denise Donniacuo":"/images/foto organigramma/denise-Donniacuo.jpeg",
   "Dott. Dimitrios Varvaras":"/images/foto organigramma/Dimitrios-Varvaras.jpeg",
   "Edoardo Marcucci":"/images/foto organigramma/edoardo-marcucci.JPG",
   "Eleni Pasqualini":"/images/foto organigramma/eleni-pasqualini.jpeg",
@@ -119,7 +120,7 @@ export default function OrganigrammaPage(){return <>
         <div className="org-entry-grid org-governance-leaders">{governanceRoles.slice(0,3).map(person=><PersonEntry key={person.role} {...person}/>)}</div>
         <div className="org-council">
           <div className="org-subheading"><p>Consiglio Direttivo</p><h3>Componenti</h3></div>
-          <ul>{council.map(name=><li key={name}>{name}</li>)}</ul>
+          <ul>{council.map(name=><li key={name}><OrgAvatar name={name}/><span>{name}</span></li>)}</ul>
         </div>
         <div className="org-entry-grid org-management-grid">{governanceRoles.slice(3).map(person=><PersonEntry key={person.role} {...person}/>)}</div>
         <div className="org-committee-section">
