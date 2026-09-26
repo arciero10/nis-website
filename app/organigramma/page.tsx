@@ -18,6 +18,7 @@ const orgPhotos:Record<string,string>={
   "Dott.ssa Cristina Fiore":"/images/foto organigramma/cristina-fiore.jpeg",
   "Dott. Dimitrios Varvaras":"/images/foto organigramma/Dimitrios-Varvaras.jpeg",
   "Edoardo Marcucci":"/images/foto organigramma/edoardo-marcucci.JPG",
+  "Eleni Pasqualini":"/images/foto organigramma/eleni-pasqualini.jpeg",
   "Dott.ssa Emilia Rega":"/images/foto organigramma/emilia-rega.jpeg",
   "Dott.ssa Fabiana Monti":"/images/foto organigramma/fabiana-monti.jpeg",
   "Flavio Moretti":"/images/foto organigramma/flavio-moretti.jpeg",
@@ -29,6 +30,7 @@ const orgPhotos:Record<string,string>={
   "Marco Cerroni":"/images/foto organigramma/marco-cerroni.jpeg",
   "Massimo Rossi":"/images/foto organigramma/massimo-rossi.jpeg",
   "Dott. Mauro La Pietra":"/images/foto organigramma/mauro-lapietra.jpeg",
+  "Dott.ssa Novella Buscemi":"/images/foto organigramma/novella-buscemi.jpeg",
   "Patrizio Pasqualini":"/images/foto organigramma/patrizio-pasqualini.jpeg",
   "Sara Mastracchio":"/images/foto organigramma/sara-mastracchio.jpeg",
 };
