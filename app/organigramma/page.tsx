@@ -10,11 +10,28 @@ export const metadata:Metadata={
 
 const pdfPath="/documenti/organigramma-nis-2026.pdf";
 
+const orgPhotos:Record<string,string>={
+  "Alessandro Arciero":"/images/foto organigramma/alessandro-arciero.jpeg",
+  "Dott. Alfonso D’Anna":"/images/foto organigramma/alfonso-d'anna.jpeg",
+  "Camilla Cardinali":"/images/foto organigramma/camilla-cardinali.jpeg",
+  "Dott.ssa Cristina Fiore":"/images/foto organigramma/cristina-fiore.jpeg",
+  "Dott. Dimitrios Varvaras":"/images/foto organigramma/Dimitrios-Varvaras.jpeg",
+  "Edoardo Marcucci":"/images/foto organigramma/edoardo-marcucci.JPG",
+  "Dott.ssa Emilia Rega":"/images/foto organigramma/emilia-rega.jpeg",
+  "Flavio Moretti":"/images/foto organigramma/flavio-moretti.jpeg",
+  "Dott. Giovanni Vozzi":"/images/foto organigramma/giovanni-vozzi.jpeg",
+  "Joseph Fiore":"/images/foto organigramma/joseph-fiore.jpeg",
+  "Luca Cipriano":"/images/foto organigramma/luca-cipriano.jpg",
+  "Ludovica Rossetti":"/images/foto organigramma/ludovica-rossetti.jpeg",
+  "Marco Cerroni":"/images/foto organigramma/marco-cerroni.jpeg",
+  "Patrizio Pasqualini":"/images/foto organigramma/patrizio-pasqualini.jpeg",
+};
+
 const governanceRoles=[
-  {role:"Presidente",name:"Joseph Fiore",details:["Socio Fondatore","Manager Sanitario"],description:"Rappresentanza istituzionale e indirizzo strategico dell’Associazione.",image:"/images/foto organigramma/joseph-fiore.jpeg"},
-  {role:"Vicepresidente",name:"Luca Cipriano",details:["Socio Fondatore • Presidente Onorario","Ginecologo"],description:"Supporto alla Presidenza e alle attività istituzionali dell’Associazione.",image:"/images/foto organigramma/luca-cipriano.jpg"},
-  {role:"Tesoriere",name:"Edoardo Marcucci",details:["Socio Fondatore","Notaio"],description:"Presidio amministrativo e gestione economica dell’Associazione.",image:"/images/foto organigramma/edoardo-marcucci.JPG"},
-  {role:"Direzione Generale",name:"Ludovica Rossetti",details:["Manager Sanitario"],description:"Coordina l’attuazione operativa degli indirizzi del Consiglio Direttivo.",image:"/images/foto organigramma/ludovica-rossetti.jpeg"},
+  {role:"Presidente",name:"Joseph Fiore",details:["Socio Fondatore","Manager Sanitario"],description:"Rappresentanza istituzionale e indirizzo strategico dell’Associazione."},
+  {role:"Vicepresidente",name:"Luca Cipriano",details:["Socio Fondatore • Presidente Onorario","Ginecologo"],description:"Supporto alla Presidenza e alle attività istituzionali dell’Associazione."},
+  {role:"Tesoriere",name:"Edoardo Marcucci",details:["Socio Fondatore","Notaio"],description:"Presidio amministrativo e gestione economica dell’Associazione."},
+  {role:"Direzione Generale",name:"Ludovica Rossetti",details:["Manager Sanitario"],description:"Coordina l’attuazione operativa degli indirizzi del Consiglio Direttivo."},
   {role:"Segreteria del Direttivo",name:"Denise Donniacuo",details:["Responsabile Segreteria del Direttivo"],description:"Assicura il supporto organizzativo e documentale al Consiglio Direttivo."},
 ];
 
@@ -28,7 +45,7 @@ const eventTeam=[
 
 const mediaTeam=[
   {role:"Responsabile Ufficio Stampa",name:"Patrizio Pasqualini",details:["Membro del Consiglio Direttivo","Assicuratore e Giornalista"],description:"Coordina la comunicazione istituzionale e i rapporti con stampa e media."},
-  {role:"IT Manager & Videomaker",name:"Alessandro Arciero",details:[],description:"Gestisce gli strumenti digitali e la produzione video per la comunicazione NIS.",image:"/images/foto organigramma/alessandro-arciero.jpeg"},
+  {role:"IT Manager & Videomaker",name:"Alessandro Arciero",details:[],description:"Gestisce gli strumenti digitali e la produzione video per la comunicazione NIS."},
 ];
 
 const sectors=[
@@ -57,8 +74,15 @@ function PdfPanel(){return <div className="org-pdf-panel">
   </div>
 </div>}
 
-function PersonEntry({role,name,details,description,image}:{role:string;name:string;details:string[];description?:string;image?:string}){return <article className={`org-person-entry${image?" org-person-entry-with-photo":""}`}>
-  {image&&<div className="org-person-avatar"><Image src={image} alt={`Ritratto di ${name}`} fill sizes="112px"/></div>}
+function OrgAvatar({name}:{name:string}){
+  const image=orgPhotos[name];
+  return image?<div className="org-person-avatar"><Image src={image} alt={`${name} - Nazionale Italiana Sanitari`} fill sizes="(max-width: 720px) 80px, 104px"/></div>:null;
+}
+
+function PersonEntry({role,name,details,description}:{role:string;name:string;details:string[];description?:string}){
+  const hasPhoto=Boolean(orgPhotos[name]);
+  return <article className={`org-person-entry${hasPhoto?" org-person-entry-with-photo":""}`}>
+  <OrgAvatar name={name}/>
   <h3>{name}</h3>
   <p className="org-entry-role">{role}</p>
   {details.length>0&&<p className="org-entry-details">{details.join(" · ")}</p>}
@@ -123,7 +147,7 @@ export default function OrganigrammaPage(){return <>
         <div className="org-sector-register">
           {sectors.map(sector=><article className="org-sector-row" key={sector.name}>
             <h3><Icon name="ball" size={17}/><span>{sector.name}</span></h3>
-            {sector.roles.map(role=><div key={role.label}><p>{role.label}</p><strong className={role.name==="Da nominare"?"org-unassigned":""}>{role.name}</strong>{role.detail&&<span>{role.detail}</span>}</div>)}
+            {sector.roles.map(role=><div className={orgPhotos[role.name]?"org-sector-person-with-photo":undefined} key={role.label}><OrgAvatar name={role.name}/><p>{role.label}</p><strong className={role.name==="Da nominare"?"org-unassigned":""}>{role.name}</strong>{role.detail&&<span>{role.detail}</span>}</div>)}
           </article>)}
         </div>
       </div>
@@ -134,7 +158,7 @@ export default function OrganigrammaPage(){return <>
         <SectionHeader title="Board Medico-Scientifico" intro="L’organo tecnico-consultivo che contribuisce a definire la strategia medico-scientifica dell’Associazione." icon="medical"/>
         <p className="org-science-objective"><strong>Obiettivo</strong><span>Rappresentanza di almeno 15 branche specialistiche</span></p>
         <div className="org-scientific-register">
-          {scientific.map(item=><article key={item.area}><p>{item.area}</p><h3>{item.name}</h3><span>{item.detail}</span></article>)}
+          {scientific.map(item=><article className={orgPhotos[item.name]?"org-scientific-person-with-photo":undefined} key={item.area}><OrgAvatar name={item.name}/><p>{item.area}</p><h3>{item.name}</h3><span>{item.detail}</span></article>)}
         </div>
       </div>
     </section>
