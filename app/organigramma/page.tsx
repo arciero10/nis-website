@@ -11,14 +11,14 @@ export const metadata:Metadata={
 const pdfPath="/documenti/organigramma-nis-2026.pdf";
 
 const governanceRoles=[
-  {role:"Presidente",name:"Joseph Fiore",details:["Socio Fondatore","Manager Sanitario"],description:"Rappresentanza istituzionale e indirizzo strategico dell’Associazione."},
-  {role:"Vicepresidente",name:"Prof. Luca Cipriano",details:["Socio Fondatore • Presidente Onorario","Ginecologo"],description:"Supporto alla Presidenza e alle attività istituzionali dell’Associazione."},
-  {role:"Tesoriere",name:"Edoardo Marcucci",details:["Socio Fondatore","Notaio"],description:"Presidio amministrativo e gestione economica dell’Associazione."},
-  {role:"Direzione Generale",name:"Ludovica Rossetti",details:["Manager Sanitario"],description:"Coordina l’attuazione operativa degli indirizzi del Consiglio Direttivo."},
+  {role:"Presidente",name:"Joseph Fiore",details:["Socio Fondatore","Manager Sanitario"],description:"Rappresentanza istituzionale e indirizzo strategico dell’Associazione.",image:"/images/foto organigramma/joseph-fiore.jpeg"},
+  {role:"Vicepresidente",name:"Luca Cipriano",details:["Socio Fondatore • Presidente Onorario","Ginecologo"],description:"Supporto alla Presidenza e alle attività istituzionali dell’Associazione.",image:"/images/foto organigramma/luca-cipriano.jpg"},
+  {role:"Tesoriere",name:"Edoardo Marcucci",details:["Socio Fondatore","Notaio"],description:"Presidio amministrativo e gestione economica dell’Associazione.",image:"/images/foto organigramma/edoardo-marcucci.JPG"},
+  {role:"Direzione Generale",name:"Ludovica Rossetti",details:["Manager Sanitario"],description:"Coordina l’attuazione operativa degli indirizzi del Consiglio Direttivo.",image:"/images/foto organigramma/ludovica-rossetti.jpeg"},
   {role:"Segreteria del Direttivo",name:"Denise Donniacuo",details:["Responsabile Segreteria del Direttivo"],description:"Assicura il supporto organizzativo e documentale al Consiglio Direttivo."},
 ];
 
-const council=["Joseph Fiore","Prof. Luca Cipriano","Edoardo Marcucci","Ludovica Rossetti","Flavio Moretti","Patrizio Pasqualini","Dott.ssa Cristina Fiore"];
+const council=["Joseph Fiore","Luca Cipriano","Edoardo Marcucci","Ludovica Rossetti","Flavio Moretti","Patrizio Pasqualini","Dott.ssa Cristina Fiore"];
 
 const eventTeam=[
   {role:"Direttore Organizzazione Eventi",name:"Flavio Moretti",details:["Membro del Consiglio Direttivo","Manager Food & Beverage"],description:"Sovrintende alla pianificazione, alla logistica e alla realizzazione degli eventi NIS."},
@@ -28,7 +28,7 @@ const eventTeam=[
 
 const mediaTeam=[
   {role:"Responsabile Ufficio Stampa",name:"Patrizio Pasqualini",details:["Membro del Consiglio Direttivo","Assicuratore e Giornalista"],description:"Coordina la comunicazione istituzionale e i rapporti con stampa e media."},
-  {role:"IT Manager & Videomaker",name:"Alessandro Arciero",details:[],description:"Gestisce gli strumenti digitali e la produzione video per la comunicazione NIS."},
+  {role:"IT Manager & Videomaker",name:"Alessandro Arciero",details:[],description:"Gestisce gli strumenti digitali e la produzione video per la comunicazione NIS.",image:"/images/foto organigramma/alessandro-arciero.jpeg"},
 ];
 
 const sectors=[
@@ -43,7 +43,7 @@ const scientific=[
   {area:"Oncologia",name:"Dott.ssa Cristina Fiore",detail:"Responsabile Medico - Pianificazione e Coordinamento Campagne di Screening"},
   {area:"Dermatologo",name:"Dott. Mauro La Pietra",detail:"Componente del Board Medico-Scientifico"},
   {area:"Chirurgo Senologo",name:"Dott. Dimitrios Varvaras",detail:"Componente del Board Medico-Scientifico"},
-  {area:"Ginecologo",name:"Prof. Luca Cipriano",detail:"Componente del Board Medico-Scientifico"},
+  {area:"Ginecologo",name:"Luca Cipriano",detail:"Componente del Board Medico-Scientifico"},
   {area:"Anatomopatologa",name:"Dott.ssa Antonella Rossetti",detail:"Componente del Board Medico-Scientifico"},
   {area:"Embriologa",name:"Dott.ssa Emilia Rega",detail:"Componente del Board Medico-Scientifico"},
   {area:"Altre Branche",name:"Board in evoluzione",detail:"Gli altri membri saranno inseriti nel corso dell’anno."},
@@ -57,7 +57,8 @@ function PdfPanel(){return <div className="org-pdf-panel">
   </div>
 </div>}
 
-function PersonEntry({role,name,details,description}:{role:string;name:string;details:string[];description?:string}){return <article className="org-person-entry">
+function PersonEntry({role,name,details,description,image}:{role:string;name:string;details:string[];description?:string;image?:string}){return <article className={`org-person-entry${image?" org-person-entry-with-photo":""}`}>
+  {image&&<div className="org-person-avatar"><Image src={image} alt={`Ritratto di ${name}`} fill sizes="112px"/></div>}
   <h3>{name}</h3>
   <p className="org-entry-role">{role}</p>
   {details.length>0&&<p className="org-entry-details">{details.join(" · ")}</p>}
