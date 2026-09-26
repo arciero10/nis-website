@@ -13,18 +13,24 @@ const pdfPath="/documenti/organigramma-nis-2026.pdf";
 const orgPhotos:Record<string,string>={
   "Alessandro Arciero":"/images/foto organigramma/alessandro-arciero.jpeg",
   "Dott. Alfonso D’Anna":"/images/foto organigramma/alfonso-d'anna.jpeg",
+  "Dott.ssa Antonella Rossetti":"/images/foto organigramma/antonella-rossetti.jpeg",
   "Camilla Cardinali":"/images/foto organigramma/camilla-cardinali.jpeg",
   "Dott.ssa Cristina Fiore":"/images/foto organigramma/cristina-fiore.jpeg",
   "Dott. Dimitrios Varvaras":"/images/foto organigramma/Dimitrios-Varvaras.jpeg",
   "Edoardo Marcucci":"/images/foto organigramma/edoardo-marcucci.JPG",
   "Dott.ssa Emilia Rega":"/images/foto organigramma/emilia-rega.jpeg",
+  "Dott.ssa Fabiana Monti":"/images/foto organigramma/fabiana-monti.jpeg",
   "Flavio Moretti":"/images/foto organigramma/flavio-moretti.jpeg",
   "Dott. Giovanni Vozzi":"/images/foto organigramma/giovanni-vozzi.jpeg",
   "Joseph Fiore":"/images/foto organigramma/joseph-fiore.jpeg",
+  "Lucia Del Ferraro":"/images/foto organigramma/lucia-delferraro.jpeg",
   "Luca Cipriano":"/images/foto organigramma/luca-cipriano.jpg",
   "Ludovica Rossetti":"/images/foto organigramma/ludovica-rossetti.jpeg",
   "Marco Cerroni":"/images/foto organigramma/marco-cerroni.jpeg",
+  "Massimo Rossi":"/images/foto organigramma/massimo-rossi.jpeg",
+  "Dott. Mauro La Pietra":"/images/foto organigramma/mauro-lapietra.jpeg",
   "Patrizio Pasqualini":"/images/foto organigramma/patrizio-pasqualini.jpeg",
+  "Sara Mastracchio":"/images/foto organigramma/sara-mastracchio.jpeg",
 };
 
 const governanceRoles=[
