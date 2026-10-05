@@ -10,6 +10,14 @@ export const metadata:Metadata={
 
 const pdfPath="/documenti/organigramma-nis-2026.pdf";
 
+const personEmails:Record<string,string>={
+  "Joseph Fiore":"joseph.fiore@nazionaleitalianasanitari.com",
+  "Luca Cipriano":"luca.cipriano@nazionaleitalianasanitari.com",
+  "Edoardo Marcucci":"edoardo.marcucci@nazionaleitalianasanitari.com",
+  "Ludovica Rossetti":"ludovica.rossetti@nazionaleitalianasanitari.com",
+  "Patrizio Pasqualini":"ufficiostampa@nazionaleitalianasanitari.com",
+};
+
 const orgPhotos:Record<string,string>={
   "Alessandro Arciero":"/images/foto organigramma/alessandro-arciero.jpeg",
   "Dott. Alfonso D’Anna":"/images/foto organigramma/alfonso-d'anna.jpeg",
@@ -88,18 +96,26 @@ function OrgAvatar({name}:{name:string}){
   return image?<div className="org-person-avatar"><Image src={image} alt={`${name} - Nazionale Italiana Sanitari`} fill sizes="(max-width: 720px) 80px, 104px"/></div>:null;
 }
 
+function EmailLink({email,className=""}:{email:string;className?:string}){
+  return <a className={`org-email-link${className?` ${className}`:""}`} href={`mailto:${email}`} aria-label={`Invia una email a ${email}`}>
+    <Icon name="mail" size={14}/><span>{email}</span>
+  </a>;
+}
+
 function PersonEntry({role,name,details,description}:{role:string;name:string;details:string[];description?:string}){
   const hasPhoto=Boolean(orgPhotos[name]);
+  const email=personEmails[name];
   return <article className={`org-person-entry${hasPhoto?" org-person-entry-with-photo":""}`}>
   <OrgAvatar name={name}/>
   <h3>{name}</h3>
   <p className="org-entry-role">{role}</p>
   {details.length>0&&<p className="org-entry-details">{details.join(" · ")}</p>}
+  {email&&<EmailLink email={email}/>}
   {description&&<p className="org-entry-description">{description}</p>}
 </article>}
 
-function SectionHeader({title,intro,icon}:{title:string;intro:string;icon:string}){return <header className="org-section-header">
-  <span className="org-section-icon" aria-hidden="true"><Icon name={icon} size={24}/></span><h2>{title}</h2><p>{intro}</p>
+function SectionHeader({title,intro,icon,email}:{title:string;intro:string;icon:string;email?:string}){return <header className="org-section-header">
+  <span className="org-section-icon" aria-hidden="true"><Icon name={icon} size={24}/></span><h2>{title}</h2><p>{intro}</p>{email&&<EmailLink email={email} className="org-section-email"/>}
 </header>}
 
 export default function OrganigrammaPage(){return <>
@@ -116,11 +132,11 @@ export default function OrganigrammaPage(){return <>
 
     <section className="org-editorial-section" id="governance">
       <div className="shell org-content-width">
-        <SectionHeader title="Presidenza e Consiglio Direttivo" intro="Il vertice istituzionale della Nazionale Italiana Sanitari." icon="shield"/>
+        <SectionHeader title="Presidenza e Consiglio Direttivo" intro="Il vertice istituzionale della Nazionale Italiana Sanitari." icon="shield" email="info@nazionaleitalianasanitari.com"/>
         <div className="org-entry-grid org-governance-leaders">{governanceRoles.slice(0,3).map(person=><PersonEntry key={person.role} {...person}/>)}</div>
         <div className="org-council">
           <div className="org-subheading"><p>Consiglio Direttivo</p><h3>Componenti</h3></div>
-          <ul>{council.map(name=><li key={name}><OrgAvatar name={name}/><span>{name}</span></li>)}</ul>
+          <ul>{council.map(name=><li key={name}><OrgAvatar name={name}/><span>{name}</span>{personEmails[name]&&<EmailLink email={personEmails[name]}/>}</li>)}</ul>
         </div>
         <div className="org-entry-grid org-management-grid">{governanceRoles.slice(3).map(person=><PersonEntry key={person.role} {...person}/>)}</div>
         <div className="org-committee-section">
@@ -144,6 +160,7 @@ export default function OrganigrammaPage(){return <>
           </div>
           <div className="org-subsection org-operation-column">
             <h3><Icon name="mail" size={20}/><span>Comunicazione &amp; Media</span></h3>
+            <EmailLink email="comunicazione@nazionaleitalianasanitari.com" className="org-operation-email"/>
             <div className="org-entry-grid">{mediaTeam.map(person=><PersonEntry key={person.name} {...person}/>)}</div>
           </div>
         </div>
