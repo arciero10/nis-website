@@ -110,8 +110,8 @@ function PersonEntry({role,name,details,description}:{role:string;name:string;de
   <h3>{name}</h3>
   <p className="org-entry-role">{role}</p>
   {details.length>0&&<p className="org-entry-details">{details.join(" · ")}</p>}
-  {email&&<EmailLink email={email}/>}
   {description&&<p className="org-entry-description">{description}</p>}
+  {email&&<EmailLink email={email}/>}
 </article>}
 
 function SectionHeader({title,intro,icon,email}:{title:string;intro:string;icon:string;email?:string}){return <header className="org-section-header">
