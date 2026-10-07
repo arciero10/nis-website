@@ -45,24 +45,24 @@ const orgPhotos:Record<string,string>={
 };
 
 const governanceRoles=[
-  {role:"Presidente",name:"Joseph Fiore",details:["Socio Fondatore","Manager Sanitario"],description:"Rappresentanza istituzionale e indirizzo strategico dell’Associazione."},
-  {role:"Vicepresidente",name:"Luca Cipriano",details:["Socio Fondatore • Presidente Onorario","Ginecologo"],description:"Supporto alla Presidenza e alle attività istituzionali dell’Associazione."},
-  {role:"Tesoriere",name:"Edoardo Marcucci",details:["Socio Fondatore","Notaio"],description:"Presidio amministrativo e gestione economica dell’Associazione."},
-  {role:"Direzione Generale",name:"Ludovica Rossetti",details:["Manager Sanitario"],description:"Coordina l’attuazione operativa degli indirizzi del Consiglio Direttivo."},
-  {role:"Segreteria del Direttivo",name:"Denise Donniacuo",details:["Responsabile Segreteria del Direttivo"],description:"Assicura il supporto organizzativo e documentale al Consiglio Direttivo."},
+  {role:"Presidente",name:"Joseph Fiore",details:["Socio Fondatore","Manager Sanitario"]},
+  {role:"Vicepresidente",name:"Luca Cipriano",details:["Socio Fondatore • Presidente Onorario","Ginecologo"]},
+  {role:"Tesoriere",name:"Edoardo Marcucci",details:["Socio Fondatore","Notaio"]},
+  {role:"Direzione Generale",name:"Ludovica Rossetti",details:["Manager Sanitario"]},
+  {role:"Segreteria del Direttivo",name:"Denise Donniacuo",details:["Responsabile Segreteria del Direttivo"]},
 ];
 
 const council=["Joseph Fiore","Luca Cipriano","Edoardo Marcucci","Ludovica Rossetti","Flavio Moretti","Patrizio Pasqualini","Dott.ssa Cristina Fiore"];
 
 const eventTeam=[
-  {role:"Direttore Organizzazione Eventi",name:"Flavio Moretti",details:["Membro del Consiglio Direttivo","Manager Food & Beverage"],description:"Sovrintende alla pianificazione, alla logistica e alla realizzazione degli eventi NIS."},
-  {role:"Direzione Artistica — Eventi & Design",name:"Camilla Cardinali",details:[],description:"Cura l’identità visiva, gli allestimenti e la direzione artistica delle iniziative NIS."},
-  {role:"Coordinamento Operativo",name:"Sara Mastracchio",details:["Coordinatrice Operativa Eventi & Produzione"],description:"Coordina la produzione e l’esecuzione operativa degli eventi."},
+  {role:"Direttore Organizzazione Eventi",name:"Flavio Moretti",details:["Membro del Consiglio Direttivo","Manager Food & Beverage"]},
+  {role:"Direzione Artistica — Eventi & Design",name:"Camilla Cardinali",details:[]},
+  {role:"Coordinamento Operativo",name:"Sara Mastracchio",details:["Coordinatrice Operativa Eventi & Produzione"]},
 ];
 
 const mediaTeam=[
-  {role:"Responsabile Ufficio Stampa",name:"Patrizio Pasqualini",details:["Membro del Consiglio Direttivo","Assicuratore e Giornalista"],description:"Coordina la comunicazione istituzionale e i rapporti con stampa e media."},
-  {role:"IT Manager & Videomaker",name:"Alessandro Arciero",details:[],description:"Gestisce gli strumenti digitali e la produzione video per la comunicazione NIS."},
+  {role:"Responsabile Ufficio Stampa",name:"Patrizio Pasqualini",details:["Membro del Consiglio Direttivo","Assicuratore e Giornalista"]},
+  {role:"IT Manager & Videomaker",name:"Alessandro Arciero",details:[]},
 ];
 
 const sectors=[
@@ -102,7 +102,7 @@ function EmailLink({email,className=""}:{email:string;className?:string}){
   </a>;
 }
 
-function PersonEntry({role,name,details,description}:{role:string;name:string;details:string[];description?:string}){
+function PersonEntry({role,name,details}:{role:string;name:string;details:string[]}){
   const hasPhoto=Boolean(orgPhotos[name]);
   const email=personEmails[name];
   return <article className={`org-person-entry${hasPhoto?" org-person-entry-with-photo":""}`}>
@@ -110,7 +110,6 @@ function PersonEntry({role,name,details,description}:{role:string;name:string;de
   <h3>{name}</h3>
   <p className="org-entry-role">{role}</p>
   {details.length>0&&<p className="org-entry-details">{details.join(" · ")}</p>}
-  {description&&<p className="org-entry-description">{description}</p>}
   {email&&<EmailLink email={email}/>}
 </article>}
 
