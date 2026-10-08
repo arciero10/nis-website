@@ -1,7 +1,9 @@
 import type {Metadata} from "next";
+import {NIS_GALA_PRIVATE_INVITATION_URL} from "@/data/ticketing";
 
 export const metadata:Metadata={
   title:"Invito NIS Gala Charity Night",
+  alternates:{canonical:NIS_GALA_PRIVATE_INVITATION_URL},
   robots:{
     index:false,
     follow:false,

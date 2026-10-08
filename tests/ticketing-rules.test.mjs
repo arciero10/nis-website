@@ -24,3 +24,18 @@ test("server total ignores an altered client total",()=>{const alteredClientTota
 test("N participants produce N tickets",()=>assert.equal(ticketsToIssue(5,0),5));
 test("capture retry produces no duplicate ticket",()=>assert.equal(ticketsToIssue(5,5),0));
 test("used_count increases once independently from ticket count",()=>{assert.equal(invitationUsesAfterOrder(0),1);assert.equal(invitationUsesAfterOrder(7),8);});
+
+test("short invitation alias is private and excluded from sitemap",async()=>{
+  const [layout,page,sitemap]=await Promise.all([
+    readFile(new URL("../app/i/gala-2026/layout.tsx",import.meta.url),"utf8"),
+    readFile(new URL("../app/i/gala-2026/page.tsx",import.meta.url),"utf8"),
+    readFile(new URL("../app/sitemap.ts",import.meta.url),"utf8"),
+  ]);
+  assert.match(layout,/index:false/);assert.match(layout,/follow:false/);assert.match(layout,/noarchive:true/);
+  assert.match(page,/findInvitationByPublicSlug/);assert.doesNotMatch(sitemap,/\/i\/gala-2026/);
+});
+
+test("legacy token invitation route remains available",async()=>{
+  const page=await readFile(new URL("../app/inviti/nis-gala-2026/[accessToken]/page.tsx",import.meta.url),"utf8");
+  assert.match(page,/findInvitationByAccessToken/);assert.match(page,/accessToken=\{accessToken\}/);
+});

@@ -1,5 +1,7 @@
 import type {Event} from "@/types/ticketing";
 
+export const NIS_GALA_PRIVATE_INVITATION_URL="https://www.nazionaleitalianasanitari.com/i/gala-2026";
+
 export const nisGala2026:Event={
   id:"evt_nis_gala_2026",
   slug:"nis-gala-2026",

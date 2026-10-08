@@ -12,6 +12,8 @@ if(!Number.isInteger(maxUses)||maxUses<1) throw new Error("NIS_GALA_INVITATION_M
 
 const expiresAt=process.env.NIS_GALA_INVITATION_EXPIRES_AT?.trim()||null;
 if(expiresAt&&Number.isNaN(new Date(expiresAt).getTime())) throw new Error("NIS_GALA_INVITATION_EXPIRES_AT non valido.");
+const publicSlug=process.env.NIS_GALA_INVITATION_PUBLIC_SLUG?.trim()||"gala-2026";
+if(!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(publicSlug)) throw new Error("NIS_GALA_INVITATION_PUBLIC_SLUG non valido.");
 
 const ssl=process.env.DATABASE_SSL==="true"
   ?{rejectUnauthorized:process.env.DATABASE_SSL_REJECT_UNAUTHORIZED!=="false"}
@@ -25,9 +27,10 @@ try{
 
   const tokenHash=createHash("sha256").update(token).digest("hex");
   await client.query(`INSERT INTO ticketing_invitations (
-    id,event_id,access_token_hash,label,max_uses,used_count,expires_at,status,created_at,updated_at
-  ) VALUES ($1,$2,$3,$4,$5,0,$6,'ACTIVE',NOW(),NOW())
+    id,event_id,access_token_hash,public_slug,label,max_uses,used_count,expires_at,status,created_at,updated_at
+  ) VALUES ($1,$2,$3,$4,$5,$6,0,$7,'ACTIVE',NOW(),NOW())
   ON CONFLICT (access_token_hash) DO UPDATE SET
+    public_slug=EXCLUDED.public_slug,
     label=EXCLUDED.label,
     max_uses=EXCLUDED.max_uses,
     expires_at=EXCLUDED.expires_at,
@@ -36,6 +39,7 @@ try{
     randomUUID(),
     event.rows[0].id,
     tokenHash,
+    publicSlug,
     process.env.NIS_GALA_INVITATION_LABEL?.trim()||"Invito NIS Gala 2026",
     maxUses,
     expiresAt,

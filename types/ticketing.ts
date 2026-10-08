@@ -106,6 +106,7 @@ export interface Invitation{
   id:string;
   eventId:string;
   accessTokenHash:string;
+  publicSlug:string|null;
   label:string;
   maxUses:number;
   usedCount:number;

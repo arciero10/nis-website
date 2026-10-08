@@ -7,13 +7,14 @@ import {generateQrToken,generateTicketCode} from "@/lib/ticketing/security";
 import type {Attendee,CheckIn,Event,Invitation,Order,OrderParticipant,Ticket,TicketLookup} from "@/types/ticketing";
 
 type EventRow=QueryResultRow&{id:string;slug:string;title:string;description:string;location:string|null;event_date:Date|null;doors_open_at:Date|null;price:string;currency:"EUR";capacity:number|null;status:Event["status"];created_at:Date;updated_at:Date};
-type InvitationRow=QueryResultRow&{id:string;event_id:string;access_token_hash:string;label:string;max_uses:number;used_count:number;expires_at:Date|null;status:Invitation["status"];created_at:Date;updated_at:Date};
+type InvitationRow=QueryResultRow&{id:string;event_id:string;access_token_hash:string;public_slug:string|null;label:string;max_uses:number;used_count:number;expires_at:Date|null;status:Invitation["status"];created_at:Date;updated_at:Date};
 type AttendeeRow=QueryResultRow&{id:string;event_id:string;first_name:string;last_name:string;email:string;phone:string|null;company:string|null;created_at:Date;updated_at:Date};
 type OrderRow=QueryResultRow&{id:string;event_id:string;attendee_id:string|null;invitation_id:string;request_id:string;provider:"PAYPAL";provider_order_id:string|null;provider_capture_id:string|null;amount:string;currency:"EUR";payment_status:Order["paymentStatus"];created_at:Date;updated_at:Date;paid_at:Date|null};
 type ParticipantRow=QueryResultRow&{id:string;order_id:string;attendee_id:string|null;position:number;first_name:string;last_name:string;email:string;phone:string|null;company:string|null;created_at:Date};
 type TicketRow=QueryResultRow&{id:string;event_id:string;attendee_id:string;order_id:string;ticket_code:string;qr_token:string;category:Ticket["category"];access_mode:Ticket["accessMode"];status:Ticket["status"];created_at:Date;updated_at:Date;first_check_in_at:Date|null;last_check_in_at:Date|null};
 
 export type AttendeeInput={firstName:string;lastName:string;email:string;phone?:string;company?:string};
+export type InvitationCredential={accessToken:string;publicSlug?:never}|{accessToken?:never;publicSlug:string};
 export type CheckoutRecord={event:Event;invitation:Invitation;participants:OrderParticipant[];order:Order};
 export type TicketConfirmation={event:Event;attendees:Attendee[];order:Order;tickets:Ticket[]};
 
@@ -23,7 +24,7 @@ export class TicketingConflictError extends Error{
 
 const iso=(value:Date|null)=>value?.toISOString()??null;
 const mapEvent=(r:EventRow):Event=>({id:r.id,slug:r.slug,title:r.title,description:r.description,location:r.location,eventDate:iso(r.event_date),doorsOpenAt:iso(r.doors_open_at),price:Number(r.price),currency:r.currency,capacity:r.capacity,status:r.status,createdAt:r.created_at.toISOString(),updatedAt:r.updated_at.toISOString()});
-const mapInvitation=(r:InvitationRow):Invitation=>({id:r.id,eventId:r.event_id,accessTokenHash:r.access_token_hash,label:r.label,maxUses:r.max_uses,usedCount:r.used_count,expiresAt:iso(r.expires_at),status:r.status,createdAt:r.created_at.toISOString(),updatedAt:r.updated_at.toISOString()});
+const mapInvitation=(r:InvitationRow):Invitation=>({id:r.id,eventId:r.event_id,accessTokenHash:r.access_token_hash,publicSlug:r.public_slug,label:r.label,maxUses:r.max_uses,usedCount:r.used_count,expiresAt:iso(r.expires_at),status:r.status,createdAt:r.created_at.toISOString(),updatedAt:r.updated_at.toISOString()});
 const mapAttendee=(r:AttendeeRow):Attendee=>({id:r.id,eventId:r.event_id,firstName:r.first_name,lastName:r.last_name,email:r.email,phone:r.phone??undefined,company:r.company??undefined,createdAt:r.created_at.toISOString(),updatedAt:r.updated_at.toISOString()});
 const mapOrder=(r:OrderRow):Order=>({id:r.id,eventId:r.event_id,attendeeId:r.attendee_id,invitationId:r.invitation_id,requestId:r.request_id,provider:r.provider,providerOrderId:r.provider_order_id,providerCaptureId:r.provider_capture_id,amount:Number(r.amount),currency:r.currency,paymentStatus:r.payment_status,createdAt:r.created_at.toISOString(),updatedAt:r.updated_at.toISOString(),paidAt:iso(r.paid_at)});
 const mapParticipant=(r:ParticipantRow):OrderParticipant=>({id:r.id,orderId:r.order_id,attendeeId:r.attendee_id,position:r.position,firstName:r.first_name,lastName:r.last_name,email:r.email,phone:r.phone??undefined,company:r.company??undefined,createdAt:r.created_at.toISOString()});
@@ -45,8 +46,9 @@ async function loadConfirmation(client:PoolClient,order:Order):Promise<TicketCon
 export const ticketingRepository={
   async findEventBySlug(slug:string){const result=await query<EventRow>("SELECT * FROM ticketing_events WHERE slug=$1",[slug]);return result.rows[0]?mapEvent(result.rows[0]):null;},
   async findInvitationByAccessToken(accessToken:string){const result=await query<InvitationRow>("SELECT * FROM ticketing_invitations WHERE access_token_hash=$1",[hashInvitationAccessToken(accessToken)]);if(!result.rows[0])return null;const invitation=mapInvitation(result.rows[0]);return invitationBlockReason(invitation)?null:invitation;},
+  async findInvitationByPublicSlug(publicSlug:string){const result=await query<InvitationRow>("SELECT * FROM ticketing_invitations WHERE public_slug=$1",[publicSlug]);if(!result.rows[0])return null;const invitation=mapInvitation(result.rows[0]);return invitationBlockReason(invitation)?null:invitation;},
 
-  async createPendingCheckout(eventSlug:string,accessToken:string,requestId:string,inputs:AttendeeInput[]):Promise<CheckoutRecord>{
+  async createPendingCheckout(eventSlug:string,credential:InvitationCredential,requestId:string,inputs:AttendeeInput[]):Promise<CheckoutRecord>{
     return withTransaction(async client=>{
       const prior=await client.query<OrderRow>("SELECT * FROM ticketing_orders WHERE request_id=$1 FOR UPDATE",[requestId]);
       if(prior.rows[0]){
@@ -60,7 +62,10 @@ export const ticketingRepository={
       const event=mapEvent(eventRow);const amount=orderAmountForQuantity(event.price,inputs.length);
       if(amount===null)throw new TicketingConflictError("INVALID_QUANTITY","Il numero di ingressi deve essere compreso tra 1 e 10.");
 
-      const invitationResult=await client.query<InvitationRow>("SELECT * FROM ticketing_invitations WHERE event_id=$1 AND access_token_hash=$2 FOR UPDATE",[event.id,hashInvitationAccessToken(accessToken)]);const invitationRow=invitationResult.rows[0];
+      const invitationResult="accessToken" in credential&&credential.accessToken
+        ?await client.query<InvitationRow>("SELECT * FROM ticketing_invitations WHERE event_id=$1 AND access_token_hash=$2 FOR UPDATE",[event.id,hashInvitationAccessToken(credential.accessToken)])
+        :await client.query<InvitationRow>("SELECT * FROM ticketing_invitations WHERE event_id=$1 AND public_slug=$2 FOR UPDATE",[event.id,credential.publicSlug]);
+      const invitationRow=invitationResult.rows[0];
       if(!invitationRow||invitationBlockReason(mapInvitation(invitationRow)))throw new TicketingConflictError("INVITATION_UNAVAILABLE","Invito non valido o esaurito.");
       if(event.capacity!==null&&(await activeTicketCount(client,event.id))+inputs.length>event.capacity)throw new TicketingConflictError("SOLD_OUT","Non ci sono abbastanza posti disponibili.");
 
