@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "test": "npm run test:ticketing",
     "db:migrate:ticketing": "node scripts/ticketing/migrate.mjs",
     "ticketing:create-invitation": "node scripts/ticketing/create-invitation.mjs",
     "test:ticketing": "node --test tests/ticketing-rules.test.mjs"

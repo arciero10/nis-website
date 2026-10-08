@@ -11,6 +11,27 @@ export type PaymentRuleInput={
   currency:string;
 };
 
+export const MIN_TICKETS_PER_ORDER=1;
+export const MAX_TICKETS_PER_ORDER=10;
+
+export function validTicketQuantity(quantity:number){
+  return Number.isInteger(quantity)&&quantity>=MIN_TICKETS_PER_ORDER&&quantity<=MAX_TICKETS_PER_ORDER;
+}
+
+export function orderAmountForQuantity(unitPrice:number,quantity:number){
+  if(!validTicketQuantity(quantity)) return null;
+  return Number((unitPrice*quantity).toFixed(2));
+}
+
+export function ticketsToIssue(participantCount:number,existingTicketCount:number){
+  if(!validTicketQuantity(participantCount)) return null;
+  return existingTicketCount>0?0:participantCount;
+}
+
+export function invitationUsesAfterOrder(currentUses:number){
+  return currentUses+1;
+}
+
 export function invitationBlockReason(invitation:InvitationRuleInput,now=new Date()){
   if(invitation.status!=="ACTIVE") return invitation.status==="EXPIRED"?"EXPIRED":"DISABLED";
   if(invitation.expiresAt&&new Date(invitation.expiresAt).getTime()<=now.getTime()) return "EXPIRED";

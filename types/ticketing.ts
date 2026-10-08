@@ -52,7 +52,7 @@ export interface Attendee{
 export interface Order{
   id:string;
   eventId:string;
-  attendeeId:string;
+  attendeeId:string|null;
   invitationId:string;
   requestId:string;
   provider:"PAYPAL";
@@ -64,6 +64,19 @@ export interface Order{
   createdAt:IsoDateTime;
   updatedAt:IsoDateTime;
   paidAt:IsoDateTime|null;
+}
+
+export interface OrderParticipant{
+  id:string;
+  orderId:string;
+  attendeeId:string|null;
+  position:number;
+  firstName:string;
+  lastName:string;
+  email:string;
+  phone?:string;
+  company?:string;
+  createdAt:IsoDateTime;
 }
 
 export interface Ticket{

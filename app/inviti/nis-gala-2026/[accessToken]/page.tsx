@@ -9,26 +9,7 @@ export default async function GalaInvitationPage({params}:{params:Promise<{acces
   const {accessToken}=await params;
   const [invitation,event]=await Promise.all([ticketingRepository.findInvitationByAccessToken(accessToken),ticketingRepository.findEventBySlug("nis-gala-2026")]);
 
-  if(!invitation||!event||invitation.eventId!==event.id){
-    const reason=!invitation&&!event
-      ?"invitation_and_event_not_found"
-      :!invitation
-        ?"invitation_not_found"
-        :!event
-          ?"event_not_found"
-          :"invitation_event_mismatch";
-
-    console.error("[NIS-TICKETING-DIAG] Invito Gala non valido",{
-      databaseUrlPresent:Boolean(process.env.DATABASE_URL),
-      invitationFound:Boolean(invitation),
-      eventFound:Boolean(event),
-      invitationEventId:invitation?.eventId,
-      eventId:event?.id,
-      eventSlug:event?.slug,
-      reason,
-    });
-    notFound();
-  }
+  if(!invitation||!event||invitation.eventId!==event.id)notFound();
 
   return <>
     <header className="ticketing-page-head">
@@ -42,13 +23,13 @@ export default async function GalaInvitationPage({params}:{params:Promise<{acces
       <div className="shell ticketing-checkout-layout">
         <div className="ticketing-form-panel">
           <h2>Dati partecipante</h2>
-          <TicketPurchaseForm accessToken={accessToken} paypalClientId={process.env.PAYPAL_CLIENT_ID?.trim()??""}/>
+          <TicketPurchaseForm accessToken={accessToken} paypalClientId={process.env.PAYPAL_CLIENT_ID?.trim()??""} unitPrice={event.price}/>
         </div>
         <aside className="ticketing-order-summary">
           <span>RIEPILOGO</span>
           <h2>{event.title}</h2>
-          <div><span>Quantità</span><strong>1 ingresso</strong></div>
-          <div className="ticketing-order-total"><span>Totale</span><strong>{formatEventPrice(event)}</strong></div>
+          <div><span>Ingressi</span><strong>Da 1 a 10</strong></div>
+          <div className="ticketing-order-total"><span>Prezzo unitario</span><strong>{formatEventPrice(event)}</strong></div>
           <p>Categoria Standard · Accesso singolo</p>
         </aside>
       </div>
