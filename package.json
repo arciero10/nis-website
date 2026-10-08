@@ -6,11 +6,15 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "db:migrate:ticketing": "node scripts/ticketing/migrate.mjs",
+    "ticketing:create-invitation": "node scripts/ticketing/create-invitation.mjs",
+    "test:ticketing": "node --test tests/ticketing-rules.test.mjs"
   },
   "dependencies": {
     "next": "^15.5.0",
     "nodemailer": "^10.0.10",
+    "pg": "^8.23.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
@@ -18,6 +22,7 @@
     "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^22.10.0",
     "@types/nodemailer": "^8.0.2",
+    "@types/pg": "^8.23.1",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "tailwindcss": "^4.3.3",

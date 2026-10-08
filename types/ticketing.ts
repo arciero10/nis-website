@@ -34,6 +34,7 @@ export interface Event{
   capacity:number|null;
   status:EventStatus;
   createdAt:IsoDateTime;
+  updatedAt:IsoDateTime;
 }
 
 export interface Attendee{
@@ -45,12 +46,15 @@ export interface Attendee{
   phone?:string;
   company?:string;
   createdAt:IsoDateTime;
+  updatedAt:IsoDateTime;
 }
 
 export interface Order{
   id:string;
   eventId:string;
   attendeeId:string;
+  invitationId:string;
+  requestId:string;
   provider:"PAYPAL";
   providerOrderId:string|null;
   providerCaptureId:string|null;
@@ -58,6 +62,7 @@ export interface Order{
   currency:"EUR";
   paymentStatus:PaymentStatus;
   createdAt:IsoDateTime;
+  updatedAt:IsoDateTime;
   paidAt:IsoDateTime|null;
 }
 
@@ -72,6 +77,7 @@ export interface Ticket{
   accessMode:AccessMode;
   status:TicketStatus;
   createdAt:IsoDateTime;
+  updatedAt:IsoDateTime;
   firstCheckInAt:IsoDateTime|null;
   lastCheckInAt:IsoDateTime|null;
 }
@@ -86,13 +92,14 @@ export interface CheckIn{
 export interface Invitation{
   id:string;
   eventId:string;
-  accessToken:string;
+  accessTokenHash:string;
   label:string;
   maxUses:number;
   usedCount:number;
   expiresAt:IsoDateTime|null;
   status:InvitationStatus;
   createdAt:IsoDateTime;
+  updatedAt:IsoDateTime;
 }
 
 export interface TicketPurchaseInput{

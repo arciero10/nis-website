@@ -1,0 +1,5 @@
+import {notFound} from "next/navigation";
+import {formatEventPrice} from "@/data/ticketing";
+import {ticketingRepository} from "@/lib/ticketing/repository";
+export const dynamic="force-dynamic";
+export default async function TicketConfirmationPage({params}:{params:Promise<{qrToken:string}>}){const {qrToken}=await params;const confirmation=await ticketingRepository.findConfirmationByQrToken(qrToken);if(!confirmation)notFound();const {event,attendee,ticket}=confirmation;return <main className="ticketing-confirmation"><div className="shell ticketing-confirmation-card"><span>PAGAMENTO COMPLETATO</span><h1>Il tuo ingresso è confermato</h1><p>Conserva questa pagina. L'email con il biglietto sarà disponibile in una fase successiva.</p><dl><div><dt>Partecipante</dt><dd>{attendee.firstName} {attendee.lastName}</dd></div><div><dt>Evento</dt><dd>{event.title}</dd></div><div><dt>Importo</dt><dd>{formatEventPrice(event)}</dd></div><div><dt>Codice ticket</dt><dd>{ticket.ticketCode}</dd></div><div><dt>Stato</dt><dd>{ticket.status}</dd></div></dl></div></main>;}

@@ -28,6 +28,7 @@ export function issueStandardTicket({
     accessMode:"ONE_SHOT",
     status:"ACTIVE",
     createdAt:createdAt.toISOString(),
+    updatedAt:createdAt.toISOString(),
     firstCheckInAt:null,
     lastCheckInAt:null,
   };

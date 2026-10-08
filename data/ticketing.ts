@@ -13,6 +13,7 @@ export const nisGala2026:Event={
   capacity:null,
   status:"ANNOUNCED",
   createdAt:"2026-10-08T00:00:00.000Z",
+  updatedAt:"2026-10-08T00:00:00.000Z",
 };
 
 export const ticketingEvents:readonly Event[]=[nisGala2026];
