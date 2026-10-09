@@ -4,32 +4,22 @@ import type {Metadata} from "next";
 import MetricStrip from "@/components/MetricStrip";
 import ProjectFeature from "@/components/ProjectFeature";
 import SectorGrid from "@/components/SectorGrid";
+import StructuredData from "@/components/StructuredData";
+import {createPageMetadata,organizationJsonLd,websiteJsonLd} from "@/lib/seo";
 
-const organizationJsonLd={
-  "@context":"https://schema.org",
-  "@type":"Organization",
-  name:"Nazionale Italiana Sanitari",
-  url:"https://www.nazionaleitalianasanitari.com",
-  logo:"https://www.nazionaleitalianasanitari.com/logo/nis-logo-square.png",
-  sameAs:[
-    "https://www.facebook.com/NazionaleItalianaSanitari/",
-    "https://www.instagram.com/nazionaleitalianasanitari/",
-  ],
-};
-
-export const metadata:Metadata={
+export const metadata:Metadata=createPageMetadata({
   title:"Nazionale Italiana Sanitari | Sport, Salute e Solidarietà",
   description:"La Nazionale Italiana Sanitari unisce professionisti della salute, sport e solidarietà per sostenere progetti concreti di prevenzione, cura e inclusione.",
-  alternates:{canonical:"https://www.nazionaleitalianasanitari.com/"},
-};
+  path:"/",
+});
 
 export default function Home(){return <>
-  <script type="application/ld+json" dangerouslySetInnerHTML={{__html:JSON.stringify(organizationJsonLd).replace(/</g,"\\u003c")}}/>
+  <StructuredData data={[organizationJsonLd,websiteJsonLd]}/>
   <section className="home-hero">
     <Image className="home-bg-image" src="/images/hero-home.jpg" alt="Professionisti sanitari, sportivi e volontari NIS" fill priority sizes="100vw"/>
     <div className="home-overlay"/>
     <div className="shell home-content">
-      <h1 className="brand-title"><b>NIS</b> is <em>NICE.</em></h1>
+      <h1 className="brand-title"><span className="sr-only">Nazionale Italiana Sanitari. </span><b>NIS</b> is <em>NICE.</em></h1>
       <div className="brand-sub">Perché fare del bene è bello.</div>
       <h2 className="home-title">In campo per la salute.<br/>Uniti per la <span>vita.</span></h2>
       <p>La Nazionale Italiana Sanitari unisce professionisti della salute, sport e solidarietà per costruire progetti che migliorano concretamente la vita delle persone.</p>

@@ -1,9 +1,9 @@
 import PageHero from "@/components/PageHero";
 import SectorGrid from "@/components/SectorGrid";
-import type {Metadata} from "next";
-export const metadata:Metadata={title:"Settori sportivi NIS | Sport e solidarietà",description:"Scopri i settori sportivi della Nazionale Italiana Sanitari e le attività che uniscono sport, salute, formazione, volontariato e solidarietà.",alternates:{canonical:"/settori"}};
+import {createPageMetadata} from "@/lib/seo";
+export const metadata=createPageMetadata({title:"Settori sportivi NIS | Sport e solidarietà",description:"Scopri i settori sportivi della Nazionale Italiana Sanitari e le attività che uniscono sport, salute, formazione, volontariato e solidarietà.",path:"/settori"});
 export default function Page(){return <>
-<PageHero eyebrow="SETTORI" title="Un’unica squadra." accent="Tanti modi di fare la differenza." intro="Sport, formazione, eventi e volontariato sono strumenti al servizio della salute e della solidarietà. Insieme trasformiamo la passione in progetti concreti per una vita migliore, per tutti." image="/images/hero-sectors.jpg"/>
+<PageHero eyebrow="SETTORI" title="Un’unica squadra." accent="Tanti modi di fare la differenza." intro="Sport, formazione, eventi e volontariato sono strumenti al servizio della salute e della solidarietà. Insieme trasformiamo la passione in progetti concreti per una vita migliore, per tutti." image="/images/hero-sectors.jpg" path="/settori"/>
 <section className="section soft"><div className="shell"><SectorGrid/></div></section>
 <section className="section"><div className="shell home-cards">
 <div className="info-card"><div className="media" style={{backgroundImage:"url('/images/hero-events.jpg')"}}/><div className="body"><h2>Lo sport è un mezzo, non il fine.</h2><p>Attraverso lo sport promuoviamo salute, inclusione e solidarietà.</p></div></div>

@@ -1,15 +1,16 @@
-import type {Metadata} from "next";
 import Image from "next/image";
 import Link from "next/link";
 import {existsSync} from "node:fs";
 import {join} from "node:path";
 import ApplicationForm from "@/components/ApplicationForm";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import {createPageMetadata} from "@/lib/seo";
 
-export const metadata:Metadata={
+export const metadata=createPageMetadata({
   title:"Diventa socio NIS | Entra nella Community",
   description:"Invia la tua candidatura e scopri come entrare nella Community della Nazionale Italiana Sanitari attraverso il programma associativo NIS.",
-  alternates:{canonical:"/diventa-socio"},
-};
+  path:"/diventa-socio",
+});
 
 const programmePdf="/documenti/be-nis-be-nice-2026-2027.pdf";
 const programmePdfAvailable=existsSync(join(process.cwd(),"public","documenti","be-nis-be-nice-2026-2027.pdf"));
@@ -36,6 +37,7 @@ export default function DiventaSocioPage(){return <>
     <Image className="community-hero-image" src="/images/hero-membership.jpg" alt="La community della Nazionale Italiana Sanitari" fill priority sizes="100vw"/>
     <div className="community-hero-overlay"/>
     <div className="shell community-hero-content">
+      <Breadcrumbs items={[{name:"Home",path:"/"},{name:"Diventa Socio",path:"/diventa-socio"}]} className="breadcrumbs-on-dark"/>
       <p className="community-kicker">PROGRAMMA ASSOCIATIVO NIS</p>
       <h1>BE NIS. <span>BE NICE.</span></h1>
       <h2>Programma associativo e di supporto NIS 2026–2027</h2>
@@ -43,7 +45,7 @@ export default function DiventaSocioPage(){return <>
     </div>
   </header>
 
-  <main>
+  <div>
     <section className="community-intro section">
       <div className="shell">
         <div className="community-section-heading">
@@ -131,5 +133,5 @@ export default function DiventaSocioPage(){return <>
         </div>
       </div>
     </section>
-  </main>
+  </div>
 </>}

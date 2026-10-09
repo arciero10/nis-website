@@ -51,7 +51,7 @@ export default function CheckInPanel(){
       <div className="checkin-scan-frame" aria-hidden="true"><span/><span/><span/><span/></div>
       <div>
         <h2 id="scanner-title">Scanner QR</h2>
-        <p>L'attivazione della fotocamera e la lettura dei QR saranno collegate in un blocco successivo.</p>
+        <p>L’attivazione della fotocamera e la lettura dei QR saranno collegate in un blocco successivo.</p>
       </div>
     </section>
 

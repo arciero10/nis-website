@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import {useEffect,useRef,useState} from "react";
+import {useCallback,useEffect,useRef,useState} from "react";
 
 export type ProjectGalleryImage={
   src:string;
@@ -16,9 +16,9 @@ export default function ProjectGallery({images}:{images:ProjectGalleryImage[]}){
   const triggers=useRef<Array<HTMLButtonElement|null>>([]);
   const touchStart=useRef<number|null>(null);
 
-  const close=()=>setActive(null);
-  const previous=()=>setActive(current=>current===null?null:(current-1+images.length)%images.length);
-  const next=()=>setActive(current=>current===null?null:(current+1)%images.length);
+  const close=useCallback(()=>setActive(null),[]);
+  const previous=useCallback(()=>setActive(current=>current===null?null:(current-1+images.length)%images.length),[images.length]);
+  const next=useCallback(()=>setActive(current=>current===null?null:(current+1)%images.length),[images.length]);
 
   useEffect(()=>{
     if(active===null)return;
@@ -47,13 +47,13 @@ export default function ProjectGallery({images}:{images:ProjectGalleryImage[]}){
       document.body.style.overflow=previousOverflow;
       window.removeEventListener("keydown",onKeyDown);
     };
-  },[active]);
+  },[active,close,next,previous]);
 
-  const closeAndRestore=()=>{
+  const closeAndRestore=useCallback(()=>{
     const triggerIndex=active;
     close();
     window.setTimeout(()=>{if(triggerIndex!==null)triggers.current[triggerIndex]?.focus();},0);
-  };
+  },[active,close]);
 
   return <>
     <div className="battito-gallery">

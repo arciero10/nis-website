@@ -8,14 +8,14 @@ export const GA_MEASUREMENT_ID="G-75QQ9VW74N";
 
 declare global{
   interface Window{
-    dataLayer:IArguments[];
+    dataLayer:unknown[][];
     gtag:(...args:unknown[])=>void;
   }
 }
 
 export function initializeConsentMode(){
   window.dataLayer=window.dataLayer||[];
-  window.gtag=window.gtag||function(){window.dataLayer.push(arguments)};
+  window.gtag=window.gtag||function(...args:unknown[]){window.dataLayer.push(args)};
   window.gtag("consent","default",{
     analytics_storage:"denied",
     ad_storage:"denied",

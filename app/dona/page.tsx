@@ -1,12 +1,13 @@
 import Image from "next/image";
-import type {Metadata} from "next";
 import PayPalDonationActions from "@/components/PayPalDonationActions";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import {createPageMetadata} from "@/lib/seo";
 
-export const metadata:Metadata={
+export const metadata=createPageMetadata({
   title:"Dona | Nazionale Italiana Sanitari",
   description:"Sostieni i progetti di salute, prevenzione, sport e solidarietà della Nazionale Italiana Sanitari.",
-  alternates:{canonical:"/dona"},
-};
+  path:"/dona",
+});
 
 export default function Page(){return <section className="donation-page">
   <div className="shell donation-layout">
@@ -14,6 +15,7 @@ export default function Page(){return <section className="donation-page">
       <Image src="/logo/nis-logo-square.png" alt="" width={240} height={240} priority/>
     </div>
     <div className="donation-content">
+      <Breadcrumbs items={[{name:"Home",path:"/"},{name:"Dona",path:"/dona"}]} className="breadcrumbs-on-dark"/>
       <div className="eyebrow white">DONA ORA</div>
       <h1>Sostieni la Nazionale Italiana Sanitari</h1>
       <p className="donation-intro">Il tuo contributo sostiene i progetti di salute, prevenzione, sport e solidarietà della Nazionale Italiana Sanitari.</p>

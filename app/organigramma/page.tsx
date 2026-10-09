@@ -1,12 +1,13 @@
-import type {Metadata} from "next";
 import Image from "next/image";
 import Icon from "@/components/Icon";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import {createPageMetadata} from "@/lib/seo";
 
-export const metadata:Metadata={
+export const metadata=createPageMetadata({
   title:"Organigramma NIS | Struttura e governance",
   description:"Consulta l’organigramma della Nazionale Italiana Sanitari: Presidenza, Consiglio Direttivo, aree operative, settori e Board Medico-Scientifico.",
-  alternates:{canonical:"/organigramma"},
-};
+  path:"/organigramma",
+});
 
 const pdfPath="/documenti/organigramma-nis-2026.pdf";
 
@@ -122,6 +123,7 @@ export default function OrganigrammaPage(){return <>
     <Image className="org-page-header-image" src="/images/brand/nis-is-nice.png" alt="" fill priority sizes="100vw"/>
     <div className="org-page-header-overlay" aria-hidden="true"/>
     <div className="shell org-page-header-inner">
+      <Breadcrumbs items={[{name:"Home",path:"/"},{name:"Organigramma",path:"/organigramma"}]} className="breadcrumbs-on-dark"/>
       <h1>Organigramma</h1>
     </div>
   </header>

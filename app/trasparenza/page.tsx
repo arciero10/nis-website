@@ -1,13 +1,13 @@
-import type {Metadata} from "next";
 import PageHero from "@/components/PageHero";
 import Icon from "@/components/Icon";
 import {site} from "@/data/site";
+import {createPageMetadata} from "@/lib/seo";
 
-export const metadata:Metadata={
+export const metadata=createPageMetadata({
   title:"Trasparenza | Nazionale Italiana Sanitari",
   description:"Dati identificativi e documentazione di trasparenza della Nazionale Italiana Sanitari.",
-  alternates:{canonical:"/trasparenza"},
-};
+  path:"/trasparenza",
+});
 
 const sections=[
   {title:"Organi sociali",icon:"people",text:"Nessun atto o documento ufficiale relativo agli organi sociali è attualmente pubblicato in questa sezione."},
@@ -18,7 +18,7 @@ const sections=[
 ];
 
 export default function Page(){return <>
-  <PageHero eyebrow="TRASPARENZA" title="Trasparenza." accent="Responsabilità." intro="Informazioni istituzionali e documenti verificati della Nazionale Italiana Sanitari." image="/images/hero-contact.jpg"/>
+  <PageHero eyebrow="TRASPARENZA" title="Trasparenza." accent="Responsabilità." intro="Informazioni istituzionali e documenti verificati della Nazionale Italiana Sanitari." image="/images/hero-contact.jpg" path="/trasparenza"/>
   <section className="section soft">
     <div className="shell transparency-identity">
       <div className="eyebrow">DATI IDENTIFICATIVI</div>

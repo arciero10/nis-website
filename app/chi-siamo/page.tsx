@@ -1,12 +1,12 @@
-import type {Metadata} from "next";
 import Image from "next/image";
 import PageHero from "@/components/PageHero";
+import {createPageMetadata} from "@/lib/seo";
 
-export const metadata:Metadata={
+export const metadata=createPageMetadata({
   title:"Chi siamo | Missione e valori della NIS",
   description:"Conosci la Nazionale Italiana Sanitari, la sua missione e i valori che uniscono professionisti della salute attraverso sport, prevenzione e solidarietà.",
-  alternates:{canonical:"/chi-siamo"},
-};
+  path:"/chi-siamo",
+});
 
 const founderStatements = [
   {
@@ -58,6 +58,7 @@ export default function Page(){return <>
     accent="Persone nella solidarietà."
     intro="Sport, competenze sanitarie e impegno sociale uniti sotto un unico simbolo di vita, unione e speranza."
     image="/images/hero-about.jpg"
+    path="/chi-siamo"
   />
 
   <section className="section about-intro">

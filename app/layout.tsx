@@ -3,16 +3,20 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import RevealOnScroll from "@/components/RevealOnScroll";
+import {DEFAULT_OG_IMAGE,SITE_NAME,SITE_URL} from "@/lib/seo";
 
-const productionOrigin="https://www.nazionaleitalianasanitari.com";
-const ogImage="https://www.nazionaleitalianasanitari.com/og-nis-social.png";
 const siteTitle="Nazionale Italiana Sanitari | Sport, Salute e Solidarietà";
 const siteDescription="La Nazionale Italiana Sanitari unisce professionisti della salute, sport e solidarietà per sostenere progetti concreti di prevenzione, cura e inclusione.";
 
 export const metadata:Metadata={
-  metadataBase:new URL(productionOrigin),
+  metadataBase:new URL(SITE_URL),
   title:siteTitle,
   description:siteDescription,
+  applicationName:SITE_NAME,
+  authors:[{name:SITE_NAME,url:SITE_URL}],
+  creator:SITE_NAME,
+  publisher:SITE_NAME,
+  category:"Salute, sport e solidarietà",
   manifest:"/site.webmanifest",
   icons:{
     icon:[
@@ -26,13 +30,13 @@ export const metadata:Metadata={
   openGraph:{
     type:"website",
     locale:"it_IT",
-    url:productionOrigin,
+    url:SITE_URL,
     title:siteTitle,
     description:siteDescription,
-    siteName:"Nazionale Italiana Sanitari",
+    siteName:SITE_NAME,
     images:[
       {
-        url:ogImage,
+        url:DEFAULT_OG_IMAGE,
         width:1200,
         height:630,
         alt:"Nazionale Italiana Sanitari",
@@ -44,7 +48,7 @@ export const metadata:Metadata={
     title:siteTitle,
     description:siteDescription,
     site:"@NazItSanitari",
-    images:[ogImage],
+    images:[DEFAULT_OG_IMAGE],
   },
 };
 

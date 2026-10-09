@@ -1,15 +1,15 @@
-import type {Metadata} from "next";
 import PageHero from "@/components/PageHero";
 import {site} from "@/data/site";
+import {createPageMetadata} from "@/lib/seo";
 
-export const metadata:Metadata={
+export const metadata=createPageMetadata({
   title:"Privacy Policy | Nazionale Italiana Sanitari",
   description:"Informativa sul trattamento dei dati personali attraverso il sito della Nazionale Italiana Sanitari.",
-  alternates:{canonical:"/privacy-policy"},
-};
+  path:"/privacy-policy",
+});
 
 export default function Page(){return <>
-  <PageHero eyebrow="INFORMAZIONI LEGALI" title="Privacy" accent="Policy." intro="Informazioni sul trattamento dei dati personali attraverso il sito della Nazionale Italiana Sanitari." image="/images/hero-contact.jpg"/>
+  <PageHero eyebrow="PRIVACY POLICY" title="Privacy" accent="Policy." intro="Informazioni sul trattamento dei dati personali attraverso il sito della Nazionale Italiana Sanitari." image="/images/hero-contact.jpg" path="/privacy-policy"/>
   <section className="section"><div className="shell legal-content">
     <p className="legal-updated">Ultimo aggiornamento: 25 settembre 2026</p>
     <h2>Titolare del trattamento</h2>

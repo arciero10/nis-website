@@ -1,10 +1,10 @@
 import Link from "next/link";
 import PageHero from "@/components/PageHero";
-import type {Metadata} from "next";
+import {createPageMetadata} from "@/lib/seo";
 
-export const metadata:Metadata={title:"Eventi NIS | Sport, salute e prevenzione",description:"Scopri gli eventi sportivi, le iniziative solidali e le giornate dedicate alla prevenzione organizzate dalla Nazionale Italiana Sanitari.",alternates:{canonical:"/eventi"}};
+export const metadata=createPageMetadata({title:"Eventi NIS | Sport, salute e prevenzione",description:"Scopri gli eventi sportivi, le iniziative solidali e le giornate dedicate alla prevenzione organizzate dalla Nazionale Italiana Sanitari.",path:"/eventi"});
 
 export default function Page(){return <>
-  <PageHero eyebrow="EVENTI" title="Incontrarsi per" accent="generare impatto." intro="Eventi sportivi, iniziative solidali, giornate di prevenzione e appuntamenti associativi. Occasioni per condividere valori, costruire reti e fare la differenza, insieme." image="/images/hero-events.jpg"/>
+  <PageHero eyebrow="EVENTI" title="Incontrarsi per" accent="generare impatto." intro="Eventi sportivi, iniziative solidali, giornate di prevenzione e appuntamenti associativi. Occasioni per condividere valori, costruire reti e fare la differenza, insieme." image="/images/hero-events.jpg" path="/eventi"/>
   <section className="section soft"><div className="shell empty-state"><div className="eyebrow">PROSSIMI APPUNTAMENTI</div><h2 className="section-title">Il calendario NIS è in aggiornamento.</h2><p className="section-lead">I prossimi eventi saranno pubblicati qui non appena confermati.</p><Link href="/contatti" className="btn btn-blue">CONTATTACI</Link></div></section>
 </>}

@@ -1,8 +1,9 @@
-import type {Metadata} from "next";
 import Image from "next/image";
 import Link from "next/link";
 import MetricStrip from "@/components/MetricStrip";
 import ProjectGallery from "@/components/ProjectGallery";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import {createPageMetadata} from "@/lib/seo";
 
 const imageBase="/images/progetti/il-primo-battito";
 
@@ -13,11 +14,11 @@ const galleryImages=[
   {src:`${imageBase}/firma-assegno-2.jpg`,width:900,height:1600,alt:"Seconda firma sull’assegno simbolico da 50.000 euro del progetto Il 1° Battito"},
 ];
 
-export const metadata:Metadata={
+export const metadata=createPageMetadata({
   title:"Il 1° Battito | Progetto NIS per l’Umberto I",
   description:"Il progetto della Nazionale Italiana Sanitari che ha raccolto 50.000 euro per l’Oncoematologia Pediatrica dell’Ospedale Umberto I di Roma.",
-  alternates:{canonical:"/progetti/il-1-battito"},
-};
+  path:"/progetti/il-1-battito",
+});
 
 export default function Page(){return <>
   <section className="battito-hero">
@@ -26,6 +27,7 @@ export default function Page(){return <>
     </div>
     <div className="battito-hero-overlay"/>
     <div className="shell battito-hero-content">
+      <Breadcrumbs items={[{name:"Home",path:"/"},{name:"Progetti",path:"/progetti"},{name:"Il 1° Battito",path:"/progetti/il-1-battito"}]} className="breadcrumbs-on-dark"/>
       <div className="eyebrow white">PROGETTO NIS</div>
       <h1>Il 1° Battito</h1>
       <p className="battito-concept">Quando lo sport diventa cura</p>

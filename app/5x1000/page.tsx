@@ -1,13 +1,13 @@
-import type {Metadata} from "next";
 import Image from "next/image";
 import PageHero from "@/components/PageHero";
 import CopyTaxCode from "@/components/CopyTaxCode";
+import {createPageMetadata} from "@/lib/seo";
 
-export const metadata:Metadata={
+export const metadata=createPageMetadata({
   title:"5x1000 alla Nazionale Italiana Sanitari",
   description:"Destina il tuo 5x1000 alla Nazionale Italiana Sanitari per sostenere progetti concreti di salute, prevenzione, sport e solidarietà.",
-  alternates:{canonical:"/5x1000"},
-};
+  path:"/5x1000",
+});
 
 export default function Page(){return <>
   <PageHero
@@ -16,6 +16,7 @@ export default function Page(){return <>
     accent="Nazionale Italiana Sanitari"
     intro="È un gesto semplice, gratuito e non ti costa nulla. Si tratta di una quota delle tue tasse che puoi scegliere a chi destinare."
     image="/images/5x1000-nis.png"
+    path="/5x1000"
   />
 
   <section className="section five-per-thousand">

@@ -1,14 +1,14 @@
-import type {Metadata} from "next";
 import PageHero from "@/components/PageHero";
+import {createPageMetadata} from "@/lib/seo";
 
-export const metadata:Metadata={
+export const metadata=createPageMetadata({
   title:"Cookie Policy | Nazionale Italiana Sanitari",
   description:"Informazioni sulle tecnologie cookie utilizzate dal sito della Nazionale Italiana Sanitari.",
-  alternates:{canonical:"/cookie-policy"},
-};
+  path:"/cookie-policy",
+});
 
 export default function Page(){return <>
-  <PageHero eyebrow="INFORMAZIONI LEGALI" title="Cookie" accent="Policy." intro="Informazioni sulle tecnologie utilizzate dal sito della Nazionale Italiana Sanitari." image="/images/hero-contact.jpg"/>
+  <PageHero eyebrow="COOKIE POLICY" title="Cookie" accent="Policy." intro="Informazioni sulle tecnologie utilizzate dal sito della Nazionale Italiana Sanitari." image="/images/hero-contact.jpg" path="/cookie-policy"/>
   <section className="section"><div className="shell legal-content">
     <p className="legal-updated">Ultimo aggiornamento: 25 settembre 2026</p>
     <h2>Cookie necessari</h2>
