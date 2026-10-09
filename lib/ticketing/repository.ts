@@ -25,6 +25,7 @@ export type StaffIngressDashboard={totalIssued:number;totalCheckedIn:number;tota
 export type EventAvailability={capacity:number|null;issued:number;reserved:number;available:number|null};
 export type StaffParticipant={firstName:string;lastName:string;ticketCode:string;category:Ticket["category"];status:"PENDING"|"ENTERED";checkedInAt:string|null};
 export type StaffParticipantsDashboard={capacity:number|null;participants:number;entered:number;pending:number;available:number|null;results:StaffParticipant[]};
+export type TicketEmailPayload={ticketId:string;firstName:string;lastName:string;email:string;ticketCode:string;qrToken:string;category:Ticket["category"];amount:number;currency:string};
 
 export class TicketingConflictError extends Error{
   constructor(public code:"INVITATION_UNAVAILABLE"|"SOLD_OUT"|"PAYMENT_MISMATCH"|"INVALID_QUANTITY",message:string){super(message);this.name="TicketingConflictError";}
@@ -113,6 +114,10 @@ export const ticketingRepository={
   async markOrderFailed(orderId:string){await query("UPDATE ticketing_orders SET payment_status='FAILED',updated_at=NOW() WHERE id=$1 AND payment_status='PENDING'",[orderId]);},
   async findOrderByProviderOrderId(providerOrderId:string){const result=await query<OrderRow>("SELECT * FROM ticketing_orders WHERE provider_order_id=$1",[providerOrderId]);return result.rows[0]?mapOrder(result.rows[0]):null;},
   async findTicketsByOrderId(orderId:string){const result=await query<TicketRow>("SELECT * FROM ticketing_tickets WHERE order_id=$1 ORDER BY created_at,id",[orderId]);return result.rows.map(mapTicket);},
+  async claimTicketEmail(ticketId:string,force=false){const result=await query<{id:string}>("UPDATE ticketing_tickets SET email_claimed_at=NOW(),email_send_attempts=email_send_attempts+1,email_last_error=NULL WHERE id=$1 AND ($2::boolean OR email_sent_at IS NULL) AND (email_claimed_at IS NULL OR email_claimed_at<NOW()-INTERVAL '10 minutes') RETURNING id",[ticketId,force]);return Boolean(result.rowCount);},
+  async markTicketEmailSent(ticketId:string){await query("UPDATE ticketing_tickets SET email_sent_at=NOW(),email_claimed_at=NULL,email_last_error=NULL,updated_at=NOW() WHERE id=$1",[ticketId]);},
+  async markTicketEmailFailed(ticketId:string,error:string){await query("UPDATE ticketing_tickets SET email_claimed_at=NULL,email_last_error=$2,updated_at=NOW() WHERE id=$1",[ticketId,error.replace(/[\u0000-\u001f\u007f]+/g," ").slice(0,1000)]);},
+  async findTicketEmailPayload(ticketCode:string):Promise<TicketEmailPayload|null>{const result=await query<{ticket_id:string;first_name:string;last_name:string;email:string;ticket_code:string;qr_token:string;category:Ticket["category"];amount:string;currency:string}>("SELECT ticket.id AS ticket_id,attendee.first_name,attendee.last_name,attendee.email,ticket.ticket_code,ticket.qr_token,ticket.category,event.price AS amount,event.currency FROM ticketing_tickets ticket JOIN ticketing_attendees attendee ON attendee.id=ticket.attendee_id JOIN ticketing_events event ON event.id=ticket.event_id JOIN ticketing_orders orders ON orders.id=ticket.order_id WHERE ticket.ticket_code=$1 AND orders.payment_status='PAID' AND ticket.status IN ('ACTIVE','USED')",[ticketCode]);const row=result.rows[0];return row?{ticketId:row.ticket_id,firstName:row.first_name,lastName:row.last_name,email:row.email,ticketCode:row.ticket_code,qrToken:row.qr_token,category:row.category,amount:Number(row.amount),currency:row.currency}:null;},
 
   async finalizePaidOrder(providerOrderId:string,captureId:string,amount:string,currency:string):Promise<TicketConfirmation>{
     return withTransaction(async client=>{

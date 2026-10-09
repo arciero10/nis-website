@@ -8,7 +8,7 @@ const formatTime=(value:string)=>new Intl.DateTimeFormat("it-IT",{hour:"2-digit"
 const emptyDashboard:Dashboard={capacity:null,participants:0,entered:0,pending:0,available:null,results:[]};
 
 export default function StaffParticipantsDashboard(){
-  const [dashboard,setDashboard]=useState<Dashboard>(emptyDashboard);const [filter,setFilter]=useState<Filter>("ALL");const [query,setQuery]=useState("");const [loading,setLoading]=useState(true);const [message,setMessage]=useState("");const [checkingCode,setCheckingCode]=useState<string|null>(null);
+  const [dashboard,setDashboard]=useState<Dashboard>(emptyDashboard);const [filter,setFilter]=useState<Filter>("ALL");const [query,setQuery]=useState("");const [loading,setLoading]=useState(true);const [message,setMessage]=useState("");const [checkingCode,setCheckingCode]=useState<string|null>(null);const [resendingCode,setResendingCode]=useState<string|null>(null);
 
   const load=useCallback(async(silent=false)=>{
     if(!silent)setLoading(true);
@@ -25,11 +25,17 @@ export default function StaffParticipantsDashboard(){
     catch{setMessage("Non è stato possibile registrare l'ingresso.");}finally{setCheckingCode(null);}
   }
 
+  async function resend(ticketCode:string){
+    setResendingCode(ticketCode);setMessage("");
+    try{const response=await fetch("/api/ticketing/staff/resend-ticket",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({ticketCode})});if(response.status===401){window.location.assign("/checkin");return;}const body=await response.json() as {message?:string};if(!response.ok)throw new Error(body.message||"Reinvio non riuscito.");setMessage(body.message||"Biglietto inviato nuovamente.");}
+    catch(error){setMessage(error instanceof Error?error.message:"Non è stato possibile reinviare il biglietto.");}finally{setResendingCode(null);}
+  }
+
   const filters:[Filter,string,number][]=[["ALL","Tutti",dashboard.participants],["PENDING","Da arrivare",dashboard.pending],["ENTERED","Entrati",dashboard.entered]];
   return <>
     <section className="staff-dashboard-metrics" aria-label="Riepilogo partecipanti"><article><span>Capienza</span><strong>{dashboard.capacity??"—"}</strong></article><article><span>Partecipanti</span><strong>{dashboard.participants}</strong></article><article><span>Entrati</span><strong>{dashboard.entered}</strong></article><article><span>Da arrivare</span><strong>{dashboard.pending}</strong></article><article><span>Posti disponibili</span><strong>{dashboard.available??"—"}</strong></article></section>
     <section className="staff-participant-controls"><label htmlFor="participant-search">Cerca partecipante</label><input id="participant-search" type="search" value={query} onChange={event=>setQuery(event.target.value)} maxLength={100} autoComplete="off" placeholder="Nome, cognome, email o codice ticket"/><div className="staff-filter-bar" aria-label="Filtra partecipanti">{filters.map(([value,label,count])=><button key={value} type="button" className={filter===value?"is-active":""} aria-pressed={filter===value} onClick={()=>setFilter(value)}>{label} <span>{count}</span></button>)}</div></section>
     {message&&<p className="staff-feedback" role="status">{message}</p>}
-    <section className="staff-participant-list" aria-label="Elenco partecipanti">{loading?<p className="staff-empty">Aggiornamento partecipanti...</p>:dashboard.results.length===0?<p className="staff-empty">Nessun partecipante trovato.</p>:dashboard.results.map(person=><article key={person.ticketCode} className={person.status==="ENTERED"?"is-entered":"is-pending"}><div className="staff-participant-main"><span className={`staff-ticket-state ${person.status==="ENTERED"?"is-entered":"is-valid"}`}>{person.status==="ENTERED"?"ENTRATO":"DA ARRIVARE"}</span><h2>{person.firstName} {person.lastName}</h2><p>{person.ticketCode} · {person.category}</p>{person.checkedInAt&&<time dateTime={person.checkedInAt}>Entrato alle {formatTime(person.checkedInAt)}</time>}</div>{person.status==="PENDING"&&<button type="button" onClick={()=>checkIn(person.ticketCode)} disabled={checkingCode===person.ticketCode}>{checkingCode===person.ticketCode?"REGISTRAZIONE...":"REGISTRA INGRESSO"}</button>}</article>)}</section>
+    <section className="staff-participant-list" aria-label="Elenco partecipanti">{loading?<p className="staff-empty">Aggiornamento partecipanti...</p>:dashboard.results.length===0?<p className="staff-empty">Nessun partecipante trovato.</p>:dashboard.results.map(person=><article key={person.ticketCode} className={person.status==="ENTERED"?"is-entered":"is-pending"}><div className="staff-participant-main"><span className={`staff-ticket-state ${person.status==="ENTERED"?"is-entered":"is-valid"}`}>{person.status==="ENTERED"?"ENTRATO":"DA ARRIVARE"}</span><h2>{person.firstName} {person.lastName}</h2><p>{person.ticketCode} · {person.category}</p>{person.checkedInAt&&<time dateTime={person.checkedInAt}>Entrato alle {formatTime(person.checkedInAt)}</time>}</div><div className="staff-participant-actions">{person.status==="PENDING"&&<button type="button" onClick={()=>checkIn(person.ticketCode)} disabled={checkingCode===person.ticketCode}>{checkingCode===person.ticketCode?"REGISTRAZIONE...":"REGISTRA INGRESSO"}</button>}<button className="is-secondary" type="button" onClick={()=>resend(person.ticketCode)} disabled={resendingCode===person.ticketCode}>{resendingCode===person.ticketCode?"INVIO...":"REINVIA BIGLIETTO"}</button></div></article>)}</section>
   </>;
 }
