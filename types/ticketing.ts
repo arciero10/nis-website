@@ -45,6 +45,8 @@ export interface Attendee{
   email:string;
   phone?:string;
   company?:string;
+  source:"STANDARD"|"PARTNER";
+  partnerAllocationId:string|null;
   createdAt:IsoDateTime;
   updatedAt:IsoDateTime;
 }
@@ -84,7 +86,8 @@ export interface Ticket{
   id:string;
   eventId:string;
   attendeeId:string;
-  orderId:string;
+  orderId:string|null;
+  partnerAllocationId:string|null;
   ticketCode:string;
   qrToken:string;
   category:TicketCategory;
@@ -94,6 +97,19 @@ export interface Ticket{
   updatedAt:IsoDateTime;
   firstCheckInAt:IsoDateTime|null;
   lastCheckInAt:IsoDateTime|null;
+}
+
+export interface PartnerAllocation{
+  id:string;
+  eventId:string;
+  companyName:string;
+  packageName:string|null;
+  partnershipAmountCents:number|null;
+  allocatedQuantity:number;
+  status:"ACTIVE"|"CANCELLED";
+  notes:string|null;
+  createdAt:IsoDateTime;
+  updatedAt:IsoDateTime;
 }
 
 export interface CheckIn{

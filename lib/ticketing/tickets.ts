@@ -22,6 +22,7 @@ export function issueStandardTicket({
     eventId,
     attendeeId,
     orderId,
+    partnerAllocationId:null,
     ticketCode:generateTicketCode(eventYear),
     qrToken:generateQrToken(),
     category:"STANDARD",
