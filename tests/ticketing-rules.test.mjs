@@ -12,6 +12,26 @@ const {buildTicketPageUrl,buildTicketQrPayload,extractTicketQrToken,findTicketPo
 const emailContentSource=await readFile(new URL("../lib/ticketing/email-content.ts",import.meta.url),"utf8");
 const emailContentCompiled=ts.transpileModule(emailContentSource,{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText;
 const {buildTicketEmailContent,buildTicketUrl}=await import(`data:text/javascript;base64,${Buffer.from(emailContentCompiled).toString("base64")}`);
+const emailProviderSource=await readFile(new URL("../lib/email/provider.ts",import.meta.url),"utf8");
+const emailProviderCompiled=ts.transpileModule(emailProviderSource,{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText;
+const {MicrosoftGraphEmailProvider,resetMicrosoftGraphTokenCacheForTests}=await import(`data:text/javascript;base64,${Buffer.from(emailProviderCompiled).toString("base64")}`);
+
+function withMicrosoftGraphEnvironment(){
+  const keys=["MICROSOFT_TENANT_ID","MICROSOFT_CLIENT_ID","MICROSOFT_CLIENT_SECRET","TICKETING_EMAIL_FROM"];
+  const previous=Object.fromEntries(keys.map(key=>[key,process.env[key]]));
+  process.env.MICROSOFT_TENANT_ID="tenant-id";
+  process.env.MICROSOFT_CLIENT_ID="client-id";
+  process.env.MICROSOFT_CLIENT_SECRET="client-secret";
+  process.env.TICKETING_EMAIL_FROM="biglietti@nazionaleitalianasanitari.com";
+  resetMicrosoftGraphTokenCacheForTests();
+  return ()=>{
+    for(const key of keys){
+      if(previous[key]===undefined)delete process.env[key];
+      else process.env[key]=previous[key];
+    }
+    resetMicrosoftGraphTokenCacheForTests();
+  };
+}
 
 const invitation={status:"ACTIVE",maxUses:2,usedCount:0,expiresAt:null};
 test("active invitation",()=>assert.equal(invitationBlockReason(invitation),null));
@@ -98,7 +118,51 @@ test("multi-ticket confirmation sends one email per participant",async()=>{const
 test("email provider failure preserves tickets and records a retryable failure",async()=>{const [service,repository]=await Promise.all([readFile(new URL("../lib/ticketing/ticket-email.ts",import.meta.url),"utf8"),readFile(new URL("../lib/ticketing/repository.ts",import.meta.url),"utf8")]);assert.match(service,/markTicketEmailFailed/);assert.match(service,/status:"FAILED"/);assert.doesNotMatch(service,/DELETE FROM ticketing_tickets|payment_status='FAILED'/);assert.match(repository,/email_last_error=\$2/);});
 test("ticket email uses the canonical private ticket URL and escapes participant content",()=>{const url=buildTicketUrl("opaque_token-123");assert.equal(url,"https://www.nazionaleitalianasanitari.com/biglietto/opaque_token-123");const content=buildTicketEmailContent({firstName:"Mario <script>",lastName:"Rossi",ticketCode:"NIS26-ABC12345",category:"STANDARD",amount:200,currency:"EUR",qrToken:"opaque_token-123"});assert.match(content.html,/Mario &lt;script&gt; Rossi/);assert.match(content.html,/APRI IL TUO BIGLIETTO/);assert.match(content.text,/Mostra il QR Code/);});
 test("staff resend is authenticated and reuses the existing ticket",async()=>{const [route,service]=await Promise.all([readFile(new URL("../app/api/ticketing/staff/resend-ticket/route.ts",import.meta.url),"utf8"),readFile(new URL("../lib/ticketing/ticket-email.ts",import.meta.url),"utf8")]);assert.match(route,/hasValidStaffSession\(request\)/);assert.match(route,/resendTicketEmail\(ticketCode\)/);assert.match(service,/findTicketEmailPayload\(ticketCode\)/);assert.doesNotMatch(service,/generateQrToken|INSERT INTO ticketing_tickets/);});
-test("email credentials remain server-side and absent from ticketing clients",async()=>{const [form,dashboard,provider]=await Promise.all([readFile(new URL("../components/TicketPurchaseForm.tsx",import.meta.url),"utf8"),readFile(new URL("../components/StaffParticipantsDashboard.tsx",import.meta.url),"utf8"),readFile(new URL("../lib/email/provider.ts",import.meta.url),"utf8")]);assert.doesNotMatch(form,/SMTP_PASSWORD|SMTP_USER/);assert.doesNotMatch(dashboard,/SMTP_PASSWORD|SMTP_USER|qrToken/);assert.match(provider,/process\.env\.SMTP_PASSWORD/);});
+test("Microsoft Graph obtains an app-only token, sends from the NIS mailbox and reuses the cached token",async()=>{
+  const restore=withMicrosoftGraphEnvironment();
+  try{
+    const calls=[];
+    const fetcher=async(url,init)=>{
+      calls.push({url:String(url),init});
+      if(String(url).includes("login.microsoftonline.com"))return new Response(JSON.stringify({access_token:"opaque-access-token",expires_in:3600}),{status:200,headers:{"Content-Type":"application/json"}});
+      return new Response(null,{status:202});
+    };
+    const provider=new MicrosoftGraphEmailProvider(fetcher);
+    const message={to:"partecipante@example.com",subject:"NIS Gala Charity Night - Il tuo biglietto",text:"Biglietto NIS",html:"<strong>Biglietto NIS</strong>"};
+    await provider.send(message);
+    await provider.send({...message,to:"secondo@example.com"});
+
+    const tokenCalls=calls.filter(call=>call.url.includes("login.microsoftonline.com"));
+    const sendCalls=calls.filter(call=>call.url.includes("graph.microsoft.com/v1.0/users/"));
+    assert.equal(tokenCalls.length,1);
+    assert.equal(sendCalls.length,2);
+    assert.match(tokenCalls[0].url,/tenant-id\/oauth2\/v2\.0\/token$/);
+    const tokenBody=new URLSearchParams(String(tokenCalls[0].init.body));
+    assert.equal(tokenBody.get("grant_type"),"client_credentials");
+    assert.equal(tokenBody.get("scope"),"https://graph.microsoft.com/.default");
+    assert.equal(tokenBody.get("client_id"),"client-id");
+    assert.equal(tokenBody.get("client_secret"),"client-secret");
+    assert.match(sendCalls[0].url,/users\/biglietti%40nazionaleitalianasanitari\.com\/sendMail$/);
+    const payload=JSON.parse(String(sendCalls[0].init.body));
+    assert.equal(payload.message.from.emailAddress.address,"biglietti@nazionaleitalianasanitari.com");
+    assert.equal(payload.message.from.emailAddress.name,"Biglietti NIS");
+    assert.equal(payload.message.toRecipients[0].emailAddress.address,"partecipante@example.com");
+    assert.equal(payload.saveToSentItems,true);
+  }finally{restore();}
+});
+test("a Microsoft Graph error is surfaced without altering ticket lifecycle logic",async()=>{
+  const restore=withMicrosoftGraphEnvironment();
+  try{
+    const fetcher=async url=>String(url).includes("login.microsoftonline.com")
+      ?new Response(JSON.stringify({access_token:"opaque-access-token",expires_in:3600}),{status:200,headers:{"Content-Type":"application/json"}})
+      :new Response(null,{status:503});
+    const provider=new MicrosoftGraphEmailProvider(fetcher);
+    await assert.rejects(()=>provider.send({to:"partecipante@example.com",subject:"Ticket",text:"Ticket",html:"<p>Ticket</p>"}),/Microsoft Graph non riuscito \(503\)/);
+    const service=await readFile(new URL("../lib/ticketing/ticket-email.ts",import.meta.url),"utf8");
+    assert.match(service,/markTicketEmailFailed/);assert.doesNotMatch(service,/DELETE FROM ticketing_tickets|payment_status='FAILED'/);
+  }finally{restore();}
+});
+test("email credentials remain server-side and SMTP has been removed",async()=>{const [form,dashboard,provider,candidature,environment,packageFile]=await Promise.all([readFile(new URL("../components/TicketPurchaseForm.tsx",import.meta.url),"utf8"),readFile(new URL("../components/StaffParticipantsDashboard.tsx",import.meta.url),"utf8"),readFile(new URL("../lib/email/provider.ts",import.meta.url),"utf8"),readFile(new URL("../app/api/candidature/route.ts",import.meta.url),"utf8"),readFile(new URL("../.env.example",import.meta.url),"utf8"),readFile(new URL("../package.json",import.meta.url),"utf8")]);assert.doesNotMatch(form,/MICROSOFT_CLIENT_SECRET|MICROSOFT_CLIENT_ID|opaque-access-token/);assert.doesNotMatch(dashboard,/MICROSOFT_CLIENT_SECRET|MICROSOFT_CLIENT_ID|opaque-access-token|qrToken/);assert.match(provider,/process\.env\.MICROSOFT_CLIENT_SECRET/);assert.doesNotMatch(provider,/console\.(?:log|error)|SMTP_|nodemailer/);assert.doesNotMatch(candidature,/SMTP_|nodemailer/);assert.doesNotMatch(environment,/SMTP_/);assert.doesNotMatch(packageFile,/nodemailer/);});
 test("order confirmation uses the concise ticket link label",async()=>{
   const page=await readFile(new URL("../app/conferma-biglietti/[qrToken]/page.tsx",import.meta.url),"utf8");assert.match(page,/>Apri biglietto</);assert.doesNotMatch(page,/Apri pagina privata del biglietto/);
 });

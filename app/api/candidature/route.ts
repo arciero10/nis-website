@@ -1,6 +1,6 @@
 import {createHash} from "node:crypto";
-import nodemailer from "nodemailer";
 import {NextResponse} from "next/server";
+import {getEmailProvider} from "@/lib/email/provider";
 
 export const runtime="nodejs";
 
@@ -66,18 +66,6 @@ function isRateLimited(key:string){
   return current.count>rateLimitMaximum;
 }
 
-function smtpSettings(){
-  const host=process.env.SMTP_HOST?.trim();
-  const port=Number(process.env.SMTP_PORT);
-  const user=process.env.SMTP_USER?.trim();
-  const password=process.env.SMTP_PASSWORD;
-  const from=process.env.SMTP_FROM?.trim();
-  const to=process.env.CANDIDATURE_TO?.trim();
-
-  if(!host||!Number.isInteger(port)||port<1||port>65535||!user||!password||!from||!to) return null;
-  return {host,port,user,password,from,to};
-}
-
 export async function POST(request:Request){
   const declaredLength=Number(request.headers.get("content-length")||0);
   if(declaredLength>maxBodyLength){
@@ -120,8 +108,8 @@ export async function POST(request:Request){
     return NextResponse.json({message:"Controlla i campi obbligatori e il consenso privacy."},{status:400});
   }
 
-  const smtp=smtpSettings();
-  if(!smtp){
+  const candidatureTo=process.env.CANDIDATURE_TO?.trim();
+  if(!candidatureTo){
     return NextResponse.json({message:"Il servizio di invio candidature non è configurato."},{status:503});
   }
 
@@ -148,18 +136,8 @@ export async function POST(request:Request){
   const plainText=["Nuova candidatura NIS","",...rows.map(([label,value])=>`${label}: ${value}`)].join("\n");
 
   try{
-    const transporter=nodemailer.createTransport({
-      host:smtp.host,
-      port:smtp.port,
-      secure:smtp.port===465,
-      auth:{user:smtp.user,pass:smtp.password},
-      connectionTimeout:10_000,
-      greetingTimeout:10_000,
-      socketTimeout:20_000,
-    });
-    await transporter.sendMail({
-      from:smtp.from,
-      to:smtp.to,
+    await getEmailProvider().send({
+      to:candidatureTo,
       replyTo:application.email,
       subject:`Nuova candidatura NIS - ${application.firstName} ${application.lastName}`,
       text:plainText,
