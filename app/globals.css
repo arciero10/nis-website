@@ -307,3 +307,29 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible,
 
 .ticketing-quantity-row{margin-bottom:24px;padding:18px;display:grid;grid-template-columns:minmax(150px,1fr) 88px minmax(190px,auto);gap:16px;align-items:center;border:1px solid #bfd0e0;border-radius:6px;background:#f5f9fd}.ticketing-quantity-row>label{font-size:15px;font-weight:900}.ticketing-quantity-row select{width:100%;min-height:48px;padding:8px 12px;border:1px solid #9fb4c8;border-radius:5px;background:#fff;color:var(--ink);font:inherit;font-weight:900}.ticketing-quantity-row>div{text-align:right}.ticketing-quantity-row span,.ticketing-quantity-row strong{display:block}.ticketing-quantity-row span{color:var(--muted);font-size:13px}.ticketing-quantity-row strong{margin-top:3px;color:var(--blue);font-size:19px}.ticketing-participants{display:grid;gap:18px}.ticketing-participant{min-width:0;margin:0;padding:22px;border:1px solid #ccd9e6;border-radius:6px}.ticketing-participant legend{padding:0 9px;color:var(--navy);font-size:17px;font-weight:900}.ticketing-field input:disabled,.ticketing-quantity-row select:disabled,.ticketing-privacy input:disabled{background:#edf2f6;cursor:not-allowed}.ticketing-confirmation-tickets{margin-top:28px;display:grid;gap:12px}.ticketing-confirmation-tickets article{padding:20px;border:1px solid var(--line);border-left:4px solid var(--blue);border-radius:4px}.ticketing-confirmation-tickets article>span{color:var(--blue);font-size:11px;font-weight:900}.ticketing-confirmation-tickets h2{margin:5px 0 8px;font-size:21px}.ticketing-confirmation-tickets p{margin:0 0 10px;color:var(--muted);overflow-wrap:anywhere}.ticketing-confirmation-tickets a{color:#075fb9;font-size:14px;font-weight:900;text-decoration:underline;text-underline-offset:3px}
 @media(max-width:720px){.ticketing-quantity-row{grid-template-columns:minmax(0,1fr) 76px;padding:16px}.ticketing-quantity-row>div{grid-column:1/-1;padding-top:12px;border-top:1px solid #d5e0ea;text-align:left}.ticketing-participant{padding:18px 15px}.ticketing-confirmation-tickets article{padding:17px 15px}.ticketing-confirmation-tickets h2{font-size:19px}}
+
+/* Biglietto digitale NIS */
+body:has(.nis-digital-ticket-page)>.site-header,body:has(.nis-digital-ticket-page)>footer{display:none}
+.nis-digital-ticket-page{min-height:100svh;padding:44px 20px;display:grid;place-items:center;background:linear-gradient(145deg,#02152e,#07366f);color:var(--ink)}
+.nis-digital-ticket-shell{width:min(100%,860px)}
+.nis-digital-ticket{overflow:hidden;border:1px solid rgba(255,255,255,.2);border-radius:8px;background:#fff;box-shadow:0 24px 70px rgba(0,10,30,.34)}
+.nis-ticket-brand{padding:24px 30px;display:flex;align-items:center;gap:22px;background:#041d3b;color:#fff}
+.nis-ticket-brand img{width:92px;height:92px;flex:0 0 92px;border-radius:6px;object-fit:contain;background:#fff}
+.nis-ticket-brand span{color:#81b7f5;font-size:11px;font-weight:900;letter-spacing:.08em}
+.nis-ticket-brand h1{margin:6px 0 0;font-size:30px;line-height:1.15;letter-spacing:0}
+.nis-ticket-body{display:grid;grid-template-columns:minmax(0,1fr) 330px;align-items:center}
+.nis-ticket-details{min-width:0;padding:34px 38px;display:grid;gap:23px}
+.nis-ticket-details>div>span,.nis-ticket-detail-grid span{display:block;margin-bottom:6px;color:#61778e;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:.04em}
+.nis-ticket-details>div>strong{display:block;font-size:23px;line-height:1.25;overflow-wrap:anywhere}
+.nis-ticket-code{color:var(--blue);font-family:Consolas,"Courier New",monospace;letter-spacing:.05em}
+.nis-ticket-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.nis-ticket-detail-grid p{margin:0}.nis-ticket-detail-grid strong{font-size:17px}
+.nis-ticket-status{padding:14px 16px;border-left:4px solid #0a9a4a;background:#edf9f2}
+.nis-ticket-status strong{color:#08783c;font-size:18px}.nis-ticket-status-used{border-left-color:#b27a08;background:#fff7e5}.nis-ticket-status-used strong{color:#855b05}.nis-ticket-status-cancelled,.nis-ticket-status-refunded{border-left-color:#bb2734;background:#fff0f1}.nis-ticket-status-cancelled strong,.nis-ticket-status-refunded strong{color:#9e1d29}
+.nis-ticket-qr{padding:30px 25px;display:flex;flex-direction:column;align-items:center;border-left:1px dashed #afc0d0;background:#f6f9fc;text-align:center}
+.nis-ticket-qr img{width:280px;height:280px;max-width:100%;object-fit:contain;image-rendering:pixelated}
+.nis-ticket-qr p{margin:12px 0 0;color:#36516c;font-size:13px;font-weight:900}
+.nis-ticket-footer{padding:14px 28px;display:flex;justify-content:space-between;gap:20px;border-top:1px solid #d8e2eb;background:#edf3f8;color:#526b83;font-size:11px;font-weight:800}
+.ticketing-confirmation-tickets .btn{width:max-content;min-height:44px;margin-top:4px;color:#fff;text-decoration:none}
+@media(max-width:720px){.nis-digital-ticket-page{padding:18px 14px}.nis-ticket-brand{padding:18px;gap:14px}.nis-ticket-brand img{width:68px;height:68px;flex-basis:68px}.nis-ticket-brand h1{font-size:22px}.nis-ticket-body{grid-template-columns:minmax(0,1fr)}.nis-ticket-details{padding:25px 20px;gap:19px}.nis-ticket-details>div>strong{font-size:20px}.nis-ticket-detail-grid{gap:14px}.nis-ticket-qr{padding:22px 18px 25px;border-top:1px dashed #afc0d0;border-left:0}.nis-ticket-qr img{width:248px;height:248px}.nis-ticket-footer{padding:13px 18px;flex-direction:column;gap:4px;text-align:center}.ticketing-confirmation-tickets .btn{width:100%}}
+@media(prefers-reduced-motion:reduce){.nis-digital-ticket-page *{scroll-behavior:auto!important}}

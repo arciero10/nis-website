@@ -6,6 +6,9 @@ import ts from "typescript";
 const source=await readFile(new URL("../lib/ticketing/rules.ts",import.meta.url),"utf8");
 const compiled=ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText;
 const {invitationBlockReason,invitationUsesAfterOrder,orderAmountForQuantity,statusAfterCaptureEvent,ticketsToIssue,validTicketQuantity,validateCompletedPayment}=await import(`data:text/javascript;base64,${Buffer.from(compiled).toString("base64")}`);
+const presentationSource=await readFile(new URL("../lib/ticketing/presentation.ts",import.meta.url),"utf8");
+const presentationCompiled=ts.transpileModule(presentationSource,{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText;
+const {buildTicketPageUrl,findTicketPosition,ticketStatusLabel}=await import(`data:text/javascript;base64,${Buffer.from(presentationCompiled).toString("base64")}`);
 
 const invitation={status:"ACTIVE",maxUses:2,usedCount:0,expiresAt:null};
 test("active invitation",()=>assert.equal(invitationBlockReason(invitation),null));
@@ -38,4 +41,22 @@ test("short invitation alias is private and excluded from sitemap",async()=>{
 test("legacy token invitation route remains available",async()=>{
   const page=await readFile(new URL("../app/inviti/nis-gala-2026/[accessToken]/page.tsx",import.meta.url),"utf8");
   assert.match(page,/findInvitationByAccessToken/);assert.match(page,/accessToken=\{accessToken\}/);
+});
+
+test("valid ticket status is displayed",()=>assert.equal(ticketStatusLabel("ACTIVE"),"VALIDO"));
+test("unknown qrToken resolves to not found",()=>assert.equal(findTicketPosition([{qrToken:"known-token"}],"missing-token"),-1));
+test("multiple tickets produce distinct private QR URLs",()=>{
+  const urls=["token-one","token-two","token-three"].map(token=>buildTicketPageUrl(token));
+  assert.equal(new Set(urls).size,3);assert.ok(urls.every(url=>url.startsWith("https://www.nazionaleitalianasanitari.com/biglietto/")));
+});
+test("QR URL contains no participant PII",()=>{
+  const url=buildTicketPageUrl("opaque-random-token");
+  assert.doesNotMatch(url,/Mario|Rossi|mario%40example\.com/i);assert.equal(url,"https://www.nazionaleitalianasanitari.com/biglietto/opaque-random-token");
+});
+test("digital ticket page is noindex and returns 404 for an unmatched token",async()=>{
+  const [layout,page]=await Promise.all([readFile(new URL("../app/biglietto/[qrToken]/layout.tsx",import.meta.url),"utf8"),readFile(new URL("../app/biglietto/[qrToken]/page.tsx",import.meta.url),"utf8")]);
+  assert.match(layout,/index:false/);assert.match(layout,/follow:false/);assert.match(layout,/noarchive:true/);assert.match(page,/if\(position<0\)notFound\(\)/);assert.match(page,/QRCode\.toDataURL\(ticketUrl/);
+});
+test("order confirmation uses the concise ticket link label",async()=>{
+  const page=await readFile(new URL("../app/conferma-biglietti/[qrToken]/page.tsx",import.meta.url),"utf8");assert.match(page,/>Apri biglietto</);assert.doesNotMatch(page,/Apri pagina privata del biglietto/);
 });
