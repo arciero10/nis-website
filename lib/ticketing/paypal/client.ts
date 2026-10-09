@@ -3,9 +3,14 @@ import {validateCompletedPayment} from "@/lib/ticketing/rules";
 const bases={sandbox:"https://api-m.sandbox.paypal.com",live:"https://api-m.paypal.com"} as const;
 let cachedToken:{value:string;expiresAt:number}|null=null;
 
-function config(){
+export function payPalEnvironment():"SANDBOX"{
   const environment=process.env.PAYPAL_ENV?.trim()||"sandbox";
   if(environment!=="sandbox") throw new Error("NIS Ticketing consente solo PAYPAL_ENV=sandbox in questo blocco.");
+  return "SANDBOX";
+}
+
+function config(){
+  payPalEnvironment();
   const clientId=process.env.PAYPAL_CLIENT_ID?.trim();const secret=process.env.PAYPAL_CLIENT_SECRET?.trim();
   if(!clientId||!secret) throw new Error("Credenziali PayPal Sandbox non configurate.");
   return {base:bases.sandbox,clientId,secret};

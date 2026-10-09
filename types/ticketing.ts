@@ -56,6 +56,7 @@ export interface Order{
   invitationId:string;
   requestId:string;
   provider:"PAYPAL";
+  providerEnvironment:"SANDBOX"|"LIVE";
   providerOrderId:string|null;
   providerCaptureId:string|null;
   amount:number;

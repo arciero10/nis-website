@@ -55,3 +55,21 @@ CANDIDATURE_TO=info@nazionaleitalianasanitari.com
 L'App Registration Microsoft Entra deve avere il permesso **Microsoft Graph > Application > Mail.Send** con **Admin Consent**. Non sono richiesti login utente o permessi delegated. Il mittente deve essere una casella esistente nel tenant; per mostrare esattamente `Biglietti NIS` come nome mittente, configurare quel display name sulla casella Microsoft 365.
 
 Tutte le variabili sono esclusivamente server-side. Il client secret e gli access token non devono essere esposti nel browser, nelle risposte API o nei log.
+
+## Pulizia dati PayPal Sandbox
+
+La migration `008_paypal_provider_environment.sql` aggiunge agli ordini il marker tecnico `SANDBOX`/`LIVE`. Gli ordini preesistenti vengono marcati `SANDBOX` perché le versioni precedenti dell'integrazione accettavano esclusivamente PayPal Sandbox.
+
+Eseguire sempre prima l'anteprima:
+
+```bash
+npm run ticketing:cleanup-sandbox -- --dry-run
+```
+
+La modalità mostra conteggi e ordini interessati senza modificare il database. Solo dopo aver verificato il report, la cancellazione può essere avviata esplicitamente con:
+
+```bash
+npm run ticketing:cleanup-sandbox -- --execute
+```
+
+La pulizia elimina esclusivamente ordini marcati `PAYPAL` + `SANDBOX` e i relativi partecipanti, biglietti, check-in e stati di consegna email. Non modifica eventi, inviti, `used_count`, capienza, `public_slug`, sessioni staff, configurazioni applicative o storico migrazioni. L'operazione è transazionale e idempotente.

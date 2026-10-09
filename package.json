@@ -10,6 +10,7 @@
     "test": "npm run test:ticketing",
     "db:migrate:ticketing": "node scripts/ticketing/migrate.mjs",
     "ticketing:create-invitation": "node scripts/ticketing/create-invitation.mjs",
+    "ticketing:cleanup-sandbox": "node scripts/ticketing/cleanup-sandbox-data.mjs",
     "test:ticketing": "node --test tests/ticketing-rules.test.mjs"
   },
   "dependencies": {

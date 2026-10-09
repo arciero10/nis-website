@@ -1,5 +1,5 @@
 import {NextResponse} from "next/server";
-import {createPayPalOrder} from "@/lib/ticketing/paypal/client";
+import {createPayPalOrder,payPalEnvironment} from "@/lib/ticketing/paypal/client";
 import {TicketingConflictError,ticketingRepository} from "@/lib/ticketing/repository";
 import {orderAmountForQuantity,validTicketQuantity} from "@/lib/ticketing/rules";
 
@@ -18,7 +18,7 @@ export async function POST(request:Request){
     const expectedAmount=orderAmountForQuantity(event.price,quantity);const clientTotal=Number(p.total);
     if(expectedAmount===null||!Number.isFinite(clientTotal)||clientTotal.toFixed(2)!==expectedAmount.toFixed(2))return NextResponse.json({message:"Il totale dell'ordine non è valido."},{status:400});
     const credential=accessToken?{accessToken}:{publicSlug:invitationAlias};
-    const checkout=await ticketingRepository.createPendingCheckout("nis-gala-2026",credential,requestId,participants);
+    const checkout=await ticketingRepository.createPendingCheckout("nis-gala-2026",credential,requestId,participants,payPalEnvironment());
     if(checkout.order.providerOrderId) return NextResponse.json({orderId:checkout.order.providerOrderId});
     try{const providerOrderId=await createPayPalOrder({internalOrderId:checkout.order.id,amount:checkout.order.amount.toFixed(2),currency:checkout.order.currency,description:checkout.event.title});await ticketingRepository.attachProviderOrder(checkout.order.id,providerOrderId);return NextResponse.json({orderId:providerOrderId});}
     catch(error){await ticketingRepository.markOrderFailed(checkout.order.id);throw error;}
