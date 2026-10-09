@@ -2,7 +2,7 @@ import {randomUUID} from "node:crypto";
 import type {PoolClient,QueryResultRow} from "pg";
 import {query,withTransaction} from "@/lib/ticketing/db";
 import {hashInvitationAccessToken} from "@/lib/ticketing/invitations";
-import {invitationBlockReason,orderAmountForQuantity,ticketsToIssue} from "@/lib/ticketing/rules";
+import {checkInEligibility,invitationBlockReason,orderAmountForQuantity,ticketsToIssue} from "@/lib/ticketing/rules";
 import {generateQrToken,generateTicketCode} from "@/lib/ticketing/security";
 import type {Attendee,CheckIn,Event,Invitation,Order,OrderParticipant,Ticket,TicketLookup} from "@/types/ticketing";
 
@@ -12,11 +12,13 @@ type AttendeeRow=QueryResultRow&{id:string;event_id:string;first_name:string;las
 type OrderRow=QueryResultRow&{id:string;event_id:string;attendee_id:string|null;invitation_id:string;request_id:string;provider:"PAYPAL";provider_order_id:string|null;provider_capture_id:string|null;amount:string;currency:"EUR";payment_status:Order["paymentStatus"];created_at:Date;updated_at:Date;paid_at:Date|null};
 type ParticipantRow=QueryResultRow&{id:string;order_id:string;attendee_id:string|null;position:number;first_name:string;last_name:string;email:string;phone:string|null;company:string|null;created_at:Date};
 type TicketRow=QueryResultRow&{id:string;event_id:string;attendee_id:string;order_id:string;ticket_code:string;qr_token:string;category:Ticket["category"];access_mode:Ticket["accessMode"];status:Ticket["status"];created_at:Date;updated_at:Date;first_check_in_at:Date|null;last_check_in_at:Date|null};
+type CheckInTicketRow=TicketRow&{first_name:string;last_name:string;event_status:Event["status"];payment_status:Order["paymentStatus"]};
 
 export type AttendeeInput={firstName:string;lastName:string;email:string;phone?:string;company?:string};
 export type InvitationCredential={accessToken:string;publicSlug?:never}|{accessToken?:never;publicSlug:string};
 export type CheckoutRecord={event:Event;invitation:Invitation;participants:OrderParticipant[];order:Order};
 export type TicketConfirmation={event:Event;attendees:Attendee[];order:Order;tickets:Ticket[]};
+export type StaffCheckInResponse={status:"AUTHORIZED"|"ALREADY_USED";firstName:string;lastName:string;ticketCode:string;category:Ticket["category"];checkedInAt:string}|{status:"INVALID"};
 
 export class TicketingConflictError extends Error{
   constructor(public code:"INVITATION_UNAVAILABLE"|"SOLD_OUT"|"PAYMENT_MISMATCH"|"INVALID_QUANTITY",message:string){super(message);this.name="TicketingConflictError";}
@@ -117,6 +119,19 @@ export const ticketingRepository={
 
   async findConfirmationByQrToken(qrToken:string):Promise<TicketConfirmation|null>{
     return withTransaction(async client=>{const ticketResult=await client.query<TicketRow>("SELECT * FROM ticketing_tickets WHERE qr_token=$1",[qrToken]);if(!ticketResult.rows[0])return null;const orderResult=await client.query<OrderRow>("SELECT * FROM ticketing_orders WHERE id=$1",[ticketResult.rows[0].order_id]);if(!orderResult.rows[0])return null;return loadConfirmation(client,mapOrder(orderResult.rows[0]));});
+  },
+  async checkInByQrToken(qrToken:string):Promise<StaffCheckInResponse>{
+    return withTransaction(async client=>{
+      const result=await client.query<CheckInTicketRow>("SELECT ticket.*,attendee.first_name,attendee.last_name,event.status AS event_status,orders.payment_status FROM ticketing_tickets ticket JOIN ticketing_attendees attendee ON attendee.id=ticket.attendee_id JOIN ticketing_events event ON event.id=ticket.event_id JOIN ticketing_orders orders ON orders.id=ticket.order_id WHERE ticket.qr_token=$1 FOR UPDATE OF ticket",[qrToken]);
+      const row=result.rows[0];if(!row)return {status:"INVALID"};
+      const ticket=mapTicket(row);const eligibility=checkInEligibility({ticketStatus:ticket.status,firstCheckInAt:ticket.firstCheckInAt,paymentStatus:row.payment_status,eventStatus:row.event_status});
+      if(eligibility==="INVALID")return {status:"INVALID"};
+      if(eligibility==="ALREADY_USED")return {status:"ALREADY_USED",firstName:row.first_name,lastName:row.last_name,ticketCode:ticket.ticketCode,category:ticket.category,checkedInAt:ticket.firstCheckInAt??ticket.lastCheckInAt??ticket.updatedAt};
+
+      const update=await client.query<{first_check_in_at:Date}>("UPDATE ticketing_tickets SET status='USED',first_check_in_at=NOW(),last_check_in_at=NOW(),updated_at=NOW() WHERE id=$1 RETURNING first_check_in_at",[ticket.id]);const checkedInAt=update.rows[0].first_check_in_at;
+      await client.query("INSERT INTO ticketing_check_ins(id,ticket_id,checked_in_at,result) VALUES($1,$2,$3,'ALLOWED')",[randomUUID(),ticket.id,checkedInAt]);
+      return {status:"AUTHORIZED",firstName:row.first_name,lastName:row.last_name,ticketCode:ticket.ticketCode,category:ticket.category,checkedInAt:checkedInAt.toISOString()};
+    });
   },
   async applyPaymentDisposition(providerOrderId:string,paymentStatus:"FAILED"|"REFUNDED",ticketStatus:"CANCELLED"|"REFUNDED"){await withTransaction(async client=>{const result=await client.query<OrderRow>("UPDATE ticketing_orders SET payment_status=$2,updated_at=NOW() WHERE provider_order_id=$1 AND payment_status<>'CANCELLED' RETURNING *",[providerOrderId,paymentStatus]);if(result.rows[0])await client.query("UPDATE ticketing_tickets SET status=$2,updated_at=NOW() WHERE order_id=$1",[result.rows[0].id,ticketStatus]);});},
   async findTicket(lookup:TicketLookup){const column=lookup.ticketCode?"ticket_code":"qr_token";const value=lookup.ticketCode??lookup.qrToken;if(!value)return null;const result=await query<TicketRow>(`SELECT * FROM ticketing_tickets WHERE ${column}=$1`,[value]);return result.rows[0]?mapTicket(result.rows[0]):null;},

@@ -15,7 +15,3 @@ export function generateTicketCode(year=2026){
 export function generateQrToken(){
   return randomBytes(32).toString("base64url");
 }
-
-export function buildCheckInUrl(qrToken:string,origin="https://www.nazionaleitalianasanitari.com"){
-  return new URL(`/check-in/${encodeURIComponent(qrToken)}`,origin).toString();
-}

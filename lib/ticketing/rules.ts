@@ -32,6 +32,12 @@ export function invitationUsesAfterOrder(currentUses:number){
   return currentUses+1;
 }
 
+export function checkInEligibility(input:{ticketStatus:string;firstCheckInAt:string|null;paymentStatus:string;eventStatus:string}){
+  if(input.paymentStatus!=="PAID"||input.eventStatus==="CANCELLED"||input.ticketStatus==="CANCELLED"||input.ticketStatus==="REFUNDED")return "INVALID" as const;
+  if(input.ticketStatus==="USED"||input.firstCheckInAt)return "ALREADY_USED" as const;
+  return "AUTHORIZED" as const;
+}
+
 export function invitationBlockReason(invitation:InvitationRuleInput,now=new Date()){
   if(invitation.status!=="ACTIVE") return invitation.status==="EXPIRED"?"EXPIRED":"DISABLED";
   if(invitation.expiresAt&&new Date(invitation.expiresAt).getTime()<=now.getTime()) return "EXPIRED";

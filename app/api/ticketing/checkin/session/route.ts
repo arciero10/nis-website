@@ -1,0 +1,7 @@
+import {NextResponse} from "next/server";
+import {CHECKIN_SESSION_COOKIE,CHECKIN_SESSION_MAX_AGE,checkOperatorPin,createStaffSession,hasValidStaffSession,revokeStaffSession} from "@/lib/ticketing/staff-auth";
+
+export const runtime="nodejs";
+export async function GET(request:Request){return NextResponse.json({authenticated:await hasValidStaffSession(request)});}
+export async function POST(request:Request){try{const payload=await request.json() as {pin?:unknown};const pin=typeof payload.pin==="string"?payload.pin.trim():"";if(!pin||pin.length>128||!checkOperatorPin(pin))return NextResponse.json({message:"PIN non valido."},{status:401});const token=await createStaffSession();const response=NextResponse.json({authenticated:true});response.cookies.set(CHECKIN_SESSION_COOKIE,token,{httpOnly:true,secure:process.env.NODE_ENV==="production",sameSite:"strict",path:"/",maxAge:CHECKIN_SESSION_MAX_AGE});return response;}catch(error){console.error("Check-in staff authentication failed",error instanceof Error?error.message:"unknown");return NextResponse.json({message:"Accesso staff non disponibile."},{status:500});}}
+export async function DELETE(request:Request){await revokeStaffSession(request);const response=NextResponse.json({authenticated:false});response.cookies.set(CHECKIN_SESSION_COOKIE,"",{httpOnly:true,secure:process.env.NODE_ENV==="production",sameSite:"strict",path:"/",maxAge:0});return response;}
