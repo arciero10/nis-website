@@ -14,6 +14,16 @@ export type PaymentRuleInput={
 export const MIN_TICKETS_PER_ORDER=1;
 export const MAX_TICKETS_PER_ORDER=10;
 
+export function availableTicketCapacity(capacity:number|null,issued:number,reserved=0){
+  if(capacity===null)return null;
+  return Math.max(0,capacity-issued-reserved);
+}
+
+export function hasTicketCapacity(capacity:number|null,issued:number,requested:number,reserved=0){
+  const available=availableTicketCapacity(capacity,issued,reserved);
+  return available===null||requested<=available;
+}
+
 export function validTicketQuantity(quantity:number){
   return Number.isInteger(quantity)&&quantity>=MIN_TICKETS_PER_ORDER&&quantity<=MAX_TICKETS_PER_ORDER;
 }

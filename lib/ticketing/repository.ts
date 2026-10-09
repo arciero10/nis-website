@@ -2,7 +2,7 @@ import {randomUUID} from "node:crypto";
 import type {PoolClient,QueryResultRow} from "pg";
 import {query,withTransaction} from "@/lib/ticketing/db";
 import {hashInvitationAccessToken} from "@/lib/ticketing/invitations";
-import {checkInEligibility,invitationBlockReason,orderAmountForQuantity,ticketsToIssue} from "@/lib/ticketing/rules";
+import {availableTicketCapacity,checkInEligibility,hasTicketCapacity,invitationBlockReason,orderAmountForQuantity,ticketsToIssue} from "@/lib/ticketing/rules";
 import {generateQrToken,generateTicketCode} from "@/lib/ticketing/security";
 import type {Attendee,CheckIn,Event,Invitation,Order,OrderParticipant,Ticket,TicketLookup} from "@/types/ticketing";
 
@@ -22,6 +22,9 @@ export type StaffCheckInResponse={status:"AUTHORIZED"|"ALREADY_USED";firstName:s
 export type StaffTicketSearchResult={firstName:string;lastName:string;ticketCode:string;category:Ticket["category"];status:"VALID"|"USED";checkedInAt:string|null};
 export type StaffIngressEntry={firstName:string;lastName:string;ticketCode:string;category:Ticket["category"];checkedInAt:string};
 export type StaffIngressDashboard={totalIssued:number;totalCheckedIn:number;totalPending:number;entries:StaffIngressEntry[]};
+export type EventAvailability={capacity:number|null;issued:number;reserved:number;available:number|null};
+export type StaffParticipant={firstName:string;lastName:string;ticketCode:string;category:Ticket["category"];status:"PENDING"|"ENTERED";checkedInAt:string|null};
+export type StaffParticipantsDashboard={capacity:number|null;participants:number;entered:number;pending:number;available:number|null;results:StaffParticipant[]};
 
 export class TicketingConflictError extends Error{
   constructor(public code:"INVITATION_UNAVAILABLE"|"SOLD_OUT"|"PAYMENT_MISMATCH"|"INVALID_QUANTITY",message:string){super(message);this.name="TicketingConflictError";}
@@ -41,6 +44,7 @@ async function getParticipants(client:PoolClient,orderId:string,lock=false){cons
 async function getTicketsByOrder(client:PoolClient,orderId:string){const result=await client.query<TicketRow>("SELECT t.* FROM ticketing_order_participants p JOIN ticketing_tickets t ON t.attendee_id=p.attendee_id AND t.order_id=p.order_id WHERE p.order_id=$1 ORDER BY p.position",[orderId]);return result.rows.map(mapTicket);}
 async function getAttendeesByOrder(client:PoolClient,orderId:string){const result=await client.query<AttendeeRow>("SELECT a.* FROM ticketing_order_participants p JOIN ticketing_attendees a ON a.id=p.attendee_id WHERE p.order_id=$1 ORDER BY p.position",[orderId]);return result.rows.map(mapAttendee);}
 async function activeTicketCount(client:PoolClient,eventId:string){const result=await client.query<{count:string}>("SELECT COUNT(*)::text AS count FROM ticketing_tickets WHERE event_id=$1 AND status IN ('ACTIVE','USED')",[eventId]);return Number(result.rows[0].count);}
+async function reservedTicketCount(client:PoolClient,eventId:string){const result=await client.query<{count:string}>("SELECT COUNT(*)::text AS count FROM ticketing_order_participants participant JOIN ticketing_orders orders ON orders.id=participant.order_id WHERE orders.event_id=$1 AND orders.payment_status='PENDING' AND orders.created_at>=NOW()-INTERVAL '30 minutes'",[eventId]);return Number(result.rows[0].count);}
 
 async function loadConfirmation(client:PoolClient,order:Order):Promise<TicketConfirmation>{
   const [event,attendees,tickets]=await Promise.all([getEvent(client,order.eventId),getAttendeesByOrder(client,order.id),getTicketsByOrder(client,order.id)]);
@@ -66,6 +70,10 @@ const staffSearchPattern=(value:string)=>`%${value.replace(/[\\%_]/g,"\\$&")}%`;
 
 export const ticketingRepository={
   async findEventBySlug(slug:string){const result=await query<EventRow>("SELECT * FROM ticketing_events WHERE slug=$1",[slug]);return result.rows[0]?mapEvent(result.rows[0]):null;},
+  async getEventAvailability(slug:string):Promise<EventAvailability|null>{
+    const result=await query<{capacity:number|null;issued:string;reserved:string}>("SELECT event.capacity,(SELECT COUNT(*) FROM ticketing_tickets ticket WHERE ticket.event_id=event.id AND ticket.status IN ('ACTIVE','USED'))::text AS issued,(SELECT COUNT(*) FROM ticketing_order_participants participant JOIN ticketing_orders orders ON orders.id=participant.order_id WHERE orders.event_id=event.id AND orders.payment_status='PENDING' AND orders.created_at>=NOW()-INTERVAL '30 minutes')::text AS reserved FROM ticketing_events event WHERE event.slug=$1",[slug]);
+    const row=result.rows[0];if(!row)return null;const issued=Number(row.issued);const reserved=Number(row.reserved);return {capacity:row.capacity,issued,reserved,available:availableTicketCapacity(row.capacity,issued,reserved)};
+  },
   async findInvitationByAccessToken(accessToken:string){const result=await query<InvitationRow>("SELECT * FROM ticketing_invitations WHERE access_token_hash=$1",[hashInvitationAccessToken(accessToken)]);if(!result.rows[0])return null;const invitation=mapInvitation(result.rows[0]);return invitationBlockReason(invitation)?null:invitation;},
   async findInvitationByPublicSlug(publicSlug:string){const result=await query<InvitationRow>("SELECT * FROM ticketing_invitations WHERE public_slug=$1",[publicSlug]);if(!result.rows[0])return null;const invitation=mapInvitation(result.rows[0]);return invitationBlockReason(invitation)?null:invitation;},
 
@@ -88,7 +96,8 @@ export const ticketingRepository={
         :await client.query<InvitationRow>("SELECT * FROM ticketing_invitations WHERE event_id=$1 AND public_slug=$2 FOR UPDATE",[event.id,credential.publicSlug]);
       const invitationRow=invitationResult.rows[0];
       if(!invitationRow||invitationBlockReason(mapInvitation(invitationRow)))throw new TicketingConflictError("INVITATION_UNAVAILABLE","Invito non valido o esaurito.");
-      if(event.capacity!==null&&(await activeTicketCount(client,event.id))+inputs.length>event.capacity)throw new TicketingConflictError("SOLD_OUT","Non ci sono abbastanza posti disponibili.");
+      const [issued,reserved]=await Promise.all([activeTicketCount(client,event.id),reservedTicketCount(client,event.id)]);
+      if(!hasTicketCapacity(event.capacity,issued,inputs.length,reserved))throw new TicketingConflictError("SOLD_OUT","Non ci sono abbastanza posti disponibili.");
 
       const orderResult=await client.query<OrderRow>("INSERT INTO ticketing_orders(id,event_id,attendee_id,invitation_id,request_id,provider,amount,currency,payment_status) VALUES($1,$2,NULL,$3,$4,'PAYPAL',$5,$6,'PENDING') RETURNING *",[randomUUID(),event.id,invitationRow.id,requestId,amount.toFixed(2),event.currency]);
       const order=mapOrder(orderResult.rows[0]);const participants:OrderParticipant[]=[];
@@ -132,6 +141,7 @@ export const ticketingRepository={
         await client.query("INSERT INTO ticketing_tickets(id,event_id,attendee_id,order_id,ticket_code,qr_token,category,access_mode,status) VALUES($1,$2,$3,$4,$5,$6,'STANDARD','ONE_SHOT','ACTIVE')",[randomUUID(),event.id,attendeeId,order.id,generateTicketCode(),generateQrToken()]);
         if(!order.attendeeId){const primary=await client.query<OrderRow>("UPDATE ticketing_orders SET attendee_id=$2 WHERE id=$1 RETURNING *",[order.id,attendeeId]);order=mapOrder(primary.rows[0]);}
       }
+      if(event.capacity!==null&&(await activeTicketCount(client,event.id))>=event.capacity)await client.query("UPDATE ticketing_events SET status='SOLD_OUT',updated_at=NOW() WHERE id=$1 AND status NOT IN ('CANCELLED','COMPLETED')",[event.id]);
       return loadConfirmation(client,order);
     });
   },
@@ -156,6 +166,15 @@ export const ticketingRepository={
     ]);
     const total=counts.rows[0]??{total_issued:"0",total_checked_in:"0",total_pending:"0"};
     return {totalIssued:Number(total.total_issued),totalCheckedIn:Number(total.total_checked_in),totalPending:Number(total.total_pending),entries:entries.rows.map(row=>({firstName:row.first_name,lastName:row.last_name,ticketCode:row.ticket_code,category:row.category,checkedInAt:row.first_check_in_at.toISOString()}))};
+  },
+  async getStaffParticipants(eventSlug:string,search:string,filter:"ALL"|"PENDING"|"ENTERED"):Promise<StaffParticipantsDashboard>{
+    const pattern=staffSearchPattern(search);const statusClause=filter==="PENDING"?"AND ticket.status='ACTIVE'":filter==="ENTERED"?"AND ticket.status='USED'":"";
+    const [summary,participants]=await Promise.all([
+      query<{capacity:number|null;participants:string;entered:string;pending:string}>("SELECT event.capacity,COUNT(ticket.id) FILTER (WHERE ticket.status IN ('ACTIVE','USED'))::text AS participants,COUNT(ticket.id) FILTER (WHERE ticket.status='USED')::text AS entered,COUNT(ticket.id) FILTER (WHERE ticket.status='ACTIVE')::text AS pending FROM ticketing_events event LEFT JOIN ticketing_tickets ticket ON ticket.event_id=event.id LEFT JOIN ticketing_orders orders ON orders.id=ticket.order_id AND orders.payment_status='PAID' WHERE event.slug=$1 AND (ticket.id IS NULL OR orders.id IS NOT NULL) GROUP BY event.id,event.capacity",[eventSlug]),
+      query<{first_name:string;last_name:string;ticket_code:string;category:Ticket["category"];status:Ticket["status"];first_check_in_at:Date|null}>(`SELECT attendee.first_name,attendee.last_name,ticket.ticket_code,ticket.category,ticket.status,ticket.first_check_in_at FROM ticketing_tickets ticket JOIN ticketing_attendees attendee ON attendee.id=ticket.attendee_id JOIN ticketing_events event ON event.id=ticket.event_id JOIN ticketing_orders orders ON orders.id=ticket.order_id WHERE event.slug=$1 AND orders.payment_status='PAID' AND ticket.status IN ('ACTIVE','USED') ${statusClause} AND ($2='' OR attendee.first_name ILIKE $3 ESCAPE '\\' OR attendee.last_name ILIKE $3 ESCAPE '\\' OR CONCAT_WS(' ',attendee.first_name,attendee.last_name) ILIKE $3 ESCAPE '\\' OR ticket.ticket_code ILIKE $3 ESCAPE '\\' OR attendee.email ILIKE $3 ESCAPE '\\') ORDER BY CASE WHEN ticket.status='ACTIVE' THEN 0 ELSE 1 END,attendee.last_name,attendee.first_name LIMIT 500`,[eventSlug,search,pattern]),
+    ]);
+    const row=summary.rows[0]??{capacity:null,participants:"0",entered:"0",pending:"0"};const total=Number(row.participants);
+    return {capacity:row.capacity,participants:total,entered:Number(row.entered),pending:Number(row.pending),available:availableTicketCapacity(row.capacity,total),results:participants.rows.map(item=>({firstName:item.first_name,lastName:item.last_name,ticketCode:item.ticket_code,category:item.category,status:item.status==="USED"?"ENTERED":"PENDING",checkedInAt:iso(item.first_check_in_at)}))};
   },
   async applyPaymentDisposition(providerOrderId:string,paymentStatus:"FAILED"|"REFUNDED",ticketStatus:"CANCELLED"|"REFUNDED"){await withTransaction(async client=>{const result=await client.query<OrderRow>("UPDATE ticketing_orders SET payment_status=$2,updated_at=NOW() WHERE provider_order_id=$1 AND payment_status<>'CANCELLED' RETURNING *",[providerOrderId,paymentStatus]);if(result.rows[0])await client.query("UPDATE ticketing_tickets SET status=$2,updated_at=NOW() WHERE order_id=$1",[result.rows[0].id,ticketStatus]);});},
   async findTicket(lookup:TicketLookup){const column=lookup.ticketCode?"ticket_code":"qr_token";const value=lookup.ticketCode??lookup.qrToken;if(!value)return null;const result=await query<TicketRow>(`SELECT * FROM ticketing_tickets WHERE ${column}=$1`,[value]);return result.rows[0]?mapTicket(result.rows[0]):null;},

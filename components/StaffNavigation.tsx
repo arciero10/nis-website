@@ -6,7 +6,7 @@ import {useState} from "react";
 
 const links=[
   {href:"/checkin",label:"Scanner"},
-  {href:"/staff/cerca",label:"Cerca ticket"},
+  {href:"/staff/partecipanti",label:"Partecipanti"},
   {href:"/staff/ingressi",label:"Ingressi"},
 ];
 
