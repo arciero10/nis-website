@@ -19,6 +19,9 @@ export type InvitationCredential={accessToken:string;publicSlug?:never}|{accessT
 export type CheckoutRecord={event:Event;invitation:Invitation;participants:OrderParticipant[];order:Order};
 export type TicketConfirmation={event:Event;attendees:Attendee[];order:Order;tickets:Ticket[]};
 export type StaffCheckInResponse={status:"AUTHORIZED"|"ALREADY_USED";firstName:string;lastName:string;ticketCode:string;category:Ticket["category"];checkedInAt:string}|{status:"INVALID"};
+export type StaffTicketSearchResult={firstName:string;lastName:string;ticketCode:string;category:Ticket["category"];status:"VALID"|"USED";checkedInAt:string|null};
+export type StaffIngressEntry={firstName:string;lastName:string;ticketCode:string;category:Ticket["category"];checkedInAt:string};
+export type StaffIngressDashboard={totalIssued:number;totalCheckedIn:number;totalPending:number;entries:StaffIngressEntry[]};
 
 export class TicketingConflictError extends Error{
   constructor(public code:"INVITATION_UNAVAILABLE"|"SOLD_OUT"|"PAYMENT_MISMATCH"|"INVALID_QUANTITY",message:string){super(message);this.name="TicketingConflictError";}
@@ -44,6 +47,22 @@ async function loadConfirmation(client:PoolClient,order:Order):Promise<TicketCon
   if(!event||attendees.length!==tickets.length||tickets.length===0) throw new Error("Conferma ordine incompleta nel database.");
   return {event,attendees,order,tickets};
 }
+
+async function performTicketCheckIn(column:"qr_token"|"ticket_code",value:string):Promise<StaffCheckInResponse>{
+  return withTransaction(async client=>{
+    const result=await client.query<CheckInTicketRow>(`SELECT ticket.*,attendee.first_name,attendee.last_name,event.status AS event_status,orders.payment_status FROM ticketing_tickets ticket JOIN ticketing_attendees attendee ON attendee.id=ticket.attendee_id JOIN ticketing_events event ON event.id=ticket.event_id JOIN ticketing_orders orders ON orders.id=ticket.order_id WHERE ticket.${column}=$1 FOR UPDATE OF ticket`,[value]);
+    const row=result.rows[0];if(!row)return {status:"INVALID"};
+    const ticket=mapTicket(row);const eligibility=checkInEligibility({ticketStatus:ticket.status,firstCheckInAt:ticket.firstCheckInAt,paymentStatus:row.payment_status,eventStatus:row.event_status});
+    if(eligibility==="INVALID")return {status:"INVALID"};
+    if(eligibility==="ALREADY_USED")return {status:"ALREADY_USED",firstName:row.first_name,lastName:row.last_name,ticketCode:ticket.ticketCode,category:ticket.category,checkedInAt:ticket.firstCheckInAt??ticket.lastCheckInAt??ticket.updatedAt};
+
+    const update=await client.query<{first_check_in_at:Date}>("UPDATE ticketing_tickets SET status='USED',first_check_in_at=NOW(),last_check_in_at=NOW(),updated_at=NOW() WHERE id=$1 RETURNING first_check_in_at",[ticket.id]);const checkedInAt=update.rows[0].first_check_in_at;
+    await client.query("INSERT INTO ticketing_check_ins(id,ticket_id,checked_in_at,result) VALUES($1,$2,$3,'ALLOWED')",[randomUUID(),ticket.id,checkedInAt]);
+    return {status:"AUTHORIZED",firstName:row.first_name,lastName:row.last_name,ticketCode:ticket.ticketCode,category:ticket.category,checkedInAt:checkedInAt.toISOString()};
+  });
+}
+
+const staffSearchPattern=(value:string)=>`%${value.replace(/[\\%_]/g,"\\$&")}%`;
 
 export const ticketingRepository={
   async findEventBySlug(slug:string){const result=await query<EventRow>("SELECT * FROM ticketing_events WHERE slug=$1",[slug]);return result.rows[0]?mapEvent(result.rows[0]):null;},
@@ -121,17 +140,22 @@ export const ticketingRepository={
     return withTransaction(async client=>{const ticketResult=await client.query<TicketRow>("SELECT * FROM ticketing_tickets WHERE qr_token=$1",[qrToken]);if(!ticketResult.rows[0])return null;const orderResult=await client.query<OrderRow>("SELECT * FROM ticketing_orders WHERE id=$1",[ticketResult.rows[0].order_id]);if(!orderResult.rows[0])return null;return loadConfirmation(client,mapOrder(orderResult.rows[0]));});
   },
   async checkInByQrToken(qrToken:string):Promise<StaffCheckInResponse>{
-    return withTransaction(async client=>{
-      const result=await client.query<CheckInTicketRow>("SELECT ticket.*,attendee.first_name,attendee.last_name,event.status AS event_status,orders.payment_status FROM ticketing_tickets ticket JOIN ticketing_attendees attendee ON attendee.id=ticket.attendee_id JOIN ticketing_events event ON event.id=ticket.event_id JOIN ticketing_orders orders ON orders.id=ticket.order_id WHERE ticket.qr_token=$1 FOR UPDATE OF ticket",[qrToken]);
-      const row=result.rows[0];if(!row)return {status:"INVALID"};
-      const ticket=mapTicket(row);const eligibility=checkInEligibility({ticketStatus:ticket.status,firstCheckInAt:ticket.firstCheckInAt,paymentStatus:row.payment_status,eventStatus:row.event_status});
-      if(eligibility==="INVALID")return {status:"INVALID"};
-      if(eligibility==="ALREADY_USED")return {status:"ALREADY_USED",firstName:row.first_name,lastName:row.last_name,ticketCode:ticket.ticketCode,category:ticket.category,checkedInAt:ticket.firstCheckInAt??ticket.lastCheckInAt??ticket.updatedAt};
-
-      const update=await client.query<{first_check_in_at:Date}>("UPDATE ticketing_tickets SET status='USED',first_check_in_at=NOW(),last_check_in_at=NOW(),updated_at=NOW() WHERE id=$1 RETURNING first_check_in_at",[ticket.id]);const checkedInAt=update.rows[0].first_check_in_at;
-      await client.query("INSERT INTO ticketing_check_ins(id,ticket_id,checked_in_at,result) VALUES($1,$2,$3,'ALLOWED')",[randomUUID(),ticket.id,checkedInAt]);
-      return {status:"AUTHORIZED",firstName:row.first_name,lastName:row.last_name,ticketCode:ticket.ticketCode,category:ticket.category,checkedInAt:checkedInAt.toISOString()};
-    });
+    return performTicketCheckIn("qr_token",qrToken);
+  },
+  async checkInByTicketCode(ticketCode:string):Promise<StaffCheckInResponse>{
+    return performTicketCheckIn("ticket_code",ticketCode);
+  },
+  async searchStaffTickets(eventSlug:string,search:string):Promise<StaffTicketSearchResult[]>{
+    const result=await query<{first_name:string;last_name:string;ticket_code:string;category:Ticket["category"];status:Ticket["status"];first_check_in_at:Date|null}>("SELECT attendee.first_name,attendee.last_name,ticket.ticket_code,ticket.category,ticket.status,ticket.first_check_in_at FROM ticketing_tickets ticket JOIN ticketing_attendees attendee ON attendee.id=ticket.attendee_id JOIN ticketing_events event ON event.id=ticket.event_id JOIN ticketing_orders orders ON orders.id=ticket.order_id WHERE event.slug=$1 AND orders.payment_status='PAID' AND ticket.status IN ('ACTIVE','USED') AND (attendee.first_name ILIKE $2 ESCAPE '\\' OR attendee.last_name ILIKE $2 ESCAPE '\\' OR ticket.ticket_code ILIKE $2 ESCAPE '\\') ORDER BY attendee.last_name,attendee.first_name,ticket.ticket_code LIMIT 50",[eventSlug,staffSearchPattern(search)]);
+    return result.rows.map(row=>({firstName:row.first_name,lastName:row.last_name,ticketCode:row.ticket_code,category:row.category,status:row.status==="USED"?"USED":"VALID",checkedInAt:iso(row.first_check_in_at)}));
+  },
+  async getStaffIngressDashboard(eventSlug:string):Promise<StaffIngressDashboard>{
+    const [counts,entries]=await Promise.all([
+      query<{total_issued:string;total_checked_in:string;total_pending:string}>("SELECT COUNT(*) FILTER (WHERE ticket.status IN ('ACTIVE','USED'))::text AS total_issued,COUNT(*) FILTER (WHERE ticket.status='USED')::text AS total_checked_in,COUNT(*) FILTER (WHERE ticket.status='ACTIVE')::text AS total_pending FROM ticketing_tickets ticket JOIN ticketing_events event ON event.id=ticket.event_id JOIN ticketing_orders orders ON orders.id=ticket.order_id WHERE event.slug=$1 AND orders.payment_status='PAID'",[eventSlug]),
+      query<{first_name:string;last_name:string;ticket_code:string;category:Ticket["category"];first_check_in_at:Date}>("SELECT attendee.first_name,attendee.last_name,ticket.ticket_code,ticket.category,ticket.first_check_in_at FROM ticketing_tickets ticket JOIN ticketing_attendees attendee ON attendee.id=ticket.attendee_id JOIN ticketing_events event ON event.id=ticket.event_id JOIN ticketing_orders orders ON orders.id=ticket.order_id WHERE event.slug=$1 AND orders.payment_status='PAID' AND ticket.status='USED' AND ticket.first_check_in_at IS NOT NULL ORDER BY ticket.first_check_in_at DESC",[eventSlug]),
+    ]);
+    const total=counts.rows[0]??{total_issued:"0",total_checked_in:"0",total_pending:"0"};
+    return {totalIssued:Number(total.total_issued),totalCheckedIn:Number(total.total_checked_in),totalPending:Number(total.total_pending),entries:entries.rows.map(row=>({firstName:row.first_name,lastName:row.last_name,ticketCode:row.ticket_code,category:row.category,checkedInAt:row.first_check_in_at.toISOString()}))};
   },
   async applyPaymentDisposition(providerOrderId:string,paymentStatus:"FAILED"|"REFUNDED",ticketStatus:"CANCELLED"|"REFUNDED"){await withTransaction(async client=>{const result=await client.query<OrderRow>("UPDATE ticketing_orders SET payment_status=$2,updated_at=NOW() WHERE provider_order_id=$1 AND payment_status<>'CANCELLED' RETURNING *",[providerOrderId,paymentStatus]);if(result.rows[0])await client.query("UPDATE ticketing_tickets SET status=$2,updated_at=NOW() WHERE order_id=$1",[result.rows[0].id,ticketStatus]);});},
   async findTicket(lookup:TicketLookup){const column=lookup.ticketCode?"ticket_code":"qr_token";const value=lookup.ticketCode??lookup.qrToken;if(!value)return null;const result=await query<TicketRow>(`SELECT * FROM ticketing_tickets WHERE ${column}=$1`,[value]);return result.rows[0]?mapTicket(result.rows[0]):null;},

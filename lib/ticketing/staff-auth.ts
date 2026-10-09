@@ -2,7 +2,7 @@ import {createHash,randomBytes,randomUUID,timingSafeEqual} from "node:crypto";
 import {query} from "@/lib/ticketing/db";
 
 export const CHECKIN_SESSION_COOKIE="nis_checkin_session";
-export const CHECKIN_SESSION_MAX_AGE=60*60*12;
+export const CHECKIN_SESSION_MAX_AGE=60*60*8;
 
 const hash=(value:string)=>createHash("sha256").update(value).digest("hex");
 const digest=(value:string)=>createHash("sha256").update(value).digest();
@@ -28,6 +28,11 @@ function cookieValue(request:Request){
 
 export async function hasValidStaffSession(request:Request){
   const token=cookieValue(request);if(!token)return false;
+  return hasValidStaffSessionToken(token);
+}
+
+export async function hasValidStaffSessionToken(token:string){
+  if(!token)return false;
   const result=await query("UPDATE ticketing_staff_sessions SET last_used_at=NOW() WHERE token_hash=$1 AND revoked_at IS NULL AND expires_at>NOW() RETURNING id",[hash(token)]);
   return Boolean(result.rowCount);
 }
