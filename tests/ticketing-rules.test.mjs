@@ -15,6 +15,9 @@ test("active invitation",()=>assert.equal(invitationBlockReason(invitation),null
 test("disabled invitation",()=>assert.equal(invitationBlockReason({...invitation,status:"DISABLED"}),"DISABLED"));
 test("expired invitation",()=>assert.equal(invitationBlockReason({...invitation,expiresAt:"2020-01-01T00:00:00.000Z"}),"EXPIRED"));
 test("exhausted invitation",()=>assert.equal(invitationBlockReason({...invitation,usedCount:2}),"MAX_USES_REACHED"));
+test("Gala invitation remains available after its first use",()=>assert.equal(invitationBlockReason({...invitation,maxUses:500,usedCount:1}),null));
+test("Gala invitation is exhausted only when used_count reaches max_uses",()=>{assert.equal(invitationBlockReason({...invitation,maxUses:500,usedCount:499}),null);assert.equal(invitationBlockReason({...invitation,maxUses:500,usedCount:500}),"MAX_USES_REACHED");});
+test("Gala invitation migration preserves used_count and only expands max_uses",async()=>{const migration=await readFile(new URL("../migrations/006_gala_invitation_capacity.sql",import.meta.url),"utf8");assert.match(migration,/SET max_uses = 500/);assert.match(migration,/public_slug = 'gala-2026'/);assert.match(migration,/event\.slug = 'nis-gala-2026'/);assert.doesNotMatch(migration,/SET[\s\S]*used_count\s*=/i);});
 test("capture requires exact status, currency and amount",()=>{assert.equal(validateCompletedPayment({status:"COMPLETED",amount:"200.00",currency:"EUR"},"200.00"),true);assert.equal(validateCompletedPayment({status:"COMPLETED",amount:"199.99",currency:"EUR"},"200.00"),false);assert.equal(validateCompletedPayment({status:"PENDING",amount:"200.00",currency:"EUR"},"200.00"),false);});
 test("refund and denial dispositions",()=>{assert.deepEqual(statusAfterCaptureEvent("PAYMENT.CAPTURE.REFUNDED"),{paymentStatus:"REFUNDED",ticketStatus:"REFUNDED"});assert.deepEqual(statusAfterCaptureEvent("PAYMENT.CAPTURE.DENIED"),{paymentStatus:"FAILED",ticketStatus:"CANCELLED"});});
 test("1 ticket costs 200 EUR",()=>assert.equal(orderAmountForQuantity(200,1),200));
@@ -28,6 +31,7 @@ test("N participants produce N tickets",()=>assert.equal(ticketsToIssue(5,0),5))
 test("capture retry produces no duplicate ticket",()=>assert.equal(ticketsToIssue(5,5),0));
 test("used_count increases once independently from ticket count",()=>{assert.equal(invitationUsesAfterOrder(0),1);assert.equal(invitationUsesAfterOrder(7),8);});
 test("Gala capacity is 300 and availability is based on issued tickets",async()=>{const migration=await readFile(new URL("../migrations/005_gala_capacity.sql",import.meta.url),"utf8");assert.match(migration,/capacity = 300/);assert.equal(availableTicketCapacity(300,57),243);});
+test("event capacity remains independent from invitation max_uses",()=>{assert.equal(availableTicketCapacity(300,1),299);assert.equal(invitationBlockReason({...invitation,maxUses:500,usedCount:1}),null);assert.equal(hasTicketCapacity(300,299,2),false);});
 test("a multi-ticket order reserves the correct number of seats",()=>{assert.equal(availableTicketCapacity(300,100,4),196);assert.equal(hasTicketCapacity(300,296,4),true);});
 test("capacity cannot be exceeded and sold out rejects checkout",()=>{assert.equal(hasTicketCapacity(300,297,4),false);assert.equal(hasTicketCapacity(300,300,1),false);assert.equal(availableTicketCapacity(300,300),0);});
 test("events without a capacity remain unlimited",()=>{assert.equal(availableTicketCapacity(null,999),null);assert.equal(hasTicketCapacity(null,999,10),true);});
