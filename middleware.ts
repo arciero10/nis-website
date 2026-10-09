@@ -9,6 +9,9 @@ const legacyRedirects:Record<string,string>={
   "/missione":"/chi-siamo",
   "/discipline":"/settori",
   "/sponsor":"/partner",
+  "/privacy-policy/privacy-policy":"/privacy-policy",
+  "/info-contatti/privacy-policy":"/privacy-policy",
+  "/donations":"/dona",
 };
 
 export function middleware(request:NextRequest){
@@ -16,18 +19,21 @@ export function middleware(request:NextRequest){
   const requestHost=forwardedHost||request.headers.get("host")||request.nextUrl.hostname;
   const hostname=requestHost.split(":")[0].toLowerCase();
 
-  const normalizedPath=request.nextUrl.pathname.length>1?request.nextUrl.pathname.replace(/\/+$/,""):request.nextUrl.pathname;
+  const hasTrailingSlash=request.nextUrl.pathname.length>1&&request.nextUrl.pathname.endsWith("/");
+  const normalizedPath=hasTrailingSlash?request.nextUrl.pathname.replace(/\/+$/,""):request.nextUrl.pathname;
   const canonicalPath=legacyRedirects[normalizedPath];
 
-  if(hostname!==apexHost&&!canonicalPath){
+  if(hostname!==apexHost&&!canonicalPath&&!hasTrailingSlash){
     return NextResponse.next();
   }
 
-  const destination=request.nextUrl.clone();
-  destination.protocol="https:";
-  if(hostname===apexHost||canonicalPath)destination.hostname=canonicalHost;
-  destination.port="";
-  if(canonicalPath)destination.pathname=canonicalPath;
+  const useCanonicalHost=hostname===apexHost||Boolean(canonicalPath);
+  const destinationHost=useCanonicalHost?canonicalHost:requestHost;
+  const destinationProtocol=useCanonicalHost?"https:":request.nextUrl.protocol;
+  const destination=new URL(
+    `${canonicalPath||normalizedPath}${request.nextUrl.search}`,
+    `${destinationProtocol}//${destinationHost}`,
+  );
 
   return NextResponse.redirect(destination,301);
 }

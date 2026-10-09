@@ -3,6 +3,7 @@
 const nextConfig: NextConfig = {
   output: "standalone",
   outputFileTracingRoot: process.cwd(),
+  skipTrailingSlashRedirect: true,
   images: {
     unoptimized: true,
   },
