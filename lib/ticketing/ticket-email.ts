@@ -1,5 +1,6 @@
 import {getEmailProvider} from "@/lib/email/provider";
 import {buildTicketEmailContent} from "@/lib/ticketing/email-content";
+import {buildPartnerInvitationEmailContent} from "@/lib/ticketing/partner-email-content";
 import {ticketingRepository,type TicketConfirmation,type TicketEmailPayload} from "@/lib/ticketing/repository";
 
 export async function deliverTicketEmail(payload:TicketEmailPayload,force=false){
@@ -14,3 +15,11 @@ export async function deliverConfirmationTicketEmails(confirmation:TicketConfirm
 }
 
 export async function resendTicketEmail(ticketCode:string){const payload=await ticketingRepository.findTicketEmailPayload(ticketCode);if(!payload)return {status:"NOT_FOUND" as const};return deliverTicketEmail(payload,true);}
+
+export async function deliverPartnerAllocationEmail(allocationId:string,force=false){
+  const payload=await ticketingRepository.findPartnerAllocationEmailPayload(allocationId);if(!payload)return {status:"NOT_FOUND" as const};
+  try{if(!await ticketingRepository.claimPartnerAllocationEmail(allocationId,force))return {status:"SKIPPED" as const};}
+  catch{console.error("Partner invitation email claim failed");return {status:"FAILED" as const};}
+  try{const content=buildPartnerInvitationEmailContent({companyName:payload.companyName,tickets:payload.tickets});await getEmailProvider().send({to:payload.contactEmail,subject:content.subject,text:content.text,html:content.html});await ticketingRepository.markPartnerAllocationEmailSent(allocationId);return {status:"SENT" as const};}
+  catch(error){try{await ticketingRepository.markPartnerAllocationEmailFailed(allocationId,error instanceof Error?error.message:"Errore provider email");}catch{console.error("Partner invitation email failure state could not be saved");}console.error("Partner invitation email delivery failed");return {status:"FAILED" as const};}
+}

@@ -32,7 +32,7 @@ export default function StaffTicketSearch(){
       const result=await response.json() as StaffCheckInResponse;
       if(result.status==="INVALID"){setMessage("Il biglietto non è valido.");return;}
       setResults(current=>current.map(ticket=>ticket.ticketCode===ticketCode?{...ticket,status:"USED",checkedInAt:result.checkedInAt}:ticket));
-      setMessage(result.status==="AUTHORIZED"?`Ingresso registrato per ${result.firstName} ${result.lastName}.`:`Biglietto già utilizzato da ${result.firstName} ${result.lastName}.`);
+      const holder=result.category==="PARTNER"?result.companyName:`${result.firstName} ${result.lastName}`;setMessage(result.status==="AUTHORIZED"?`Ingresso registrato per ${holder}.`:`Biglietto già utilizzato da ${holder}.`);
     }catch{setMessage("Non è stato possibile registrare l'ingresso.");}finally{setCheckingCode(null);}
   }
 
@@ -40,7 +40,7 @@ export default function StaffTicketSearch(){
     <form onSubmit={search} role="search"><label htmlFor="staff-ticket-query">Nome, cognome o codice ticket</label><div><input id="staff-ticket-query" name="query" type="search" minLength={2} maxLength={100} autoComplete="off" placeholder="Es. Rossi o NIS26-..." required/><button type="submit" disabled={loading}>{loading?"RICERCA...":"CERCA"}</button></div></form>
     {message&&<p className="staff-feedback" role="status">{message}</p>}
     <div className="staff-search-results">
-      {results.map(ticket=><article key={ticket.ticketCode}><div><span className={`staff-ticket-state ${ticket.status==="VALID"?"is-valid":"is-used"}`}>{ticket.status==="VALID"?"VALIDO":"GIÀ UTILIZZATO"}</span><h2>{ticket.firstName} {ticket.lastName}</h2><p>{ticket.ticketCode} · {ticket.source==="PARTNER"?`INVITO PARTNER · ${ticket.companyName}`:ticket.category}</p>{ticket.checkedInAt&&<time dateTime={ticket.checkedInAt}>Ingresso: {formatDateTime(ticket.checkedInAt)}</time>}</div>{ticket.status==="VALID"&&<button type="button" onClick={()=>checkIn(ticket.ticketCode)} disabled={checkingCode===ticket.ticketCode}>{checkingCode===ticket.ticketCode?"REGISTRAZIONE...":"REGISTRA INGRESSO"}</button>}</article>)}
+      {results.map(ticket=><article key={ticket.ticketCode}><div><span className={`staff-ticket-state ${ticket.status==="VALID"?"is-valid":"is-used"}`}>{ticket.status==="VALID"?"VALIDO":"GIÀ UTILIZZATO"}</span><h2>{ticket.source==="PARTNER"?ticket.companyName:`${ticket.firstName} ${ticket.lastName}`}</h2><p>{ticket.ticketCode} · {ticket.source==="PARTNER"?`INVITO PARTNER · Ingresso ${ticket.sequenceNumber??1} di ${ticket.totalQuantity??1}`:ticket.category}</p>{ticket.checkedInAt&&<time dateTime={ticket.checkedInAt}>Ingresso: {formatDateTime(ticket.checkedInAt)}</time>}</div>{ticket.status==="VALID"&&<button type="button" onClick={()=>checkIn(ticket.ticketCode)} disabled={checkingCode===ticket.ticketCode}>{checkingCode===ticket.ticketCode?"REGISTRAZIONE...":"REGISTRA INGRESSO"}</button>}</article>)}
     </div>
   </div>;
 }

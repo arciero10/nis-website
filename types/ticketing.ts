@@ -93,6 +93,8 @@ export interface Ticket{
   category:TicketCategory;
   accessMode:AccessMode;
   status:TicketStatus;
+  sequenceNumber:number|null;
+  totalQuantity:number|null;
   createdAt:IsoDateTime;
   updatedAt:IsoDateTime;
   firstCheckInAt:IsoDateTime|null;
@@ -103,10 +105,15 @@ export interface PartnerAllocation{
   id:string;
   eventId:string;
   companyName:string;
+  contactEmail:string|null;
   packageName:string|null;
   partnershipAmountCents:number|null;
   allocatedQuantity:number;
   status:"ACTIVE"|"CANCELLED";
+  emailDeliveryStatus:"PENDING"|"SENT"|"FAILED";
+  emailSentAt:IsoDateTime|null;
+  emailSendAttempts:number;
+  emailLastError:string|null;
   notes:string|null;
   createdAt:IsoDateTime;
   updatedAt:IsoDateTime;

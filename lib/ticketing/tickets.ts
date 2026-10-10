@@ -28,6 +28,8 @@ export function issueStandardTicket({
     category:"STANDARD",
     accessMode:"ONE_SHOT",
     status:"ACTIVE",
+    sequenceNumber:null,
+    totalQuantity:null,
     createdAt:createdAt.toISOString(),
     updatedAt:createdAt.toISOString(),
     firstCheckInAt:null,
