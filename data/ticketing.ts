@@ -23,6 +23,8 @@ export const nisGala2026:Event={
   location:null,
   eventDate:null,
   doorsOpenAt:null,
+  checkinOpensAt:null,
+  checkinClosesAt:null,
   price:200,
   currency:"EUR",
   capacity:null,

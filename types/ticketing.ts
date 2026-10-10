@@ -17,6 +17,9 @@ export type TicketStatus=(typeof TICKET_STATUSES)[number];
 
 export const CHECK_IN_RESULTS=["ALLOWED","ALREADY_USED","INVALID","CANCELLED"] as const;
 export type CheckInResult=(typeof CHECK_IN_RESULTS)[number];
+export type StaffRole="STAFF"|"SUPERADMIN";
+export type CheckInMethod="QR"|"MANUAL";
+export type CheckInStatus="ACTIVE"|"REVERSED";
 
 export const INVITATION_STATUSES=["ACTIVE","DISABLED","EXPIRED"] as const;
 export type InvitationStatus=(typeof INVITATION_STATUSES)[number];
@@ -29,6 +32,8 @@ export interface Event{
   location:string|null;
   eventDate:IsoDateTime|null;
   doorsOpenAt:IsoDateTime|null;
+  checkinOpensAt:IsoDateTime|null;
+  checkinClosesAt:IsoDateTime|null;
   price:number;
   currency:"EUR";
   capacity:number|null;
@@ -122,8 +127,20 @@ export interface PartnerAllocation{
 export interface CheckIn{
   id:string;
   ticketId:string;
+  eventId:string;
   checkedInAt:IsoDateTime;
   result:CheckInResult;
+  checkedInByStaffId:string|null;
+  checkedInByDisplayName:string|null;
+  checkinMethod:CheckInMethod;
+  sessionId:string|null;
+  status:CheckInStatus;
+  windowBypassed:boolean;
+  reversedAt:IsoDateTime|null;
+  reversedByStaffId:string|null;
+  reversedByDisplayName:string|null;
+  reverseReason:string|null;
+  reverseSessionId:string|null;
 }
 
 export interface Invitation{

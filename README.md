@@ -56,6 +56,28 @@ L'App Registration Microsoft Entra deve avere il permesso **Microsoft Graph > Ap
 
 Tutte le variabili sono esclusivamente server-side. Il client secret e gli access token non devono essere esposti nel browser, nelle risposte API o nei log.
 
+## Ruoli e finestra check-in NIS Gala
+
+L'accesso operativo usa sessioni server-side di 8 ore. Configurare PIN distinti per i due ruoli:
+
+```text
+NIS_STAFF_PIN=
+NIS_SUPERADMIN_PIN=
+NIS_STAFF_DISPLAY_NAME=Staff
+NIS_SUPERADMIN_DISPLAY_NAME=Superadmin
+```
+
+`STAFF` può verificare e confermare gli ingressi. `SUPERADMIN` può inoltre annullare un check-in mantenendone l'audit e, con conferma esplicita, superare la finestra operativa.
+
+La finestra può essere salvata nelle colonne evento `checkin_opens_at` e `checkin_closes_at` oppure impostata per il Gala tramite variabili server-side in formato ISO 8601, per esempio `2026-10-28T17:00:00+01:00`:
+
+```text
+NIS_GALA_CHECKIN_OPENS_AT=
+NIS_GALA_CHECKIN_CLOSES_AT=
+```
+
+Se le variabili sono valorizzate prevalgono sui valori del database. I PIN, il ruolo e gli identificativi operatore non vengono mai salvati nel browser.
+
 ## Pulizia dati PayPal Sandbox
 
 La migration `008_paypal_provider_environment.sql` aggiunge agli ordini il marker tecnico `SANDBOX`/`LIVE`. Gli ordini preesistenti vengono marcati `SANDBOX` perché le versioni precedenti dell'integrazione accettavano esclusivamente PayPal Sandbox.
