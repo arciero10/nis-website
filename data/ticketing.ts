@@ -1,7 +1,7 @@
 import type {Event} from "@/types/ticketing";
 
 export const NIS_GALA_PRIVATE_INVITATION_URL="https://www.nazionaleitalianasanitari.com/i/gala-2026";
-export const NIS_GALA_SOCIAL_IMAGE="https://www.nazionaleitalianasanitari.com/og-nis-social.png";
+export const NIS_GALA_SOCIAL_IMAGE="https://www.nazionaleitalianasanitari.com/images/nis-gala-2026-og.png";
 
 export const NIS_GALA_DETAILS={
   dateLabel:"28 ottobre 2026",
