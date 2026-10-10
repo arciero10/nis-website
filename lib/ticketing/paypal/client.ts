@@ -1,31 +1,29 @@
 import {validateCompletedPayment} from "@/lib/ticketing/rules";
+import {resolvePayPalEnvironment,type PayPalProviderEnvironment} from "@/lib/ticketing/paypal/environment";
 
-const bases={sandbox:"https://api-m.sandbox.paypal.com",live:"https://api-m.paypal.com"} as const;
-let cachedToken:{value:string;expiresAt:number}|null=null;
+let cachedToken:{value:string;expiresAt:number;configurationKey:string}|null=null;
 
-export function payPalEnvironment():"SANDBOX"{
-  const environment=process.env.PAYPAL_ENV?.trim()||"sandbox";
-  if(environment!=="sandbox") throw new Error("NIS Ticketing consente solo PAYPAL_ENV=sandbox in questo blocco.");
-  return "SANDBOX";
+export function payPalEnvironment():PayPalProviderEnvironment{
+  return resolvePayPalEnvironment(process.env.PAYPAL_ENV).providerEnvironment;
 }
 
 function config(){
-  payPalEnvironment();
+  const environment=resolvePayPalEnvironment(process.env.PAYPAL_ENV);
   const clientId=process.env.PAYPAL_CLIENT_ID?.trim();const secret=process.env.PAYPAL_CLIENT_SECRET?.trim();
-  if(!clientId||!secret) throw new Error("Credenziali PayPal Sandbox non configurate.");
-  return {base:bases.sandbox,clientId,secret};
+  if(!clientId||!secret) throw new Error(`Credenziali PayPal ${environment.environment} non configurate.`);
+  return {...environment,clientId,secret,configurationKey:`${environment.environment}:${clientId}`};
 }
 
-async function accessToken(){
-  if(cachedToken&&cachedToken.expiresAt>Date.now()+30_000) return cachedToken.value;
-  const {base,clientId,secret}=config();
+async function accessToken(configuration:ReturnType<typeof config>){
+  if(cachedToken&&cachedToken.configurationKey===configuration.configurationKey&&cachedToken.expiresAt>Date.now()+30_000) return cachedToken.value;
+  const {base,clientId,secret,configurationKey}=configuration;
   const response=await fetch(`${base}/v1/oauth2/token`,{method:"POST",headers:{Authorization:`Basic ${Buffer.from(`${clientId}:${secret}`).toString("base64")}`,"Content-Type":"application/x-www-form-urlencoded"},body:"grant_type=client_credentials",cache:"no-store"});
   if(!response.ok) throw new Error(`Autenticazione PayPal non riuscita (${response.status}).`);
-  const body=await response.json() as {access_token:string;expires_in:number};cachedToken={value:body.access_token,expiresAt:Date.now()+body.expires_in*1000};return body.access_token;
+  const body=await response.json() as {access_token:string;expires_in:number};cachedToken={value:body.access_token,expiresAt:Date.now()+body.expires_in*1000,configurationKey};return body.access_token;
 }
 
 async function paypalFetch(path:string,init:RequestInit={}){
-  const token=await accessToken();const {base}=config();
+  const configuration=config();const token=await accessToken(configuration);const {base}=configuration;
   return fetch(`${base}${path}`,{...init,headers:{Authorization:`Bearer ${token}`,"Content-Type":"application/json",...(init.headers??{})},cache:"no-store"});
 }
 
