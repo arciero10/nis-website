@@ -1,17 +1,44 @@
 "use client";
 
 import Link from "next/link";
-import {FormEvent,useCallback,useEffect,useState} from "react";
+import {FormEvent,useCallback,useEffect,useMemo,useState} from "react";
+import {allocationTypeLabel} from "@/lib/ticketing/presentation";
 import type {PartnerAllocationSummary} from "@/lib/ticketing/repository";
+import type {AllocationType} from "@/types/ticketing";
 
+type AllocationFilter="ALL"|AllocationType;
+const allocationFilters:AllocationFilter[]=["ALL","SPONSOR","DONATORE","AZIENDA","OSPITE"];
 const formatAmount=(value:number|null)=>value===null?"Importo non indicato":new Intl.NumberFormat("it-IT",{style:"currency",currency:"EUR"}).format(value/100);
 
 export default function StaffPartnerDashboard(){
-  const [allocations,setAllocations]=useState<PartnerAllocationSummary[]>([]);const [loading,setLoading]=useState(true);const [saving,setSaving]=useState(false);const [message,setMessage]=useState("");
-  const load=useCallback(async()=>{setLoading(true);try{const response=await fetch("/api/ticketing/staff/partner",{cache:"no-store"});if(response.status===401){window.location.assign("/checkin");return;}if(!response.ok)throw new Error();const body=await response.json() as {allocations:PartnerAllocationSummary[]};setAllocations(body.allocations);setMessage("");}catch{setMessage("Non è stato possibile caricare le assegnazioni partner.");}finally{setLoading(false);}},[]);
+  const [allocations,setAllocations]=useState<PartnerAllocationSummary[]>([]);
+  const [filter,setFilter]=useState<AllocationFilter>("ALL");
+  const [loading,setLoading]=useState(true);
+  const [saving,setSaving]=useState(false);
+  const [message,setMessage]=useState("");
+  const visibleAllocations=useMemo(()=>filter==="ALL"?allocations:allocations.filter(item=>item.allocationType===filter),[allocations,filter]);
+
+  const load=useCallback(async()=>{setLoading(true);try{const response=await fetch("/api/ticketing/staff/partner",{cache:"no-store"});if(response.status===401){window.location.assign("/checkin");return;}if(!response.ok)throw new Error();const body=await response.json() as {allocations:PartnerAllocationSummary[]};setAllocations(body.allocations);setMessage("");}catch{setMessage("Non è stato possibile caricare le assegnazioni aziendali.");}finally{setLoading(false);}},[]);
   useEffect(()=>{void load();},[load]);
 
-  async function create(event:FormEvent<HTMLFormElement>){event.preventDefault();setSaving(true);setMessage("");const form=event.currentTarget;const data=new FormData(form);try{const response=await fetch("/api/ticketing/staff/partner",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({companyName:data.get("companyName"),contactEmail:data.get("contactEmail"),packageName:data.get("packageName"),partnershipAmount:data.get("partnershipAmount"),allocatedQuantity:Number(data.get("allocatedQuantity")),notes:data.get("notes")})});if(response.status===401){window.location.assign("/checkin");return;}const body=await response.json() as {message?:string};if(!response.ok)throw new Error(body.message||"Creazione non riuscita.");form.reset();setMessage(body.message||"Assegnazione Partner creata.");await load();}catch(error){setMessage(error instanceof Error?error.message:"Non è stato possibile creare l'assegnazione.");}finally{setSaving(false);}}
+  async function create(event:FormEvent<HTMLFormElement>){
+    event.preventDefault();setSaving(true);setMessage("");const form=event.currentTarget;const data=new FormData(form);
+    try{
+      const response=await fetch("/api/ticketing/staff/partner",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({companyName:data.get("companyName"),contactEmail:data.get("contactEmail"),allocationType:data.get("allocationType"),packageName:data.get("packageName"),partnershipAmount:data.get("partnershipAmount"),allocatedQuantity:Number(data.get("allocatedQuantity")),notes:data.get("notes")})});
+      if(response.status===401){window.location.assign("/checkin");return;}
+      const body=await response.json() as {message?:string};if(!response.ok)throw new Error(body.message||"Creazione non riuscita.");form.reset();setMessage(body.message||"Assegnazione aziendale creata.");await load();
+    }catch(error){setMessage(error instanceof Error?error.message:"Non è stato possibile creare l'assegnazione.");}finally{setSaving(false);}
+  }
 
-  return <div className="staff-partner-layout"><section className="staff-partner-form"><h2>Nuova assegnazione Partner</h2><form onSubmit={create}><label><span>Società *</span><input name="companyName" maxLength={160} required/></label><label><span>Email referente società *</span><input name="contactEmail" type="email" maxLength={160} required/></label><label><span>Pacchetto / partnership</span><input name="packageName" maxLength={120}/></label><div><label><span>Importo partnership</span><input name="partnershipAmount" type="number" inputMode="decimal" min="0" step="0.01"/></label><label><span>Numero biglietti inclusi *</span><input name="allocatedQuantity" type="number" inputMode="numeric" min="1" max="10000" required/></label></div><label><span>Note</span><textarea name="notes" maxLength={2000} rows={4}/></label><button type="submit" disabled={saving}>{saving?"CREAZIONE TICKET...":"CREA ASSEGNAZIONE E TICKET"}</button></form></section>{message&&<p className="staff-feedback" role="status">{message}</p>}<section className="staff-partner-list" aria-label="Assegnazioni partner">{loading?<p className="staff-empty">Aggiornamento partner...</p>:allocations.length===0?<p className="staff-empty">Nessuna assegnazione partner presente.</p>:allocations.map(allocation=><article key={allocation.id} className={allocation.status==="CANCELLED"?"is-cancelled":""}><div><span>{allocation.status==="ACTIVE"?"ATTIVO":"ANNULLATO"}</span><h2>{allocation.companyName}</h2><p>{allocation.contactEmail||"Email referente non disponibile"}</p><p>{allocation.packageName||"Partnership senza pacchetto"} · {formatAmount(allocation.partnershipAmountCents)}</p></div><dl><div><dt>Assegnati</dt><dd>{allocation.allocatedQuantity}</dd></div><div><dt>Emessi</dt><dd>{allocation.ticketCount}</dd></div><div><dt>Utilizzati</dt><dd>{allocation.usedCount}</dd></div><div><dt>Validi</dt><dd>{allocation.validCount}</dd></div></dl><p className="staff-partner-email-state">Email: {allocation.emailDeliveryStatus==="SENT"?"INVIATA":allocation.emailDeliveryStatus==="FAILED"?"INVIO FALLITO":"DA INVIARE"}</p><Link href={`/staff/partner/${allocation.id}`}>GESTISCI</Link></article>)}</section></div>;
+  return <div className="staff-partner-layout"><section className="staff-partner-form"><h2>Nuova assegnazione aziendale</h2><form onSubmit={create}>
+    <label><span>Società *</span><input name="companyName" maxLength={160} required/></label>
+    <label><span>Email referente *</span><input name="contactEmail" type="email" maxLength={160} required/></label>
+    <label><span>Tipo assegnazione *</span><select name="allocationType" defaultValue="AZIENDA" required><option value="SPONSOR">Sponsor</option><option value="DONATORE">Donatore</option><option value="AZIENDA">Azienda</option><option value="OSPITE">Ospite</option></select></label>
+    <label><span>Pacchetto / descrizione</span><input name="packageName" maxLength={120}/></label>
+    <div><label><span>Importo partnership</span><input name="partnershipAmount" type="number" inputMode="decimal" min="0" step="0.01"/></label><label><span>Biglietti inclusi *</span><input name="allocatedQuantity" type="number" inputMode="numeric" min="1" max="10000" required/></label></div>
+    <label><span>Note</span><textarea name="notes" maxLength={2000} rows={4}/></label>
+    <button type="submit" disabled={saving}>{saving?"CREAZIONE TICKET...":"CREA ASSEGNAZIONE E TICKET"}</button>
+  </form></section>{message&&<p className="staff-feedback" role="status">{message}</p>}
+  <div className="staff-allocation-filters" aria-label="Filtra per tipo assegnazione">{allocationFilters.map(value=><button key={value} type="button" className={filter===value?"is-active":""} aria-pressed={filter===value} onClick={()=>setFilter(value)}>{value==="ALL"?"Tutti":allocationTypeLabel(value)}</button>)}</div>
+  <section className="staff-partner-list" aria-label="Assegnazioni aziendali">{loading?<p className="staff-empty">Aggiornamento assegnazioni...</p>:visibleAllocations.length===0?<p className="staff-empty">Nessuna assegnazione presente per questo filtro.</p>:visibleAllocations.map(allocation=><article key={allocation.id} className={allocation.status==="CANCELLED"?"is-cancelled":""}><div><span>{allocation.status==="ACTIVE"?"ATTIVO":"ANNULLATO"}</span><h2>{allocation.companyName}</h2><p><strong>Tipo:</strong> {allocationTypeLabel(allocation.allocationType)}</p><p>{allocation.contactEmail||"Email referente non disponibile"}</p><p>{allocation.packageName||"Nessuna descrizione"} · {formatAmount(allocation.partnershipAmountCents)}</p></div><dl><div><dt>Assegnati</dt><dd>{allocation.allocatedQuantity}</dd></div><div><dt>Utilizzati</dt><dd>{allocation.usedCount}</dd></div><div><dt>Ancora validi</dt><dd>{allocation.validCount}</dd></div></dl><p className="staff-partner-email-state">Email: {allocation.emailDeliveryStatus==="SENT"?"INVIATA":allocation.emailDeliveryStatus==="FAILED"?"INVIO FALLITO":"DA INVIARE"}</p><Link href={`/staff/partner/${allocation.id}`}>GESTISCI</Link></article>)}</section></div>;
 }

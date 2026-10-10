@@ -1,4 +1,4 @@
-import type {TicketStatus} from "@/types/ticketing";
+import type {AllocationType,TicketStatus} from "@/types/ticketing";
 
 const productionOrigin="https://www.nazionaleitalianasanitari.com";
 
@@ -26,4 +26,11 @@ export function ticketStatusLabel(status:TicketStatus){
   if(status==="USED")return "GIÀ UTILIZZATO";
   if(status==="REFUNDED")return "RIMBORSATO";
   return "ANNULLATO";
+}
+
+export function allocationTypeLabel(type:AllocationType){
+  if(type==="SPONSOR")return "Sponsor";
+  if(type==="DONATORE")return "Donatore";
+  if(type==="OSPITE")return "Ospite";
+  return "Azienda";
 }

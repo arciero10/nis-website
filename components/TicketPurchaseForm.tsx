@@ -4,7 +4,7 @@ import Link from "next/link";
 import {FormEvent,useEffect,useRef,useState} from "react";
 
 type FormErrors=Record<string,string>;
-type ParticipantData={firstName:string;lastName:string;email:string;phone:string;company:string};
+type ParticipantData={firstName:string;lastName:string;email:string;phone:string};
 type PurchaseData={quantity:number;total:number;participants:ParticipantData[];privacyAccepted:true};
 type PayPalButtons={render:(element:HTMLElement)=>Promise<void>;close:()=>Promise<void>};
 type PayPalNamespace={Buttons:(options:{style:Record<string,unknown>;createOrder:()=>Promise<string>;onApprove:(data:{orderID:string})=>Promise<void>;onCancel:()=>void;onError:(error:unknown)=>void})=>PayPalButtons};
@@ -19,7 +19,7 @@ function readAndValidate(form:HTMLFormElement,quantity:number,unitPrice:number){
   for(let index=0;index<quantity;index++){
     const firstName=String(data.get(`firstName-${index}`)??"").trim();const lastName=String(data.get(`lastName-${index}`)??"").trim();const email=String(data.get(`email-${index}`)??"").trim();
     if(!firstName)errors[`firstName-${index}`]="Inserisci il nome.";if(!lastName)errors[`lastName-${index}`]="Inserisci il cognome.";if(!email)errors[`email-${index}`]="Inserisci l'indirizzo email.";else if(!emailPattern.test(email))errors[`email-${index}`]="Inserisci un indirizzo email valido.";
-    participants.push({firstName,lastName,email,phone:String(data.get(`phone-${index}`)??"").trim(),company:String(data.get(`company-${index}`)??"").trim()});
+    participants.push({firstName,lastName,email,phone:String(data.get(`phone-${index}`)??"").trim()});
   }
   if(data.get("privacy")!=="on")errors.privacy="Devi accettare l'informativa privacy per continuare.";
   return {errors,payload:{quantity,total:quantity*unitPrice,participants,privacyAccepted:true as const}};
@@ -41,7 +41,7 @@ export default function TicketPurchaseForm({accessToken,invitationAlias,paypalCl
       <label className="ticketing-field"><span>Nome *</span><input name={`firstName-${index}`} autoComplete={index===0?"given-name":"off"} maxLength={80} required disabled={locked} aria-invalid={Boolean(errors[`firstName-${index}`])} onChange={()=>clear(`firstName-${index}`)}/>{errors[`firstName-${index}`]&&<small>{errors[`firstName-${index}`]}</small>}</label>
       <label className="ticketing-field"><span>Cognome *</span><input name={`lastName-${index}`} autoComplete={index===0?"family-name":"off"} maxLength={80} required disabled={locked} aria-invalid={Boolean(errors[`lastName-${index}`])} onChange={()=>clear(`lastName-${index}`)}/>{errors[`lastName-${index}`]&&<small>{errors[`lastName-${index}`]}</small>}</label>
       <label className="ticketing-field ticketing-field-full"><span>Email *</span><input name={`email-${index}`} type="email" inputMode="email" autoComplete={index===0?"email":"off"} maxLength={160} required disabled={locked} aria-invalid={Boolean(errors[`email-${index}`])} onChange={()=>clear(`email-${index}`)}/>{errors[`email-${index}`]&&<small>{errors[`email-${index}`]}</small>}</label>
-      <label className="ticketing-field"><span>Telefono</span><input name={`phone-${index}`} type="tel" inputMode="tel" autoComplete={index===0?"tel":"off"} maxLength={40} disabled={locked}/></label><label className="ticketing-field"><span>Azienda</span><input name={`company-${index}`} autoComplete={index===0?"organization":"off"} maxLength={140} disabled={locked}/></label>
+      <label className="ticketing-field ticketing-field-full"><span>Telefono</span><input name={`phone-${index}`} type="tel" inputMode="tel" autoComplete={index===0?"tel":"off"} maxLength={40} disabled={locked}/></label>
     </div></fieldset>)}</div>
     <div className="ticketing-privacy"><label><input name="privacy" type="checkbox" required disabled={locked} aria-invalid={Boolean(errors.privacy)} onChange={()=>clear("privacy")}/><span>Dichiaro di aver letto la <Link href="/privacy-policy">Privacy Policy</Link> e acconsento al trattamento dei dati necessario alla gestione dell’acquisto.</span></label>{errors.privacy&&<small>{errors.privacy}</small>}</div>
     {!payload&&<button className="btn btn-blue ticketing-submit" type="submit">Continua al pagamento</button>}{payload&&!paypalClientId&&<div className="ticketing-notice" role="alert">PayPal non è configurato sul server.</div>}{payload&&paypalClientId&&<><div ref={host} className="ticketing-paypal-buttons" aria-label="Pagamento PayPal"/>{(status==="loading"||status==="processing")&&<p className="ticketing-form-note" role="status">{status==="loading"?"Caricamento PayPal...":"Conferma del pagamento in corso..."}</p>}</>}{message&&<div className="ticketing-notice" role="alert">{message}</div>}

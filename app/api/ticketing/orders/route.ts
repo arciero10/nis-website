@@ -12,7 +12,6 @@ type PurchasePayload={
   lastName?:unknown;
   email?:unknown;
   phone?:unknown;
-  company?:unknown;
   privacyAccepted?:unknown;
 };
 
@@ -35,7 +34,6 @@ export async function POST(request:Request){
   const lastName=clean(payload.lastName,80);
   const email=clean(payload.email,160);
   const phone=clean(payload.phone,40);
-  const company=clean(payload.company,140);
 
   if(!eventSlug||!accessToken||!firstName||!lastName||!emailPattern.test(email)||payload.privacyAccepted!==true){
     return NextResponse.json({message:"Controlla i campi obbligatori e il consenso privacy."},{status:400});
@@ -52,7 +50,6 @@ export async function POST(request:Request){
   }
 
   void phone;
-  void company;
 
   return NextResponse.json({
     code:"PAYMENT_NOT_CONFIGURED",

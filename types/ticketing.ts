@@ -21,6 +21,9 @@ export type StaffRole="STAFF"|"SUPERADMIN";
 export type CheckInMethod="QR"|"MANUAL";
 export type CheckInStatus="ACTIVE"|"REVERSED";
 
+export const ALLOCATION_TYPES=["SPONSOR","DONATORE","AZIENDA","OSPITE"] as const;
+export type AllocationType=(typeof ALLOCATION_TYPES)[number];
+
 export const INVITATION_STATUSES=["ACTIVE","DISABLED","EXPIRED"] as const;
 export type InvitationStatus=(typeof INVITATION_STATUSES)[number];
 
@@ -110,6 +113,7 @@ export interface PartnerAllocation{
   id:string;
   eventId:string;
   companyName:string;
+  allocationType:AllocationType;
   contactEmail:string|null;
   packageName:string|null;
   partnershipAmountCents:number|null;
@@ -163,7 +167,6 @@ export interface TicketPurchaseInput{
   lastName:string;
   email:string;
   phone?:string;
-  company?:string;
   privacyAccepted:true;
 }
 
