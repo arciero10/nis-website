@@ -56,6 +56,31 @@ L'App Registration Microsoft Entra deve avere il permesso **Microsoft Graph > Ap
 
 Tutte le variabili sono esclusivamente server-side. Il client secret e gli access token non devono essere esposti nel browser, nelle risposte API o nei log.
 
+## Apple Wallet e Google Wallet
+
+I wallet riutilizzano il ticket NIS esistente: stesso `ticket_code`, stesso payload QR `NIS:<qrToken>` e stessa verifica atomica al check-in. L'apertura o il salvataggio di un pass non consuma il biglietto. I pulsanti vengono mostrati nella pagina biglietto e nelle email solo quando il relativo provider è configurato.
+
+Apple Wallet richiede un Pass Type ID attivo, il relativo certificato `.p12` esportato in Base64, la password del certificato e il certificato Apple WWDR in Base64:
+
+```text
+APPLE_WALLET_PASS_TYPE_ID=
+APPLE_WALLET_TEAM_ID=
+APPLE_WALLET_CERTIFICATE_BASE64=
+APPLE_WALLET_CERTIFICATE_PASSWORD=
+APPLE_WALLET_WWDR_CERTIFICATE_BASE64=
+```
+
+Google Wallet richiede un issuer approvato, un service account autorizzato nell'account Google Wallet e una classe **Event Ticket** già creata. `GOOGLE_WALLET_CLASS_ID` può contenere il solo suffisso o l'ID completo `issuerId.classId`:
+
+```text
+GOOGLE_WALLET_ISSUER_ID=
+GOOGLE_WALLET_SERVICE_ACCOUNT_EMAIL=
+GOOGLE_WALLET_PRIVATE_KEY=
+GOOGLE_WALLET_CLASS_ID=
+```
+
+Certificati, chiavi private e password devono essere configurati esclusivamente come App Service settings server-side. Non vanno salvati nel repository, esposti nel client o stampati nei log. Apple Wallet usa pass `eventTicket` firmati; Google Wallet firma JWT `savetowallet` con RS256 e crea un `EventTicketObject` stabile collegato alla classe configurata.
+
 ## Ruoli e finestra check-in NIS Gala
 
 L'accesso operativo usa sessioni server-side di 8 ore. Configurare PIN distinti per i due ruoli:

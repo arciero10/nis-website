@@ -2,11 +2,12 @@ import {getEmailProvider} from "@/lib/email/provider";
 import {buildTicketEmailContent} from "@/lib/ticketing/email-content";
 import {buildPartnerInvitationEmailContent} from "@/lib/ticketing/partner-email-content";
 import {ticketingRepository,type TicketConfirmation,type TicketEmailPayload} from "@/lib/ticketing/repository";
+import {walletLinksForToken} from "@/lib/ticketing/wallet/config";
 
 export async function deliverTicketEmail(payload:TicketEmailPayload,force=false){
   try{if(!await ticketingRepository.claimTicketEmail(payload.ticketId,force))return {status:"SKIPPED" as const};}
   catch{console.error("Ticket email claim failed");return {status:"FAILED" as const};}
-  try{const content=buildTicketEmailContent(payload);await getEmailProvider().send({to:payload.email,subject:content.subject,text:content.text,html:content.html});await ticketingRepository.markTicketEmailSent(payload.ticketId);return {status:"SENT" as const};}
+  try{const content=buildTicketEmailContent({...payload,walletLinks:walletLinksForToken(payload.qrToken)});await getEmailProvider().send({to:payload.email,subject:content.subject,text:content.text,html:content.html});await ticketingRepository.markTicketEmailSent(payload.ticketId);return {status:"SENT" as const};}
   catch(error){try{await ticketingRepository.markTicketEmailFailed(payload.ticketId,error instanceof Error?error.message:"Errore provider email");}catch{console.error("Ticket email failure state could not be saved");}console.error("Ticket email delivery failed");return {status:"FAILED" as const};}
 }
 
@@ -20,6 +21,6 @@ export async function deliverPartnerAllocationEmail(allocationId:string,force=fa
   const payload=await ticketingRepository.findPartnerAllocationEmailPayload(allocationId);if(!payload)return {status:"NOT_FOUND" as const};
   try{if(!await ticketingRepository.claimPartnerAllocationEmail(allocationId,force))return {status:"SKIPPED" as const};}
   catch{console.error("Partner invitation email claim failed");return {status:"FAILED" as const};}
-  try{const content=buildPartnerInvitationEmailContent({companyName:payload.companyName,allocationType:payload.allocationType,tickets:payload.tickets});await getEmailProvider().send({to:payload.contactEmail,subject:content.subject,text:content.text,html:content.html});await ticketingRepository.markPartnerAllocationEmailSent(allocationId);return {status:"SENT" as const};}
+  try{const content=buildPartnerInvitationEmailContent({companyName:payload.companyName,allocationType:payload.allocationType,tickets:payload.tickets.map(ticket=>({...ticket,walletLinks:walletLinksForToken(ticket.qrToken)}))});await getEmailProvider().send({to:payload.contactEmail,subject:content.subject,text:content.text,html:content.html});await ticketingRepository.markPartnerAllocationEmailSent(allocationId);return {status:"SENT" as const};}
   catch(error){try{await ticketingRepository.markPartnerAllocationEmailFailed(allocationId,error instanceof Error?error.message:"Errore provider email");}catch{console.error("Partner invitation email failure state could not be saved");}console.error("Partner invitation email delivery failed");return {status:"FAILED" as const};}
 }

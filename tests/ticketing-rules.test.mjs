@@ -27,6 +27,12 @@ const {resolvePayPalEnvironment}=await import(`data:text/javascript;base64,${Buf
 const emailProviderSource=await readFile(new URL("../lib/email/provider.ts",import.meta.url),"utf8");
 const emailProviderCompiled=ts.transpileModule(emailProviderSource,{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText;
 const {MicrosoftGraphEmailProvider,resetMicrosoftGraphTokenCacheForTests}=await import(`data:text/javascript;base64,${Buffer.from(emailProviderCompiled).toString("base64")}`);
+const walletModelSource=(await readFile(new URL("../lib/ticketing/wallet/model.ts",import.meta.url),"utf8")).replace(/^import .*;\r?\n/gm,"");
+const walletModelCompiled=ts.transpileModule(`const buildTicketQrPayload=(token)=>\`NIS:\${token}\`;const ticketStatusLabel=(status)=>status==="ACTIVE"?"VALIDO":status==="USED"?"GIÀ UTILIZZATO":status;const allocationTypeLabel=(type)=>type==="SPONSOR"?"Sponsor":type==="DONATORE"?"Donatore":type==="OSPITE"?"Ospite":"Azienda";${walletModelSource}`,{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText;
+const {buildWalletTicketModel}=await import(`data:text/javascript;base64,${Buffer.from(walletModelCompiled).toString("base64")}`);
+const walletIdentifiersSource=await readFile(new URL("../lib/ticketing/wallet/identifiers.ts",import.meta.url),"utf8");
+const walletIdentifiersCompiled=ts.transpileModule(walletIdentifiersSource,{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText;
+const {stableGoogleWalletObjectId}=await import(`data:text/javascript;base64,${Buffer.from(walletIdentifiersCompiled).toString("base64")}`);
 
 function withMicrosoftGraphEnvironment(){
   const keys=["MICROSOFT_TENANT_ID","MICROSOFT_CLIENT_ID","MICROSOFT_CLIENT_SECRET","TICKETING_EMAIL_FROM"];
@@ -212,4 +218,51 @@ test("partner creation sends one company email and staff resend reuses the same 
 test("partner staff lists never expose QR tokens",async()=>{const [dashboard,detail,repository]=await Promise.all([readFile(new URL("../components/StaffPartnerDashboard.tsx",import.meta.url),"utf8"),readFile(new URL("../components/StaffPartnerDetail.tsx",import.meta.url),"utf8"),readFile(new URL("../lib/ticketing/repository.ts",import.meta.url),"utf8")]);assert.doesNotMatch(dashboard,/qrToken/);assert.doesNotMatch(detail,/qrToken/);const detailQuery=repository.slice(repository.indexOf("async getPartnerAllocation"),repository.indexOf("async createPartnerAllocation"));assert.doesNotMatch(detailQuery,/qr_token/);});
 test("order confirmation uses the concise ticket link label",async()=>{
   const page=await readFile(new URL("../app/conferma-biglietti/[qrToken]/page.tsx",import.meta.url),"utf8");assert.match(page,/>Apri biglietto</);assert.doesNotMatch(page,/Apri pagina privata del biglietto/);
+});
+
+const walletRecord=(overrides={})=>({
+  event:{title:"NIS Gala Charity Night",price:200,currency:"EUR"},
+  attendee:{firstName:"Mario",lastName:"Rossi"},
+  ticket:{id:"ticket-123",ticketCode:"NIS26-ABCD2345",qrToken:"opaque-token-123",category:"STANDARD",status:"ACTIVE",sequenceNumber:null,totalQuantity:null},
+  companyName:null,allocationType:null,...overrides,
+});
+
+test("Apple Wallet model keeps the existing ticket identity and QR for a standard ticket",()=>{
+  const model=buildWalletTicketModel(walletRecord());
+  assert.equal(model.ticketCode,"NIS26-ABCD2345");assert.equal(model.holderName,"Mario Rossi");assert.equal(model.qrPayload,buildTicketQrPayload("opaque-token-123"));assert.equal(model.amountLabel,"200,00 €");
+});
+test("Apple Wallet company model uses company allocation data and never exposes a price",()=>{
+  const model=buildWalletTicketModel(walletRecord({ticket:{...walletRecord().ticket,category:"PARTNER",sequenceNumber:2,totalQuantity:10},companyName:"NIS Azienda S.p.A.",allocationType:"SPONSOR"}));
+  assert.equal(model.companyInvitation,true);assert.equal(model.companyName,"NIS Azienda S.p.A.");assert.equal(model.allocationType,"Sponsor");assert.equal(model.sequenceNumber,2);assert.equal(model.totalQuantity,10);assert.equal(model.amountLabel,null);assert.equal(model.holderName,null);
+});
+test("Apple Wallet endpoint signs an eventTicket and handles missing configuration or qrToken safely",async()=>{
+  const [route,apple,configuration]=await Promise.all([readFile(new URL("../app/api/ticketing/wallet/apple/[qrToken]/route.ts",import.meta.url),"utf8"),readFile(new URL("../lib/ticketing/wallet/apple.ts",import.meta.url),"utf8"),readFile(new URL("../lib/ticketing/wallet/config.ts",import.meta.url),"utf8")]);
+  assert.match(route,/isAppleWalletConfigured\(\)/);assert.match(route,/status:503/);assert.match(route,/if\(!record\).*status:404/);assert.match(route,/application\/vnd\.apple\.pkpass/);assert.match(route,/nis-gala-\$\{record\.ticket\.ticketCode\}\.pkpass/);
+  assert.match(apple,/pass\.type="eventTicket"/);assert.match(apple,/pass\.setBarcodes/);assert.match(apple,/message:model\.qrPayload/);assert.match(apple,/extractSigner/);assert.match(configuration,/APPLE_WALLET_CERTIFICATE_BASE64/);
+});
+test("Apple Wallet assets are derived locally at valid icon and logo dimensions",async()=>{
+  const files=[["icon.png",29,29],["icon@2x.png",58,58],["icon@3x.png",87,87],["logo.png",160,50],["logo@2x.png",320,100]];
+  for(const [name,width,height] of files){const png=await readFile(new URL(`../public/wallet/apple/${name}`,import.meta.url));assert.equal(png.readUInt32BE(16),width);assert.equal(png.readUInt32BE(20),height);}
+});
+test("Google Wallet object identifiers are stable and contain no participant identity",()=>{
+  const first=stableGoogleWalletObjectId("issuer-1","ticket-123");const second=stableGoogleWalletObjectId("issuer-1","ticket-123");assert.equal(first,second);assert.equal(first,"issuer-1.nis_gala_2026_ticket-123");assert.doesNotMatch(first,/Mario|Rossi|@/);
+});
+test("Google Wallet creates an EventTicketObject with the existing NIS QR payload",async()=>{
+  const [route,google]=await Promise.all([readFile(new URL("../app/api/ticketing/wallet/google/[qrToken]/route.ts",import.meta.url),"utf8"),readFile(new URL("../lib/ticketing/wallet/google.ts",import.meta.url),"utf8")]);
+  assert.match(route,/isGoogleWalletConfigured\(\)/);assert.match(route,/if\(!record\).*status:404/);assert.match(route,/NextResponse\.redirect\(createGoogleWalletSaveUrl\(record\),302\)/);
+  assert.match(google,/payload:\{eventTicketObjects:\[object\]\}/);assert.match(google,/barcode:\{type:"QR_CODE",value:model\.qrPayload/);assert.match(google,/createSign\("RSA-SHA256"\)/);assert.match(google,/model\.companyInvitation/);assert.match(google,/model\.amountLabel/);
+});
+test("wallet controls are conditional and wallet secrets remain outside the ticket client markup",async()=>{
+  const [page,config]=await Promise.all([readFile(new URL("../app/biglietto/[qrToken]/page.tsx",import.meta.url),"utf8"),readFile(new URL("../lib/ticketing/wallet/config.ts",import.meta.url),"utf8")]);
+  assert.match(page,/walletLinks\.apple\|\|walletLinks\.google/);assert.match(page,/Aggiungi ad Apple Wallet/);assert.match(page,/Aggiungi a Google Wallet/);assert.doesNotMatch(page,/CERTIFICATE|PRIVATE_KEY|PASSWORD|process\.env/);
+  assert.match(config,/keys\.every/);assert.match(config,/apple:isAppleWalletConfigured/);assert.match(config,/google:isGoogleWalletConfigured/);
+});
+test("ticket emails include only configured wallet links",()=>{
+  const content=buildTicketEmailContent({firstName:"Mario",lastName:"Rossi",ticketCode:"NIS26-ABCD2345",category:"STANDARD",amount:200,currency:"EUR",qrToken:"opaque-token-123",walletLinks:{apple:"https://example.test/apple",google:"https://example.test/google"}});
+  assert.match(content.html,/AGGIUNGI AD APPLE WALLET/);assert.match(content.html,/AGGIUNGI A GOOGLE WALLET/);assert.match(content.text,/Apple Wallet: https:\/\/example\.test\/apple/);assert.match(content.text,/Google Wallet: https:\/\/example\.test\/google/);
+  const withoutWallets=buildTicketEmailContent({firstName:"Mario",lastName:"Rossi",ticketCode:"NIS26-ABCD2345",category:"STANDARD",amount:200,currency:"EUR",qrToken:"opaque-token-123"});assert.doesNotMatch(withoutWallets.html,/AGGIUNGI AD APPLE WALLET|AGGIUNGI A GOOGLE WALLET/);
+});
+test("company summary email exposes wallet actions for every entrance without price",()=>{
+  const content=buildPartnerInvitationEmailContent({companyName:"CRAI",allocationType:"AZIENDA",tickets:[{ticketCode:"NIS26-1",qrToken:"token-1",sequenceNumber:1,totalQuantity:2,walletLinks:{apple:"https://example.test/apple-1",google:"https://example.test/google-1"}},{ticketCode:"NIS26-2",qrToken:"token-2",sequenceNumber:2,totalQuantity:2,walletLinks:{apple:"https://example.test/apple-2",google:"https://example.test/google-2"}}]});
+  assert.equal((content.html.match(/APPLE WALLET/g)??[]).length,2);assert.equal((content.html.match(/GOOGLE WALLET/g)??[]).length,2);assert.doesNotMatch(content.html,/Importo|PayPal|200,00/);
 });
