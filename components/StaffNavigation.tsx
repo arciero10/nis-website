@@ -8,6 +8,7 @@ const links=[
   {href:"/checkin",label:"Scanner"},
   {href:"/staff/partecipanti",label:"Partecipanti"},
   {href:"/staff/partner",label:"Aziende"},
+  {href:"/staff/emissione",label:"Emissione"},
   {href:"/staff/ingressi",label:"Ingressi"},
 ];
 

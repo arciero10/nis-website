@@ -12,7 +12,7 @@ export async function deliverTicketEmail(payload:TicketEmailPayload,force=false)
 }
 
 export async function deliverConfirmationTicketEmails(confirmation:TicketConfirmation){
-  return Promise.all(confirmation.tickets.map((ticket,index)=>{const attendee=confirmation.attendees[index];return deliverTicketEmail({ticketId:ticket.id,firstName:attendee.firstName,lastName:attendee.lastName,email:attendee.email,ticketCode:ticket.ticketCode,qrToken:ticket.qrToken,category:ticket.category,amount:confirmation.event.price,currency:confirmation.event.currency,source:"STANDARD",companyName:null,allocationType:null});}));
+  return Promise.all(confirmation.tickets.map((ticket,index)=>{const attendee=confirmation.attendees[index];return deliverTicketEmail({ticketId:ticket.id,firstName:attendee.firstName,lastName:attendee.lastName,email:attendee.email,ticketCode:ticket.ticketCode,qrToken:ticket.qrToken,category:ticket.category,amount:confirmation.event.price,currency:confirmation.event.currency,source:"STANDARD",companyName:null,allocationType:null,issuanceSource:"PAYPAL"});}));
 }
 
 export async function resendTicketEmail(ticketCode:string){const payload=await ticketingRepository.findTicketEmailPayload(ticketCode);if(!payload)return {status:"NOT_FOUND" as const};return deliverTicketEmail(payload,true);}

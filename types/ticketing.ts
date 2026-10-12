@@ -21,6 +21,12 @@ export type StaffRole="STAFF"|"SUPERADMIN";
 export type CheckInMethod="QR"|"MANUAL";
 export type CheckInStatus="ACTIVE"|"REVERSED";
 
+export const TICKET_ISSUANCE_SOURCES=["PAYPAL","BANK_TRANSFER","COMPANY","COMPLIMENTARY"] as const;
+export type TicketIssuanceSource=(typeof TICKET_ISSUANCE_SOURCES)[number];
+
+export const COMPLIMENTARY_REASONS=["INSTITUTIONAL_GUEST","NIS_GUEST","SPEAKER","STAFF_ORGANIZATION","COURTESY","OTHER"] as const;
+export type ComplimentaryReason=(typeof COMPLIMENTARY_REASONS)[number];
+
 export const ALLOCATION_TYPES=["SPONSOR","DONATORE","AZIENDA","OSPITE"] as const;
 export type AllocationType=(typeof ALLOCATION_TYPES)[number];
 
@@ -96,6 +102,8 @@ export interface Ticket{
   attendeeId:string;
   orderId:string|null;
   partnerAllocationId:string|null;
+  manualIssuanceId:string|null;
+  issuanceSource:TicketIssuanceSource;
   ticketCode:string;
   qrToken:string;
   category:TicketCategory;

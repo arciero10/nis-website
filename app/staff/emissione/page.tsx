@@ -1,0 +1,7 @@
+import StaffManualIssuance from "@/components/StaffManualIssuance";
+import StaffNavigation from "@/components/StaffNavigation";
+import {requireStaffSession} from "@/lib/ticketing/staff-page";
+
+export const dynamic="force-dynamic";
+
+export default async function StaffManualIssuancePage(){const session=await requireStaffSession();return <main className="nis-checkin-page nis-staff-page"><div className="staff-workspace"><StaffNavigation/><header className="staff-page-heading"><span>NIS GALA CHARITY NIGHT</span><h1>Emissione biglietti</h1><p>Emissioni manuali tracciate per bonifici verificati e omaggi autorizzati.</p></header><StaffManualIssuance role={session.role}/></div></main>;}

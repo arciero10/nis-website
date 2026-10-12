@@ -120,3 +120,14 @@ npm run ticketing:cleanup-sandbox -- --execute
 ```
 
 La pulizia elimina esclusivamente ordini marcati `PAYPAL` + `SANDBOX` e i relativi partecipanti, biglietti, check-in e stati di consegna email. Non modifica eventi, inviti, `used_count`, capienza, `public_slug`, sessioni staff, configurazioni applicative o storico migrazioni. L'operazione è transazionale e idempotente.
+
+## Contabili bonifici ticketing
+
+Le emissioni manuali da bonifico salvano nel database soltanto i metadati della contabile. Il file viene archiviato in un container Azure Blob privato ed è leggibile esclusivamente dalla route autenticata riservata al ruolo `SUPERADMIN`.
+
+```text
+AZURE_STORAGE_CONNECTION_STRING=
+NIS_TICKETING_DOCUMENTS_CONTAINER=nis-ticketing-private
+```
+
+Il container viene creato senza accesso pubblico quando non esiste. La connection string è un'impostazione esclusivamente server-side e non deve essere inserita in variabili `NEXT_PUBLIC_*`, log o risposte API. Applicare la migration incrementale `013_manual_ticket_issuance.sql` prima di usare la pagina `/staff/emissione`.

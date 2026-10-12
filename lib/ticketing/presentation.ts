@@ -1,4 +1,4 @@
-import type {AllocationType,TicketStatus} from "@/types/ticketing";
+import type {AllocationType,ComplimentaryReason,TicketIssuanceSource,TicketStatus} from "@/types/ticketing";
 
 const productionOrigin="https://www.nazionaleitalianasanitari.com";
 
@@ -33,4 +33,21 @@ export function allocationTypeLabel(type:AllocationType){
   if(type==="DONATORE")return "Donatore";
   if(type==="OSPITE")return "Ospite";
   return "Azienda";
+}
+
+export function issuanceSourceLabel(source:TicketIssuanceSource){
+  if(source==="BANK_TRANSFER")return "Bonifico";
+  if(source==="COMPANY")return "Azienda";
+  if(source==="COMPLIMENTARY")return "Omaggio";
+  return "PayPal";
+}
+
+export function complimentaryReasonLabel(reason:ComplimentaryReason|null){
+  if(reason==="INSTITUTIONAL_GUEST")return "Ospite istituzionale";
+  if(reason==="NIS_GUEST")return "Invitato NIS";
+  if(reason==="SPEAKER")return "Relatore";
+  if(reason==="STAFF_ORGANIZATION")return "Staff / Organizzazione";
+  if(reason==="COURTESY")return "Cortesia";
+  if(reason==="OTHER")return "Altro";
+  return "-";
 }
