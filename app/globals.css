@@ -368,6 +368,9 @@ body:has(.nis-digital-ticket-page)>.site-header,body:has(.nis-digital-ticket-pag
 @media(max-width:380px){.nis-ticket-qr img{width:238px;height:238px}.nis-ticket-detail-grid{grid-template-columns:1fr;gap:14px}.nis-ticket-holder h2{font-size:23px}}
 @media(prefers-reduced-motion:reduce){.nis-digital-ticket-page *{scroll-behavior:auto!important}}
 
+.nis-ticket-hero{background:#041d3b}.nis-ticket-hero img{display:block;width:100%;height:auto}.nis-ticket-download{width:100%;margin-top:22px;text-align:center}.nis-ticket-visit{margin-top:24px;display:grid;grid-template-columns:1fr 1fr;gap:1px;border:1px solid #d8e2eb;background:#d8e2eb}.nis-ticket-visit article{padding:20px;background:#f7f9fb}.nis-ticket-visit span{color:#53708b;font-size:11px;font-weight:900}.nis-ticket-visit h2{margin:6px 0;font-size:18px}.nis-ticket-visit p{margin:0 0 12px;color:#526b83;line-height:1.5}.nis-ticket-visit a{color:#075fb9;font-size:13px;font-weight:900;text-decoration:underline;text-underline-offset:3px}.nis-ticket-event-date{margin:22px 0 0;text-align:center;color:#526b83;font-size:13px}.ticketing-email-help,.ticketing-pre-payment-note{display:block;color:#526b83;font-size:13px;line-height:1.5}.ticketing-pre-payment-note{margin:20px 0 12px}.ticketing-confirmation-actions{display:flex;flex-wrap:wrap;gap:8px}.ticketing-confirmation-actions .btn-outline{border:1px solid var(--blue);background:#fff;color:var(--blue)}
+@media(max-width:720px){.nis-ticket-visit{grid-template-columns:1fr}.ticketing-confirmation-actions{display:grid}.ticketing-confirmation-actions .btn{width:100%}}
+
 /* Controllo accessi NIS */
 body:has(.nis-checkin-page)>.site-header,body:has(.nis-checkin-page)>footer{display:none}
 .nis-checkin-page{min-height:100svh;padding:24px;display:grid;place-items:center;background:#03172f;color:#fff}

@@ -1,9 +1,13 @@
-import type {AllocationType,ComplimentaryReason,TicketIssuanceSource,TicketStatus} from "@/types/ticketing";
+import type {AllocationType,ComplimentaryReason,InvitationType,TicketIssuanceSource,TicketStatus} from "@/types/ticketing";
 
 const productionOrigin="https://www.nazionaleitalianasanitari.com";
 
 export function buildTicketPageUrl(qrToken:string,origin=productionOrigin){
   return new URL(`/biglietto/${encodeURIComponent(qrToken)}`,origin).toString();
+}
+
+export function buildTicketPdfUrl(qrToken:string,origin=productionOrigin){
+  return new URL(`/api/ticketing/tickets/${encodeURIComponent(qrToken)}/pdf`,origin).toString();
 }
 
 export function buildTicketQrPayload(qrToken:string){
@@ -38,8 +42,20 @@ export function allocationTypeLabel(type:AllocationType){
 export function issuanceSourceLabel(source:TicketIssuanceSource){
   if(source==="BANK_TRANSFER")return "Bonifico";
   if(source==="COMPANY")return "Azienda";
-  if(source==="COMPLIMENTARY")return "Omaggio";
+  if(source==="ADMIN")return "Admin";
   return "PayPal";
+}
+
+export function invitationTypeLabel(type:InvitationType){
+  if(type==="STANDARD")return "Standard";
+  if(type==="SPONSOR")return "Sponsor";
+  if(type==="DONATORE")return "Donatore";
+  if(type==="AZIENDA")return "Azienda";
+  if(type==="OSPITE")return "Ospite";
+  if(type==="STAMPA")return "Stampa";
+  if(type==="MEDIA")return "Media";
+  if(type==="PRESS")return "Press";
+  return "Omaggio";
 }
 
 export function complimentaryReasonLabel(reason:ComplimentaryReason|null){

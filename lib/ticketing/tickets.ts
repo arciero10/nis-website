@@ -25,6 +25,7 @@ export function issueStandardTicket({
     partnerAllocationId:null,
     manualIssuanceId:null,
     issuanceSource:"PAYPAL",
+    invitationType:"STANDARD",
     ticketCode:generateTicketCode(eventYear),
     qrToken:generateQrToken(),
     category:"STANDARD",

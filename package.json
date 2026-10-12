@@ -11,6 +11,7 @@
     "db:migrate:ticketing": "node scripts/ticketing/migrate.mjs",
     "ticketing:create-invitation": "node scripts/ticketing/create-invitation.mjs",
     "ticketing:cleanup-sandbox": "node scripts/ticketing/cleanup-sandbox-data.mjs",
+    "ticketing:cleanup-marcucci": "node scripts/ticketing/cleanup-marcucci-test.mjs",
     "test:ticketing": "node --test tests/ticketing-rules.test.mjs"
   },
   "dependencies": {
@@ -19,6 +20,7 @@
     "next": "^15.5.0",
     "node-forge": "^1.4.0",
     "passkit-generator": "^3.6.1",
+    "pdf-lib": "^1.17.1",
     "pg": "^8.23.1",
     "qrcode": "^1.5.4",
     "react": "^19.1.0",

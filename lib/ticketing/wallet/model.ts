@@ -30,6 +30,6 @@ export function buildWalletTicketModel(record:DigitalTicketRecord):WalletTicketM
     allocationType:companyInvitation?allocationTypeLabel(record.allocationType??"AZIENDA"):null,
     sequenceNumber:companyInvitation?(record.ticket.sequenceNumber??1):null,
     totalQuantity:companyInvitation?(record.ticket.totalQuantity??1):null,
-    amountLabel:companyInvitation||record.ticket.issuanceSource==="COMPLIMENTARY"?null:new Intl.NumberFormat("it-IT",{style:"currency",currency:record.event.currency}).format(record.event.price),
+    amountLabel:companyInvitation||record.ticket.issuanceSource==="ADMIN"?null:new Intl.NumberFormat("it-IT",{style:"currency",currency:record.event.currency}).format(record.event.price),
   };
 }

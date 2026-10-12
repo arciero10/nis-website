@@ -1,4 +1,7 @@
-import {COMPLIMENTARY_REASONS,type ComplimentaryReason} from "@/types/ticketing";
+import type {AdminInvitationType,ComplimentaryReason} from "@/types/ticketing";
+
+const ADMIN_TYPES:AdminInvitationType[]=["STAMPA","MEDIA","PRESS","OMAGGIO"];
+const LEGACY_REASONS:ComplimentaryReason[]=["INSTITUTIONAL_GUEST","NIS_GUEST","SPEAKER","STAFF_ORGANIZATION","COURTESY","OTHER"];
 
 export const MANUAL_TICKET_MAX_QUANTITY=10;
 export const RECEIPT_MAX_BYTES=10*1024*1024;
@@ -11,7 +14,7 @@ const amount=(value:string)=>{const parsed=Number(value.replace(",","."));return
 const validDate=(value:string)=>!value||(/^\d{4}-\d{2}-\d{2}$/.test(value)&&!Number.isNaN(Date.parse(`${value}T00:00:00Z`)));
 
 export type BankTransferIssuanceInput={source:"BANK_TRANSFER";firstName:string;lastName:string;email:string;phone?:string;quantity:number;declaredAmount:number;transferDate:string|null;transferReference:string|null;notes:string|null};
-export type ComplimentaryIssuanceInput={source:"COMPLIMENTARY";firstName:string;lastName:string;email:string;phone?:string;quantity:number;reason:ComplimentaryReason;reasonOther:string|null;notes:string|null};
+export type AdminIssuanceInput={source:"ADMIN";invitationType:AdminInvitationType;firstName:string;lastName:string;email:string;phone?:string;quantity:number;organization:string|null;reason:string;notes:string|null};
 
 export function parseBankTransferInput(data:FormData){
   const firstName=clean(data.get("firstName"),80);const lastName=clean(data.get("lastName"),80);const email=clean(data.get("email"),254).toLowerCase();const phone=clean(data.get("phone"),40);const parsedQuantity=quantity(clean(data.get("quantity"),2));const declaredAmount=amount(clean(data.get("declaredAmount"),20));const transferDate=clean(data.get("transferDate"),10);const transferReference=clean(data.get("transferReference"),120);const notes=clean(data.get("notes"),1000);
@@ -19,10 +22,16 @@ export function parseBankTransferInput(data:FormData){
   return {source:"BANK_TRANSFER",firstName,lastName,email,phone:phone||undefined,quantity:parsedQuantity,declaredAmount,transferDate:transferDate||null,transferReference:transferReference||null,notes:notes||null} satisfies BankTransferIssuanceInput;
 }
 
+export function parseAdminInput(data:FormData){
+  const invitationType=clean(data.get("invitationType"),20) as AdminInvitationType;const firstName=clean(data.get("firstName"),80);const lastName=clean(data.get("lastName"),80);const email=clean(data.get("email"),254).toLowerCase();const phone=clean(data.get("phone"),40);const parsedQuantity=quantity(clean(data.get("quantity"),2));const organization=clean(data.get("organization"),180);const reason=clean(data.get("reason"),500);const notes=clean(data.get("notes"),1000);
+  if(!ADMIN_TYPES.includes(invitationType)||!firstName||!lastName||!validEmail(email)||parsedQuantity===null||!reason)return null;
+  return {source:"ADMIN",invitationType,firstName,lastName,email,phone:phone||undefined,quantity:parsedQuantity,organization:organization||null,reason,notes:notes||null} satisfies AdminIssuanceInput;
+}
+
 export function parseComplimentaryInput(data:FormData){
-  const firstName=clean(data.get("firstName"),80);const lastName=clean(data.get("lastName"),80);const email=clean(data.get("email"),254).toLowerCase();const phone=clean(data.get("phone"),40);const parsedQuantity=quantity(clean(data.get("quantity"),2));const reason=clean(data.get("reason"),40) as ComplimentaryReason;const reasonOther=clean(data.get("reasonOther"),300);const notes=clean(data.get("notes"),1000);
-  if(!firstName||!lastName||!validEmail(email)||parsedQuantity===null||!COMPLIMENTARY_REASONS.includes(reason)||(reason==="OTHER"&&!reasonOther))return null;
-  return {source:"COMPLIMENTARY",firstName,lastName,email,phone:phone||undefined,quantity:parsedQuantity,reason,reasonOther:reason==="OTHER"?reasonOther:null,notes:notes||null} satisfies ComplimentaryIssuanceInput;
+  const legacyReason=clean(data.get("reason"),40) as ComplimentaryReason;const reasonOther=clean(data.get("reasonOther"),300);if(!LEGACY_REASONS.includes(legacyReason)||(legacyReason==="OTHER"&&!reasonOther))return null;
+  data.set("invitationType","OMAGGIO");data.set("reason",reasonOther||legacyReason.replaceAll("_"," "));
+  return parseAdminInput(data);
 }
 
 export function validateReceipt(file:File|null,required:boolean){
