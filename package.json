@@ -12,6 +12,7 @@
     "ticketing:create-invitation": "node scripts/ticketing/create-invitation.mjs",
     "ticketing:cleanup-sandbox": "node scripts/ticketing/cleanup-sandbox-data.mjs",
     "ticketing:cleanup-marcucci": "node scripts/ticketing/cleanup-marcucci-test.mjs",
+    "ticketing:cleanup-mauro": "node scripts/ticketing/cleanup-mauro-la-pietra.mjs",
     "test:ticketing": "node --test tests/ticketing-rules.test.mjs"
   },
   "dependencies": {

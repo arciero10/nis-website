@@ -49,7 +49,7 @@ MICROSOFT_TENANT_ID=
 MICROSOFT_CLIENT_ID=
 MICROSOFT_CLIENT_SECRET=
 TICKETING_EMAIL_FROM=biglietti@nazionaleitalianasanitari.com
-NIS_TICKETING_ADMIN_EMAIL=biglietti@nazionaleitalianasanitari.com
+NIS_TICKETING_ADMIN_EMAIL=alessandro.arciero@tiscali.it
 CANDIDATURE_TO=info@nazionaleitalianasanitari.com
 ```
 

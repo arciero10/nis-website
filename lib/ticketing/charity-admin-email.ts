@@ -1,7 +1,7 @@
 import {getEmailProvider} from "@/lib/email/provider";
 import {markCharityAdminEmailFailed,markCharityAdminEmailSent,type CharityRequest} from "@/lib/ticketing/charity-request-repository";
 
-const fallbackRecipient="biglietti@nazionaleitalianasanitari.com";
+const fallbackRecipient="alessandro.arciero@tiscali.it";
 const escapeHtml=(value:string)=>value.replace(/[&<>"']/g,character=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"})[character]??character);
 const amount=(value:number)=>new Intl.NumberFormat("it-IT",{style:"currency",currency:"EUR"}).format(value);
 
