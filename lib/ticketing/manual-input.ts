@@ -12,7 +12,7 @@ const amount=(value:string)=>{const parsed=Number(value.replace(",","."));return
 const validDate=(value:string)=>!value||(/^\d{4}-\d{2}-\d{2}$/.test(value)&&!Number.isNaN(Date.parse(`${value}T00:00:00Z`)));
 
 export type BankTransferIssuanceInput={source:"BANK_TRANSFER";firstName:string;lastName:string;email:string;phone?:string;quantity:number;declaredAmount:number;transferDate:string|null;transferReference:string|null;notes:string|null};
-export type PayPalCharityIssuanceInput={source:"PAYPAL_CHARITY";firstName:string;lastName:string;email:string;phone?:string;quantity:number;declaredAmount:number;donationDate:string|null;paypalReference:string|null;notes:string|null};
+export type PayPalCharityIssuanceInput={source:"PAYPAL_CHARITY";firstName:string;lastName:string;email:string;phone?:string;quantity:number;participants?:{firstName:string;lastName:string}[];declaredAmount:number;donationDate:string|null;paypalReference:string|null;notes:string|null};
 export type AdminIssuanceInput={source:"ADMIN";invitationType:AdminInvitationType;firstName:string;lastName:string;email:string;phone?:string;quantity:number;organization:string|null;reason:string;notes:string|null};
 
 export function parseBankTransferInput(data:FormData){

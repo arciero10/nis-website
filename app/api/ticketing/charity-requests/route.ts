@@ -1,5 +1,6 @@
 import {NextResponse} from "next/server";
 import {parseCharityParticipationInput} from "@/lib/ticketing/charity-request-input";
+import {notifyCharityRequestAdmin} from "@/lib/ticketing/charity-admin-email";
 import {createCharityParticipationRequest} from "@/lib/ticketing/charity-request-repository";
 
 export const runtime="nodejs";
@@ -9,6 +10,7 @@ export async function POST(request:Request){
   try{
     const input=parseCharityParticipationInput(await request.json());if(!input)return NextResponse.json({message:"Controlla i campi obbligatori e il consenso privacy."},{status:400});
     const result=await createCharityParticipationRequest("nis-gala-2026","gala-2026",input);
-    return NextResponse.json({requestId:result.request.id,status:result.request.status,redirectUrl:PAYPAL_CHARITY_URL},{status:result.created?201:200});
+    if(result.created)await notifyCharityRequestAdmin(result.request);
+    return NextResponse.json({requestId:result.request.id,requestCode:result.request.requestCode,status:result.request.status,redirectUrl:PAYPAL_CHARITY_URL},{status:result.created?201:200});
   }catch(error){const message=error instanceof Error?error.message:"Richiesta non valida.";const conflict=/Posti insufficienti|Evento non disponibile|Invito non disponibile/.test(message);return NextResponse.json({message:conflict?message:"Non è stato possibile registrare la richiesta. Riprova tra qualche minuto."},{status:conflict?409:500});}
 }
