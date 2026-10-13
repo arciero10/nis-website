@@ -4,8 +4,6 @@ const ADMIN_TYPES:AdminInvitationType[]=["STAMPA","MEDIA","PRESS","OMAGGIO"];
 const LEGACY_REASONS:ComplimentaryReason[]=["INSTITUTIONAL_GUEST","NIS_GUEST","SPEAKER","STAFF_ORGANIZATION","COURTESY","OTHER"];
 
 export const MANUAL_TICKET_MAX_QUANTITY=10;
-export const RECEIPT_MAX_BYTES=10*1024*1024;
-export const RECEIPT_MIME_TYPES=["application/pdf","image/jpeg","image/png"] as const;
 
 const clean=(value:FormDataEntryValue|null,max:number)=>typeof value==="string"?value.replace(/[\u0000-\u001f\u007f]+/g," ").trim().slice(0,max):"";
 const validEmail=(value:string)=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)&&value.length<=254;
@@ -32,20 +30,6 @@ export function parseComplimentaryInput(data:FormData){
   const legacyReason=clean(data.get("reason"),40) as ComplimentaryReason;const reasonOther=clean(data.get("reasonOther"),300);if(!LEGACY_REASONS.includes(legacyReason)||(legacyReason==="OTHER"&&!reasonOther))return null;
   data.set("invitationType","OMAGGIO");data.set("reason",reasonOther||legacyReason.replaceAll("_"," "));
   return parseAdminInput(data);
-}
-
-export function validateReceipt(file:File|null,required:boolean){
-  if(!file||file.size===0)return required?{ok:false as const,message:"La contabile del bonifico è obbligatoria."}:{ok:true as const,file:null};
-  if(file.size>RECEIPT_MAX_BYTES)return {ok:false as const,message:"La contabile non può superare 10 MB."};
-  if(!RECEIPT_MIME_TYPES.includes(file.type as (typeof RECEIPT_MIME_TYPES)[number]))return {ok:false as const,message:"Formato contabile non valido. Usa PDF, JPG, JPEG o PNG."};
-  return {ok:true as const,file};
-}
-
-export function receiptContentMatchesMime(content:Uint8Array,mimeType:string){
-  if(mimeType==="application/pdf")return content.length>=5&&String.fromCharCode(...content.slice(0,5))==="%PDF-";
-  if(mimeType==="image/png")return content.length>=8&&[137,80,78,71,13,10,26,10].every((byte,index)=>content[index]===byte);
-  if(mimeType==="image/jpeg")return content.length>=3&&content[0]===0xff&&content[1]===0xd8&&content[2]===0xff;
-  return false;
 }
 
 export function validIdempotencyKey(value:string){return /^[A-Za-z0-9_-]{16,128}$/.test(value);}

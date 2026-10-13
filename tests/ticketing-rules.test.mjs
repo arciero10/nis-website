@@ -35,7 +35,7 @@ const walletIdentifiersCompiled=ts.transpileModule(walletIdentifiersSource,{comp
 const {stableGoogleWalletObjectId}=await import(`data:text/javascript;base64,${Buffer.from(walletIdentifiersCompiled).toString("base64")}`);
 const manualInputSource=(await readFile(new URL("../lib/ticketing/manual-input.ts",import.meta.url),"utf8")).replace(/^import .*;\r?\n/gm,"");
 const manualInputCompiled=ts.transpileModule(`const COMPLIMENTARY_REASONS=["INSTITUTIONAL_GUEST","NIS_GUEST","SPEAKER","STAFF_ORGANIZATION","COURTESY","OTHER"];${manualInputSource}`,{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText;
-const {parseBankTransferInput,parseComplimentaryInput,receiptContentMatchesMime,validateReceipt}=await import(`data:text/javascript;base64,${Buffer.from(manualInputCompiled).toString("base64")}`);
+const {parseBankTransferInput,parseComplimentaryInput}=await import(`data:text/javascript;base64,${Buffer.from(manualInputCompiled).toString("base64")}`);
 
 function withMicrosoftGraphEnvironment(){
   const keys=["MICROSOFT_TENANT_ID","MICROSOFT_CLIENT_ID","MICROSOFT_CLIENT_SECRET","TICKETING_EMAIL_FROM"];
@@ -274,13 +274,9 @@ test("manual ticket migration is incremental, audited and preserves every existi
   const migration=await readFile(new URL("../migrations/013_manual_ticket_issuance.sql",import.meta.url),"utf8");
   assert.match(migration,/CREATE TABLE IF NOT EXISTS ticketing_manual_issuances/);assert.match(migration,/issuance_source IN \('PAYPAL','BANK_TRANSFER','COMPANY','COMPLIMENTARY'\)/);assert.match(migration,/created_by_staff_id/);assert.match(migration,/session_id/);assert.match(migration,/document_storage_key/);assert.doesNotMatch(migration,/DELETE FROM|TRUNCATE|DROP TABLE/);
 });
-test("bank transfer validation requires valid fields and STAFF receipt policy rejects missing files",()=>{
+test("bank transfer validation accepts complete named data without an attachment",()=>{
   const data=new FormData();data.set("firstName","Mario");data.set("lastName","Rossi");data.set("email","mario@example.test");data.set("quantity","2");data.set("declaredAmount","400");
-  assert.equal(parseBankTransferInput(data)?.source,"BANK_TRANSFER");assert.equal(parseBankTransferInput(data)?.quantity,2);assert.equal(validateReceipt(null,true).ok,false);assert.equal(validateReceipt(null,false).ok,true);
-});
-test("manual receipt validation permits only PDF/JPEG/PNG up to 10 MB",()=>{
-  assert.equal(validateReceipt(new File(["pdf"],"ricevuta.pdf",{type:"application/pdf"}),true).ok,true);assert.equal(validateReceipt(new File(["x"],"ricevuta.exe",{type:"application/octet-stream"}),true).ok,false);assert.equal(validateReceipt(new File([new Uint8Array(10*1024*1024+1)],"large.pdf",{type:"application/pdf"}),true).ok,false);
-  assert.equal(receiptContentMatchesMime(Buffer.from("%PDF-1.7"),"application/pdf"),true);assert.equal(receiptContentMatchesMime(Buffer.from("not-pdf"),"application/pdf"),false);
+  const parsed=parseBankTransferInput(data);assert.equal(parsed?.source,"BANK_TRANSFER");assert.equal(parsed?.quantity,2);assert.equal(parsed?.firstName,"Mario");assert.equal(parsed?.lastName,"Rossi");assert.equal(parsed?.email,"mario@example.test");
 });
 test("legacy complimentary validation maps to an ADMIN OMAGGIO invitation",()=>{
   const data=new FormData();data.set("firstName","Anna");data.set("lastName","Verdi");data.set("email","anna@example.test");data.set("quantity","1");data.set("reason","OTHER");assert.equal(parseComplimentaryInput(data),null);data.set("reasonOther","Invito autorizzato");const parsed=parseComplimentaryInput(data);assert.equal(parsed?.source,"ADMIN");assert.equal(parsed?.invitationType,"OMAGGIO");
@@ -288,8 +284,12 @@ test("legacy complimentary validation maps to an ADMIN OMAGGIO invitation",()=>{
 test("manual issuance is transactional, idempotent, capacity-aware and creates no PayPal order",async()=>{
   const repository=await readFile(new URL("../lib/ticketing/manual-repository.ts",import.meta.url),"utf8");assert.match(repository,/pg_advisory_xact_lock/);assert.match(repository,/idempotency_key/);assert.match(repository,/hasTicketCapacity/);assert.match(repository,/for\(let position=1;position<=input\.quantity;position\+\+\)/);assert.match(repository,/INSERT INTO ticketing_attendees/);assert.match(repository,/INSERT INTO ticketing_tickets/);assert.doesNotMatch(repository,/INSERT INTO ticketing_orders/);assert.match(repository,/manual_issuance_id IS NOT NULL/);
 });
-test("manual issuance APIs enforce role, email delivery and private receipt access",async()=>{
-  const [bank,gift,document]=await Promise.all([readFile(new URL("../app/api/ticketing/staff/manual-issuance/bank-transfer/route.ts",import.meta.url),"utf8"),readFile(new URL("../app/api/ticketing/staff/manual-issuance/complimentary/route.ts",import.meta.url),"utf8"),readFile(new URL("../app/api/ticketing/staff/manual-issuance/[id]/document/route.ts",import.meta.url),"utf8")]);assert.match(bank,/session\.role==="STAFF"/);assert.match(bank,/deliverTicketEmail/);assert.match(gift,/session\.role!=="SUPERADMIN"/);assert.match(gift,/status:403/);assert.match(gift,/deliverTicketEmail/);assert.match(document,/session\.role!=="SUPERADMIN"/);assert.match(document,/Cache-Control":"private, no-store"/);
+test("bank-transfer issuance is named, sends email and has no receipt storage dependency",async()=>{
+  const [bank,repository,form,environment,packageJson]=await Promise.all([readFile(new URL("../app/api/ticketing/staff/manual-issuance/bank-transfer/route.ts",import.meta.url),"utf8"),readFile(new URL("../lib/ticketing/manual-repository.ts",import.meta.url),"utf8"),readFile(new URL("../components/StaffManualIssuance.tsx",import.meta.url),"utf8"),readFile(new URL("../.env.example",import.meta.url),"utf8"),readFile(new URL("../package.json",import.meta.url),"utf8")]);
+  assert.match(bank,/getStaffSession\(request\)/);assert.match(bank,/deliverTicketEmail/);assert.doesNotMatch(bank,/receipt|manualDocumentStorage|AZURE_STORAGE/);assert.match(repository,/"VERIFIED_MANUAL"/);assert.match(repository,/INSERT INTO ticketing_attendees/);assert.match(repository,/INSERT INTO ticketing_tickets/);assert.match(repository,/hasTicketCapacity/);assert.doesNotMatch(repository,/document_storage_key|ManualDocumentMetadata/);assert.doesNotMatch(form,/name="receipt"|Contabile bonifico|multipart\/form-data/);assert.doesNotMatch(environment,/AZURE_STORAGE|NIS_TICKETING_DOCUMENTS_CONTAINER/);assert.doesNotMatch(packageJson,/@azure\/storage-blob/);
+});
+test("manual admin issuance remains restricted to SUPERADMIN and sends email",async()=>{
+  const gift=await readFile(new URL("../app/api/ticketing/staff/manual-issuance/complimentary/route.ts",import.meta.url),"utf8");assert.match(gift,/session\.role!=="SUPERADMIN"/);assert.match(gift,/status:403/);assert.match(gift,/deliverTicketEmail/);
 });
 test("staff dashboard exposes origins and invitation types while public admin tickets hide price and audit",async()=>{
   const [dashboard,page]=await Promise.all([readFile(new URL("../components/StaffParticipantsDashboard.tsx",import.meta.url),"utf8"),readFile(new URL("../app/biglietto/[qrToken]/page.tsx",import.meta.url),"utf8")]);for(const source of ["PAYPAL","BANK_TRANSFER","COMPANY","ADMIN"])assert.match(dashboard,new RegExp(source));for(const type of ["STAMPA","MEDIA","PRESS","OMAGGIO"])assert.match(dashboard,new RegExp(type));assert.match(page,/!company&&!admin/);assert.doesNotMatch(page,/transferReference|createdBy|document|CRO|TRN/);

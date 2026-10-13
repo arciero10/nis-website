@@ -13,7 +13,7 @@ export async function POST(request:Request){
   try{
     const existing=await findManualIssuanceByIdempotencyKey(idempotencyKey);if(existing){await Promise.all(existing.emailPayloads.map(payload=>deliverTicketEmail(payload)));return NextResponse.json({issuanceId:existing.issuanceId,source:existing.source,created:false,tickets:existing.tickets.map(({ticketCode})=>({ticketCode}))});}
     const input=parseAdminInput(await request.formData());if(!input)return NextResponse.json({message:"Controlla tipo invito, dati del destinatario e motivo."},{status:400});
-    const result=await createManualIssuance("nis-gala-2026",idempotencyKey,input,null,session);await Promise.all(result.emailPayloads.map(payload=>deliverTicketEmail(payload)));
+    const result=await createManualIssuance("nis-gala-2026",idempotencyKey,input,session);await Promise.all(result.emailPayloads.map(payload=>deliverTicketEmail(payload)));
     return NextResponse.json({issuanceId:result.issuanceId,source:result.source,created:result.created,tickets:result.tickets.map(({ticketCode})=>({ticketCode}))},{status:result.created?201:200});
   }catch(error){console.error("Admin ticket issuance failed",error instanceof Error?error.message:"unknown");return NextResponse.json({message:"Non è stato possibile creare i biglietti amministrativi."},{status:500});}
 }
