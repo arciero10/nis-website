@@ -1,18 +1,18 @@
 import {randomUUID} from "node:crypto";
 import type {PoolClient} from "pg";
 import {query,withTransaction} from "@/lib/ticketing/db";
-import type {AdminIssuanceInput,BankTransferIssuanceInput} from "@/lib/ticketing/manual-input";
+import type {AdminIssuanceInput,BankTransferIssuanceInput,PayPalCharityIssuanceInput} from "@/lib/ticketing/manual-input";
 import type {TicketEmailPayload} from "@/lib/ticketing/repository";
 import {hasTicketCapacity} from "@/lib/ticketing/rules";
 import {generateQrToken,generateTicketCode} from "@/lib/ticketing/security";
 import type {StaffSession} from "@/lib/ticketing/staff-auth";
 import type {InvitationType,StaffRole,TicketIssuanceSource} from "@/types/ticketing";
 
-export type ManualIssuanceResult={issuanceId:string;source:"BANK_TRANSFER"|"ADMIN";created:boolean;tickets:{ticketCode:string;qrToken:string}[];emailPayloads:TicketEmailPayload[]};
+export type ManualIssuanceResult={issuanceId:string;source:"PAYPAL_CHARITY"|"BANK_TRANSFER"|"ADMIN";created:boolean;tickets:{ticketCode:string;qrToken:string}[];emailPayloads:TicketEmailPayload[]};
 export type StaffTicketDetail={ticketCode:string;firstName:string;lastName:string;email:string;issuanceSource:TicketIssuanceSource;invitationType:InvitationType;paymentStatus:string;emailStatus:"PENDING"|"SENT"|"FAILED";emailSentAt:string|null;emailSendAttempts:number;emailLastError:string|null;createdAt:string;createdBy:string|null;createdByRole:StaffRole|null;declaredAmount:number|null;transferDate:string|null;transferReference:string|null;organization:string|null;reason:string|null;notes:string|null};
 
-type ManualInput=BankTransferIssuanceInput|AdminIssuanceInput;
-type ExistingRow={id:string;source:"BANK_TRANSFER"|"ADMIN";invitation_type:InvitationType;ticket_id:string;ticket_code:string;qr_token:string;first_name:string;last_name:string;email:string;category:TicketEmailPayload["category"];price:string;currency:string};
+type ManualInput=PayPalCharityIssuanceInput|BankTransferIssuanceInput|AdminIssuanceInput;
+type ExistingRow={id:string;source:"PAYPAL_CHARITY"|"BANK_TRANSFER"|"ADMIN";invitation_type:InvitationType;ticket_id:string;ticket_code:string;qr_token:string;first_name:string;last_name:string;email:string;category:TicketEmailPayload["category"];price:string;currency:string};
 
 async function existingResult(client:PoolClient,key:string):Promise<ManualIssuanceResult|null>{
   const result=await client.query<ExistingRow>("SELECT issuance.id,issuance.source,issuance.invitation_type,ticket.id AS ticket_id,ticket.ticket_code,ticket.qr_token,attendee.first_name,attendee.last_name,attendee.email,ticket.category,event.price,event.currency FROM ticketing_manual_issuances issuance JOIN ticketing_tickets ticket ON ticket.manual_issuance_id=issuance.id JOIN ticketing_attendees attendee ON attendee.id=ticket.attendee_id JOIN ticketing_events event ON event.id=ticket.event_id WHERE issuance.idempotency_key=$1 ORDER BY ticket.sequence_number",[key]);
@@ -28,13 +28,13 @@ export async function createManualIssuance(eventSlug:string,idempotencyKey:strin
     await client.query("SELECT pg_advisory_xact_lock(hashtext($1))",[idempotencyKey]);const existing=await existingResult(client,idempotencyKey);if(existing)return existing;
     const eventResult=await client.query<{id:string;capacity:number|null;price:string;currency:string;status:string}>("SELECT id,capacity,price,currency,status FROM ticketing_events WHERE slug=$1 FOR UPDATE",[eventSlug]);const event=eventResult.rows[0];if(!event||["CANCELLED","COMPLETED"].includes(event.status))throw new Error("Evento non disponibile.");
     const [committed,reserved]=await Promise.all([committedSeatCount(client,event.id),reservedSeatCount(client,event.id)]);if(!hasTicketCapacity(event.capacity,committed,input.quantity,reserved))throw new Error("Posti insufficienti per questa emissione.");
-    const issuanceId=randomUUID();const admin=input.source==="ADMIN";const invitationType:InvitationType=admin?input.invitationType:"STANDARD";
+    const issuanceId=randomUUID();const admin=input.source==="ADMIN";const charity=input.source==="PAYPAL_CHARITY";const invitationType:InvitationType=admin?input.invitationType:"STANDARD";const paymentDate=admin?null:charity?input.donationDate:input.transferDate;const paymentReference=admin?null:charity?input.paypalReference:input.transferReference;
     await client.query(`INSERT INTO ticketing_manual_issuances(id,event_id,idempotency_key,source,invitation_type,first_name,last_name,email,phone,quantity,payment_status,declared_amount,transfer_date,transfer_reference,complimentary_reason,complimentary_reason_other,organization,notes,created_by_staff_id,created_by_display_name,created_by_role,session_id)
-      VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22)`,[issuanceId,event.id,idempotencyKey,input.source,invitationType,input.firstName,input.lastName,input.email,input.phone??null,input.quantity,admin?"NOT_REQUIRED":"VERIFIED_MANUAL",admin?null:input.declaredAmount,admin?null:input.transferDate,admin?null:input.transferReference,admin?"OTHER":null,admin?input.reason:null,admin?input.organization:null,input.notes,session.operatorId,session.displayName,session.role,session.sessionId]);
+      VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22)`,[issuanceId,event.id,idempotencyKey,input.source,invitationType,input.firstName,input.lastName,input.email,"phone" in input?(input.phone??null):null,input.quantity,admin?"NOT_REQUIRED":"VERIFIED_MANUAL",admin?null:input.declaredAmount,paymentDate,paymentReference,admin?"OTHER":null,admin?input.reason:null,admin?input.organization:null,input.notes,session.operatorId,session.displayName,session.role,session.sessionId]);
     const tickets:ManualIssuanceResult["tickets"]=[];const emailPayloads:TicketEmailPayload[]=[];
     for(let position=1;position<=input.quantity;position++){
       const attendeeId=randomUUID();const ticketId=randomUUID();const ticketCode=generateTicketCode();const qrToken=generateQrToken();
-      await client.query("INSERT INTO ticketing_attendees(id,event_id,first_name,last_name,email,phone,company,source) VALUES($1,$2,$3,$4,$5,$6,$7,'STANDARD')",[attendeeId,event.id,input.firstName,input.lastName,input.email,input.phone??null,admin?input.organization:null]);
+      await client.query("INSERT INTO ticketing_attendees(id,event_id,first_name,last_name,email,phone,company,source) VALUES($1,$2,$3,$4,$5,$6,$7,'STANDARD')",[attendeeId,event.id,input.firstName,input.lastName,input.email,"phone" in input?(input.phone??null):null,admin?input.organization:null]);
       await client.query("INSERT INTO ticketing_tickets(id,event_id,attendee_id,order_id,partner_allocation_id,manual_issuance_id,issuance_source,invitation_type,ticket_code,qr_token,category,access_mode,status,sequence_number,total_quantity) VALUES($1,$2,$3,NULL,NULL,$4,$5,$6,$7,$8,$9,'ONE_SHOT','ACTIVE',$10,$11)",[ticketId,event.id,attendeeId,issuanceId,input.source,invitationType,ticketCode,qrToken,admin?"COMPLIMENTARY":"STANDARD",position,input.quantity]);
       tickets.push({ticketCode,qrToken});emailPayloads.push({ticketId,firstName:input.firstName,lastName:input.lastName,email:input.email,ticketCode,qrToken,category:"STANDARD",amount:admin?null:Number(event.price),currency:event.currency,source:"STANDARD",companyName:null,allocationType:null,issuanceSource:input.source,invitationType});
     }

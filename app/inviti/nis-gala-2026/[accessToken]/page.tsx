@@ -8,5 +8,5 @@ export default async function GalaInvitationPage({params}:{params:Promise<{acces
   const {accessToken}=await params;
   const [invitation,event,availability]=await Promise.all([ticketingRepository.findInvitationByAccessToken(accessToken),ticketingRepository.findEventBySlug("nis-gala-2026"),ticketingRepository.getEventAvailability("nis-gala-2026")]);
   if(!invitation||!event||!availability||invitation.eventId!==event.id)notFound();
-  return <GalaInvitationCheckout event={event} accessToken={accessToken} paypalClientId={process.env.PAYPAL_CLIENT_ID?.trim()??""} availableSeats={availability.available}/>;
+  return <GalaInvitationCheckout event={event} availableSeats={availability.available}/>;
 }

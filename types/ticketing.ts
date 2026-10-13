@@ -21,7 +21,7 @@ export type StaffRole="STAFF"|"SUPERADMIN";
 export type CheckInMethod="QR"|"MANUAL";
 export type CheckInStatus="ACTIVE"|"REVERSED";
 
-export const TICKET_ISSUANCE_SOURCES=["PAYPAL","BANK_TRANSFER","COMPANY","ADMIN"] as const;
+export const TICKET_ISSUANCE_SOURCES=["PAYPAL","PAYPAL_CHARITY","BANK_TRANSFER","COMPANY","ADMIN"] as const;
 export type TicketIssuanceSource=(typeof TICKET_ISSUANCE_SOURCES)[number];
 
 export const INVITATION_TYPES=["STANDARD","SPONSOR","DONATORE","AZIENDA","OSPITE","STAMPA","MEDIA","PRESS","OMAGGIO"] as const;

@@ -12,12 +12,19 @@ const amount=(value:string)=>{const parsed=Number(value.replace(",","."));return
 const validDate=(value:string)=>!value||(/^\d{4}-\d{2}-\d{2}$/.test(value)&&!Number.isNaN(Date.parse(`${value}T00:00:00Z`)));
 
 export type BankTransferIssuanceInput={source:"BANK_TRANSFER";firstName:string;lastName:string;email:string;phone?:string;quantity:number;declaredAmount:number;transferDate:string|null;transferReference:string|null;notes:string|null};
+export type PayPalCharityIssuanceInput={source:"PAYPAL_CHARITY";firstName:string;lastName:string;email:string;quantity:1;declaredAmount:number;donationDate:string|null;paypalReference:string|null;notes:string|null};
 export type AdminIssuanceInput={source:"ADMIN";invitationType:AdminInvitationType;firstName:string;lastName:string;email:string;phone?:string;quantity:number;organization:string|null;reason:string;notes:string|null};
 
 export function parseBankTransferInput(data:FormData){
   const firstName=clean(data.get("firstName"),80);const lastName=clean(data.get("lastName"),80);const email=clean(data.get("email"),254).toLowerCase();const phone=clean(data.get("phone"),40);const parsedQuantity=quantity(clean(data.get("quantity"),2));const declaredAmount=amount(clean(data.get("declaredAmount"),20));const transferDate=clean(data.get("transferDate"),10);const transferReference=clean(data.get("transferReference"),120);const notes=clean(data.get("notes"),1000);
   if(!firstName||!lastName||!validEmail(email)||parsedQuantity===null||declaredAmount===null||!validDate(transferDate))return null;
   return {source:"BANK_TRANSFER",firstName,lastName,email,phone:phone||undefined,quantity:parsedQuantity,declaredAmount,transferDate:transferDate||null,transferReference:transferReference||null,notes:notes||null} satisfies BankTransferIssuanceInput;
+}
+
+export function parsePayPalCharityInput(data:FormData){
+  const firstName=clean(data.get("firstName"),80);const lastName=clean(data.get("lastName"),80);const email=clean(data.get("email"),254).toLowerCase();const declaredAmount=amount(clean(data.get("declaredAmount"),20));const donationDate=clean(data.get("donationDate"),10);const paypalReference=clean(data.get("paypalReference"),120);const notes=clean(data.get("notes"),1000);
+  if(!firstName||!lastName||!validEmail(email)||declaredAmount===null||!validDate(donationDate))return null;
+  return {source:"PAYPAL_CHARITY",firstName,lastName,email,quantity:1,declaredAmount,donationDate:donationDate||null,paypalReference:paypalReference||null,notes:notes||null} satisfies PayPalCharityIssuanceInput;
 }
 
 export function parseAdminInput(data:FormData){

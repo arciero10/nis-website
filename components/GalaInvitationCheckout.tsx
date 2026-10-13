@@ -1,12 +1,11 @@
 import Image from "next/image";
-import TicketPurchaseForm from "@/components/TicketPurchaseForm";
 import {formatEventPrice,NIS_GALA_DETAILS} from "@/data/ticketing";
 import type {Event} from "@/types/ticketing";
 
-type InvitationCredential={accessToken:string;invitationAlias?:never}|{accessToken?:never;invitationAlias:string};
+const PAYPAL_CHARITY_URL="https://www.paypal.com/fundraiser/charity/6169624";
 
-export default function GalaInvitationCheckout({event,paypalClientId,availableSeats,...credential}:{event:Event;paypalClientId:string;availableSeats:number|null}&InvitationCredential){
-  const maxQuantity=availableSeats===null?10:Math.min(10,availableSeats);const soldOut=maxQuantity===0;
+export default function GalaInvitationCheckout({event,availableSeats}:{event:Event;availableSeats:number|null}){
+  const soldOut=availableSeats===0;
   return <div className="nis-gala-invite-page">
     <header className="nis-gala-hero">
       <div className="nis-gala-tricolore" aria-hidden="true"><span/><span/><span/></div>
@@ -23,7 +22,7 @@ export default function GalaInvitationCheckout({event,paypalClientId,availableSe
         <p className="nis-gala-confidential">Invito riservato e confidenziale. Evento a numero chiuso.</p>
       </div>
     </header>
-    <section className="ticketing-checkout-section" aria-labelledby="gala-checkout-title"><div className="shell ticketing-checkout-layout"><div className="ticketing-form-panel"><p className="ticketing-section-label">PRENOTAZIONE NOMINATIVA</p><h2 id="gala-checkout-title">{soldOut?"Posti esauriti":"I dati dei partecipanti"}</h2>{soldOut?<div className="ticketing-sold-out" role="status"><strong>POSTI ESAURITI</strong><p>Non è più possibile acquistare ingressi per questo evento.</p></div>:<TicketPurchaseForm {...credential} paypalClientId={paypalClientId} unitPrice={event.price} maxQuantity={maxQuantity}/>}</div><aside className="ticketing-order-summary" aria-label="Riepilogo ordine"><span>RIEPILOGO</span><h2>{event.title}</h2><p className="ticketing-summary-date">{NIS_GALA_DETAILS.dateLabel} · Roma</p><div><span>Ingressi</span><strong>{soldOut?"Non disponibili":"Selezionabili nel modulo"}</strong></div><div className="ticketing-order-total"><span>Prezzo unitario</span><strong>{formatEventPrice(event)}</strong></div><p>Categoria Standard · Accesso singolo</p></aside></div></section>
+    <section className="ticketing-checkout-section" aria-labelledby="gala-checkout-title"><div className="shell ticketing-checkout-layout"><div className="ticketing-form-panel"><p className="ticketing-section-label">PARTECIPAZIONE AL GALA</p><h2 id="gala-checkout-title">{soldOut?"Posti esauriti":"Sostieni i progetti NIS"}</h2>{soldOut?<div className="ticketing-sold-out" role="status"><strong>POSTI ESAURITI</strong><p>Non è più possibile richiedere inviti per questo evento.</p></div>:<div className="ticketing-charity-donation"><p>La partecipazione al NIS Gala Charity Night prevede una donazione di 200 €.<br/>Dopo aver effettuato la donazione, il tuo invito verrà emesso e inviato via email dopo la verifica.</p><a className="btn btn-blue ticketing-submit" href={PAYPAL_CHARITY_URL} rel="noopener noreferrer">EFFETTUA UNA DONAZIONE DI 200 €</a><small>Il semplice click sul collegamento non genera alcun biglietto.</small></div>}</div><aside className="ticketing-order-summary" aria-label="Riepilogo"><span>RIEPILOGO</span><h2>{event.title}</h2><p className="ticketing-summary-date">{NIS_GALA_DETAILS.dateLabel} · Roma</p><div><span>Partecipazione</span><strong>{soldOut?"Non disponibile":"Invito nominativo"}</strong></div><div className="ticketing-order-total"><span>Donazione prevista</span><strong>{formatEventPrice(event)}</strong></div><p>Emissione dopo verifica della donazione</p></aside></div></section>
     <footer className="nis-gala-footer"><Image src="/logo/nis-logo-round-transparent.png" width={54} height={54} alt="Nazionale Italiana Sanitari"/><div><strong>Nazionale Italiana Sanitari</strong><span>Ticketing ufficiale NIS · Ingresso nominativo</span></div></footer>
   </div>;
 }
