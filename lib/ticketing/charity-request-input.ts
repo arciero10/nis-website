@@ -1,0 +1,12 @@
+import {validTicketQuantity} from "@/lib/ticketing/rules";
+
+const emailPattern=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const clean=(value:unknown,max:number)=>typeof value==="string"?value.replace(/[\u0000-\u001f\u007f]+/g," ").replace(/\s+/g," ").trim().slice(0,max):"";
+
+export type CharityParticipationInput={requestId:string;firstName:string;lastName:string;email:string;phone:string|null;quantity:number;privacyAccepted:true};
+
+export function parseCharityParticipationInput(payload:unknown):CharityParticipationInput|null{
+  const value=payload&&typeof payload==="object"?payload as Record<string,unknown>:{};const requestId=clean(value.requestId,36);const firstName=clean(value.firstName,80);const lastName=clean(value.lastName,80);const email=clean(value.email,254).toLowerCase();const phone=clean(value.phone,40);const quantity=Number(value.quantity);
+  if(!/^[0-9a-f-]{36}$/i.test(requestId)||!firstName||!lastName||!emailPattern.test(email)||!validTicketQuantity(quantity)||value.privacyAccepted!==true)return null;
+  return {requestId,firstName,lastName,email,phone:phone||null,quantity,privacyAccepted:true};
+}
