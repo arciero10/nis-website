@@ -24,10 +24,11 @@ export type CheckInStatus="ACTIVE"|"REVERSED";
 export const TICKET_ISSUANCE_SOURCES=["PAYPAL","PAYPAL_CHARITY","BANK_TRANSFER","COMPANY","ADMIN"] as const;
 export type TicketIssuanceSource=(typeof TICKET_ISSUANCE_SOURCES)[number];
 
-export const INVITATION_TYPES=["STANDARD","SPONSOR","DONATORE","AZIENDA","OSPITE","STAMPA","MEDIA","PRESS","OMAGGIO"] as const;
+export const INVITATION_TYPES=["STANDARD","SPONSOR","DONATORE","AZIENDA","OSPITE","STAMPA","MEDIA","PRESS","OMAGGIO_NIS"] as const;
 export type InvitationType=(typeof INVITATION_TYPES)[number];
-export const ADMIN_INVITATION_TYPES=["STAMPA","MEDIA","PRESS","OMAGGIO"] as const;
+export const ADMIN_INVITATION_TYPES=["STAMPA","MEDIA","PRESS","OMAGGIO_NIS"] as const;
 export type AdminInvitationType=(typeof ADMIN_INVITATION_TYPES)[number];
+export type StaffInvitationTypeFilter="ALL"|"OMAGGIO"|InvitationType;
 
 export const COMPLIMENTARY_REASONS=["INSTITUTIONAL_GUEST","NIS_GUEST","SPEAKER","STAFF_ORGANIZATION","COURTESY","OTHER"] as const;
 export type ComplimentaryReason=(typeof COMPLIMENTARY_REASONS)[number];

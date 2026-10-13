@@ -8,7 +8,7 @@ const locationUrl="https://www.google.com/maps/search/?api=1&query=Another+Studi
 const parkingUrl="https://www.google.com/maps/search/?api=1&query=Parking+Pietralata%2C+Via+del+Casale+Rocchi+3%2C+Roma";
 const escapeHtml=(value:string)=>value.replace(/[&<>"']/g,character=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"})[character]??character);
 const formatPrice=(amount:number,currency:string)=>new Intl.NumberFormat("it-IT",{style:"currency",currency}).format(amount);
-const invitationTypeLabel=(type:InvitationType)=>type.charAt(0)+type.slice(1).toLowerCase();
+const invitationTypeLabel=(type:InvitationType)=>type==="OMAGGIO_NIS"?"Omaggio NIS":type.charAt(0)+type.slice(1).toLowerCase();
 export function buildTicketUrl(token:string){return `${origin}/biglietto/${encodeURIComponent(token)}`;}
 export function buildTicketPdfUrl(token:string){return `${origin}/api/ticketing/tickets/${encodeURIComponent(token)}/pdf`;}
 

@@ -1,7 +1,7 @@
 import {NextResponse} from "next/server";
 import {hasValidStaffSession} from "@/lib/ticketing/staff-auth";
 import {ticketingRepository} from "@/lib/ticketing/repository";
-import {INVITATION_TYPES,type InvitationType,type TicketIssuanceSource} from "@/types/ticketing";
+import {INVITATION_TYPES,type StaffInvitationTypeFilter,type TicketIssuanceSource} from "@/types/ticketing";
 
 export const runtime="nodejs";
 
@@ -12,7 +12,7 @@ export async function GET(request:Request){
   if(!["ALL","PENDING","ENTERED"].includes(rawFilter))return NextResponse.json({message:"Filtro non valido."},{status:400});
   const rawType=params.get("type")?.toUpperCase()??"ALL";
   if(!["ALL","PAYPAL","PAYPAL_CHARITY","BANK_TRANSFER","COMPANY","ADMIN"].includes(rawSource))return NextResponse.json({message:"Origine non valida."},{status:400});
-  if(rawType!=="ALL"&&!INVITATION_TYPES.includes(rawType as InvitationType))return NextResponse.json({message:"Tipo invito non valido."},{status:400});
-  try{return NextResponse.json(await ticketingRepository.getStaffParticipants("nis-gala-2026",search,rawFilter as "ALL"|"PENDING"|"ENTERED",rawSource as "ALL"|TicketIssuanceSource,rawType as "ALL"|InvitationType));}
+  if(!["ALL","OMAGGIO"].includes(rawType)&&!INVITATION_TYPES.includes(rawType as (typeof INVITATION_TYPES)[number]))return NextResponse.json({message:"Tipo invito non valido."},{status:400});
+  try{return NextResponse.json(await ticketingRepository.getStaffParticipants("nis-gala-2026",search,rawFilter as "ALL"|"PENDING"|"ENTERED",rawSource as "ALL"|TicketIssuanceSource,rawType as StaffInvitationTypeFilter));}
   catch(error){console.error("Staff participants dashboard failed",error instanceof Error?error.message:"unknown");return NextResponse.json({message:"Dashboard temporaneamente non disponibile."},{status:500});}
 }

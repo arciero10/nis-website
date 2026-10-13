@@ -1,6 +1,6 @@
 import type {AdminInvitationType,ComplimentaryReason} from "@/types/ticketing";
 
-const ADMIN_TYPES:AdminInvitationType[]=["STAMPA","MEDIA","PRESS","OMAGGIO"];
+const ADMIN_TYPES:AdminInvitationType[]=["STAMPA","MEDIA","PRESS","OMAGGIO_NIS"];
 const LEGACY_REASONS:ComplimentaryReason[]=["INSTITUTIONAL_GUEST","NIS_GUEST","SPEAKER","STAFF_ORGANIZATION","COURTESY","OTHER"];
 
 export const MANUAL_TICKET_MAX_QUANTITY=10;
@@ -35,7 +35,7 @@ export function parseAdminInput(data:FormData){
 
 export function parseComplimentaryInput(data:FormData){
   const legacyReason=clean(data.get("reason"),40) as ComplimentaryReason;const reasonOther=clean(data.get("reasonOther"),300);if(!LEGACY_REASONS.includes(legacyReason)||(legacyReason==="OTHER"&&!reasonOther))return null;
-  data.set("invitationType","OMAGGIO");data.set("reason",reasonOther||legacyReason.replaceAll("_"," "));
+  data.set("invitationType","OMAGGIO_NIS");data.set("reason",reasonOther||legacyReason.replaceAll("_"," "));
   return parseAdminInput(data);
 }
 

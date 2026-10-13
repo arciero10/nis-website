@@ -20,7 +20,7 @@ export async function POST(request:Request){
     const credential=accessToken?{accessToken}:{publicSlug:invitationAlias};
     const checkout=await ticketingRepository.createPendingCheckout("nis-gala-2026",credential,requestId,participants,payPalEnvironment());
     if(checkout.order.providerOrderId) return NextResponse.json({orderId:checkout.order.providerOrderId});
-    try{const providerOrderId=await createPayPalOrder({internalOrderId:checkout.order.id,amount:checkout.order.amount.toFixed(2),currency:checkout.order.currency,description:checkout.event.title});await ticketingRepository.attachProviderOrder(checkout.order.id,providerOrderId);return NextResponse.json({orderId:providerOrderId});}
+    try{const providerOrderId=await createPayPalOrder({internalOrderId:checkout.order.id,amount:checkout.order.amount.toFixed(2),unitAmount:checkout.event.price.toFixed(2),quantity,currency:checkout.order.currency,description:checkout.event.title});await ticketingRepository.attachProviderOrder(checkout.order.id,providerOrderId);return NextResponse.json({orderId:providerOrderId});}
     catch(error){await ticketingRepository.markOrderFailed(checkout.order.id);throw error;}
   }catch(error){if(error instanceof TicketingConflictError) return NextResponse.json({message:error.message,code:error.code},{status:409});console.error("Ticketing create-order failed",error instanceof Error?error.message:"unknown");return NextResponse.json({message:"Non è stato possibile inizializzare il pagamento."},{status:500});}
 }

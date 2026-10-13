@@ -56,7 +56,7 @@ export function invitationTypeLabel(type:InvitationType){
   if(type==="STAMPA")return "Stampa";
   if(type==="MEDIA")return "Media";
   if(type==="PRESS")return "Press";
-  return "Omaggio";
+  return "Omaggio NIS";
 }
 
 export function complimentaryReasonLabel(reason:ComplimentaryReason|null){

@@ -1,5 +1,6 @@
 import {validateCompletedPayment} from "@/lib/ticketing/rules";
 import {resolvePayPalEnvironment,type PayPalProviderEnvironment} from "@/lib/ticketing/paypal/environment";
+import {buildPayPalOrderPayload,type PayPalOrderPayloadInput} from "@/lib/ticketing/paypal/order-payload";
 
 let cachedToken:{value:string;expiresAt:number;configurationKey:string}|null=null;
 
@@ -33,8 +34,8 @@ async function paypalJson(path:string,init:RequestInit={}){
   return body;
 }
 
-export async function createPayPalOrder(input:{internalOrderId:string;amount:string;currency:string;description:string}){
-  const body=await paypalJson("/v2/checkout/orders",{method:"POST",headers:{"PayPal-Request-Id":input.internalOrderId},body:JSON.stringify({intent:"CAPTURE",purchase_units:[{reference_id:input.internalOrderId,custom_id:input.internalOrderId,description:input.description,amount:{currency_code:input.currency,value:input.amount}}]})});
+export async function createPayPalOrder(input:PayPalOrderPayloadInput){
+  const body=await paypalJson("/v2/checkout/orders",{method:"POST",headers:{"PayPal-Request-Id":input.internalOrderId},body:JSON.stringify(buildPayPalOrderPayload(input))});
   if(typeof body.id!=="string") throw new Error("PayPal non ha restituito l'identificativo ordine.");return body.id;
 }
 
