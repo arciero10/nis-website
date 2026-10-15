@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
   outputFileTracingRoot: process.cwd(),
   skipTrailingSlashRedirect: true,
   images: {
-    unoptimized: true,
+    minimumCacheTTL: 86400,
   },
 };
 
