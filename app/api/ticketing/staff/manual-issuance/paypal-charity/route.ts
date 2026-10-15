@@ -14,5 +14,5 @@ export async function POST(request:Request){
     const input=parsePayPalCharityInput(await request.formData());if(!input)return NextResponse.json({message:"Controlla nome, cognome, email, importo e data della donazione."},{status:400});
     const result=await createManualIssuance("nis-gala-2026",idempotencyKey,input,session);await Promise.all(result.emailPayloads.map(payload=>deliverTicketEmail(payload)));
     return NextResponse.json({issuanceId:result.issuanceId,source:result.source,created:result.created,tickets:result.tickets.map(({ticketCode})=>({ticketCode}))},{status:result.created?201:200});
-  }catch(error){console.error("Manual PayPal Charity ticket issuance failed",error instanceof Error?error.message:"unknown");return NextResponse.json({message:"Non è stato possibile emettere il biglietto. Riprova senza ripetere l'invio."},{status:500});}
+  }catch(error){const message=error instanceof Error?error.message:"Emissione non riuscita.";console.error("Manual PayPal Charity ticket issuance failed",message);const conflict=/già utilizzato|biglietto attivo|Posti insufficienti/.test(message);return NextResponse.json({message:conflict?message:"Non è stato possibile emettere il biglietto. Riprova senza ripetere l'invio."},{status:conflict?409:500});}
 }
