@@ -5,6 +5,8 @@ import MetricStrip from "@/components/MetricStrip";
 import ProjectFeature from "@/components/ProjectFeature";
 import SectorGrid from "@/components/SectorGrid";
 import StructuredData from "@/components/StructuredData";
+import GalaTakeover from "@/components/GalaTakeover";
+import GalaHomeBanner from "@/components/GalaHomeBanner";
 import {createPageMetadata,organizationJsonLd,websiteJsonLd} from "@/lib/seo";
 
 export const metadata:Metadata=createPageMetadata({
@@ -15,6 +17,7 @@ export const metadata:Metadata=createPageMetadata({
 
 export default function Home(){return <>
   <StructuredData data={[organizationJsonLd,websiteJsonLd]}/>
+  <GalaTakeover/>
   <section className="home-hero">
     <Image className="home-bg-image" src="/images/hero-home.jpg" alt="Professionisti sanitari, sportivi e volontari NIS" fill priority sizes="100vw"/>
     <div className="home-overlay"/>
@@ -27,6 +30,8 @@ export default function Home(){return <>
     </div>
     <div className="tricolor-swoosh"/>
   </section>
+
+  <GalaHomeBanner/>
 
   <MetricStrip/>
 

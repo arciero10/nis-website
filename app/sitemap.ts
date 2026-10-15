@@ -14,6 +14,7 @@ export default function sitemap():MetadataRoute.Sitemap{
     {path:"/settori",changeFrequency:"monthly",priority:.8},
     ...sectors.map(sector=>({path:`/settori/${sector.slug}`,changeFrequency:"monthly" as const,priority:sector.slug==="calcio"?.8:.6})),
     {path:"/eventi",changeFrequency:"weekly",priority:.8},
+    {path:"/eventi/nis-gala-2026",changeFrequency:"weekly",priority:.9},
     {path:"/news",changeFrequency:"weekly",priority:.8},
     {path:"/dicono-di-noi",changeFrequency:"weekly",priority:.7},
     {path:"/5x1000",changeFrequency:"yearly",priority:.7},
