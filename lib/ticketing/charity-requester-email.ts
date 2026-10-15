@@ -1,5 +1,6 @@
 import {getEmailProvider} from "@/lib/email/provider";
 import {GALA_REPLY_TO} from "@/lib/ticketing/email-config";
+import {formatPersonFullName} from "@/lib/ticketing/name-format";
 import {
   claimCharityRequesterEmail,
   markCharityRequesterEmailFailed,
@@ -12,7 +13,7 @@ const escapeHtml=(value:string)=>value.replace(/[&<>"']/g,character=>({"&":"&amp
 const amount=(value:number)=>new Intl.NumberFormat("it-IT",{style:"currency",currency:"EUR"}).format(value);
 
 export function buildCharityRequesterEmail(request:CharityRequest){
-  const greeting=escapeHtml(`${request.firstName} ${request.lastName}`);
+  const displayName=formatPersonFullName(request.firstName,request.lastName);const greeting=escapeHtml(displayName);
   const requestCode=escapeHtml(request.requestCode);
   const expectedAmount=amount(request.expectedAmount);
   const subject=`NIS Gala - richiesta ${request.requestCode} ricevuta`;
@@ -21,7 +22,7 @@ export function buildCharityRequesterEmail(request:CharityRequest){
     "NIS GALA CHARITY NIGHT",
     "Richiesta presa in carico",
     "",
-    `Gentile ${request.firstName} ${request.lastName},`,
+    `Gentile ${displayName},`,
     "abbiamo registrato correttamente la tua richiesta di partecipazione.",
     "",
     `Codice richiesta: ${request.requestCode}`,

@@ -1,4 +1,5 @@
 import type {DigitalTicketRecord} from "@/lib/ticketing/repository";
+import {formatPersonFullName} from "@/lib/ticketing/name-format";
 import {allocationTypeLabel,buildTicketQrPayload,ticketStatusLabel} from "@/lib/ticketing/presentation";
 
 export type WalletTicketModel={
@@ -25,7 +26,7 @@ export function buildWalletTicketModel(record:DigitalTicketRecord):WalletTicketM
     eventTitle:record.event.title,
     statusLabel:ticketStatusLabel(record.ticket.status),
     companyInvitation,
-    holderName:companyInvitation?null:`${record.attendee.firstName} ${record.attendee.lastName}`,
+    holderName:companyInvitation?null:formatPersonFullName(record.attendee.firstName,record.attendee.lastName),
     companyName:companyInvitation?record.companyName:null,
     allocationType:companyInvitation?allocationTypeLabel(record.allocationType??"AZIENDA"):null,
     sequenceNumber:companyInvitation?(record.ticket.sequenceNumber??1):null,
