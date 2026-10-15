@@ -9,7 +9,7 @@ const {availableTicketCapacity,checkInEligibility,hasTicketCapacity,invitationBl
 const presentationSource=await readFile(new URL("../lib/ticketing/presentation.ts",import.meta.url),"utf8");
 const presentationCompiled=ts.transpileModule(presentationSource,{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText;
 const {buildTicketQrPayload,extractTicketQrToken,findTicketPosition,ticketStatusLabel}=await import(`data:text/javascript;base64,${Buffer.from(presentationCompiled).toString("base64")}`);
-const emailContentSource=await readFile(new URL("../lib/ticketing/email-content.ts",import.meta.url),"utf8");
+const emailContentSource=(await readFile(new URL("../lib/ticketing/email-content.ts",import.meta.url),"utf8")).replace(/^import \{GALA_REPLY_TO\} from .*;\r?\n/m,'const GALA_REPLY_TO="info@nazionaleitalianasanitari.com";\n');
 const emailContentCompiled=ts.transpileModule(emailContentSource,{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText;
 const {buildTicketEmailContent,buildTicketUrl}=await import(`data:text/javascript;base64,${Buffer.from(emailContentCompiled).toString("base64")}`);
 const partnerEmailContentSource=await readFile(new URL("../lib/ticketing/partner-email-content.ts",import.meta.url),"utf8");
@@ -161,7 +161,8 @@ test("non-completed PayPal events do not dispatch ticket email",async()=>{const 
 test("ticket email claims are idempotent across capture retries",async()=>{const repository=await readFile(new URL("../lib/ticketing/repository.ts",import.meta.url),"utf8");assert.match(repository,/email_sent_at IS NULL/);assert.match(repository,/email_claimed_at<NOW\(\)-INTERVAL '10 minutes'/);assert.match(repository,/email_send_attempts=email_send_attempts\+1/);});
 test("multi-ticket confirmation sends one email per participant",async()=>{const service=await readFile(new URL("../lib/ticketing/ticket-email.ts",import.meta.url),"utf8");assert.match(service,/confirmation\.tickets\.map/);assert.match(service,/confirmation\.attendees\[index\]/);assert.match(service,/to:payload\.email/);});
 test("email provider failure preserves tickets and records a retryable failure",async()=>{const [service,repository]=await Promise.all([readFile(new URL("../lib/ticketing/ticket-email.ts",import.meta.url),"utf8"),readFile(new URL("../lib/ticketing/repository.ts",import.meta.url),"utf8")]);assert.match(service,/markTicketEmailFailed/);assert.match(service,/status:"FAILED"/);assert.doesNotMatch(service,/DELETE FROM ticketing_tickets|payment_status='FAILED'/);assert.match(repository,/email_last_error=\$2/);});
-test("ticket email uses canonical ticket and PDF URLs and escapes participant content",()=>{const url=buildTicketUrl("opaque_token-123");assert.equal(url,"https://www.nazionaleitalianasanitari.com/biglietto/opaque_token-123");const content=buildTicketEmailContent({firstName:"Mario <script>",lastName:"Rossi",ticketCode:"NIS26-ABC12345",category:"STANDARD",amount:200,currency:"EUR",qrToken:"opaque_token-123"});assert.match(content.html,/Mario &lt;script&gt; Rossi/);assert.match(content.html,/APRI BIGLIETTO/);assert.match(content.html,/SCARICA PDF/);assert.match(content.html,/nis-gala-2026-ticket-hero\.png/);assert.match(content.html,/Another Studio/);assert.match(content.html,/Parking Pietralata/);assert.match(content.html,/Apri location/);assert.match(content.html,/Apri parcheggio/);assert.match(content.text,/Scarica PDF/);});
+test("ticket email uses canonical ticket and PDF URLs and escapes participant content",()=>{const url=buildTicketUrl("opaque_token-123");assert.equal(url,"https://www.nazionaleitalianasanitari.com/biglietto/opaque_token-123");const content=buildTicketEmailContent({firstName:"Mario <script>",lastName:"Rossi",ticketCode:"NIS26-ABC12345",category:"STANDARD",amount:200,currency:"EUR",qrToken:"opaque_token-123"});assert.match(content.html,/Mario &lt;script&gt; Rossi/);assert.match(content.html,/APRI BIGLIETTO/);assert.match(content.html,/SCARICA PDF/);assert.match(content.html,/nis-gala-2026-ticket-hero\.png/);assert.match(content.html,/Another Studio/);assert.match(content.html,/Parking Pietralata/);assert.match(content.html,/Apri location/);assert.match(content.html,/Apri parcheggio/);assert.match(content.html,/mailto:info@nazionaleitalianasanitari\.com/);assert.match(content.text,/rispondere direttamente a questa email.*info@nazionaleitalianasanitari\.com/);assert.match(content.text,/Scarica PDF/);});
+test("Gala acknowledgement and ticket delivery set the official reply-to address",async()=>{const [requester,ticket,configuration]=await Promise.all([readFile(new URL("../lib/ticketing/charity-requester-email.ts",import.meta.url),"utf8"),readFile(new URL("../lib/ticketing/ticket-email.ts",import.meta.url),"utf8"),readFile(new URL("../lib/ticketing/email-config.ts",import.meta.url),"utf8")]);assert.match(configuration,/GALA_REPLY_TO="info@nazionaleitalianasanitari\.com"/);assert.match(requester,/replyTo:GALA_REPLY_TO/);assert.match(ticket,/replyTo:GALA_REPLY_TO/);assert.match(requester,/mailto:\$\{GALA_REPLY_TO\}/);});
 test("staff resend is authenticated and reuses the existing ticket",async()=>{const [route,service]=await Promise.all([readFile(new URL("../app/api/ticketing/staff/resend-ticket/route.ts",import.meta.url),"utf8"),readFile(new URL("../lib/ticketing/ticket-email.ts",import.meta.url),"utf8")]);assert.match(route,/hasValidStaffSession\(request\)/);assert.match(route,/resendTicketEmail\(ticketCode\)/);assert.match(service,/findTicketEmailPayload\(ticketCode\)/);assert.doesNotMatch(service,/generateQrToken|INSERT INTO ticketing_tickets/);});
 test("Microsoft Graph obtains an app-only token, sends from the NIS mailbox and reuses the cached token",async()=>{
   const restore=withMicrosoftGraphEnvironment();
@@ -173,7 +174,7 @@ test("Microsoft Graph obtains an app-only token, sends from the NIS mailbox and 
       return new Response(null,{status:202});
     };
     const provider=new MicrosoftGraphEmailProvider(fetcher);
-    const message={to:"partecipante@example.com",subject:"NIS Gala Charity Night - Il tuo biglietto",text:"Biglietto NIS",html:"<strong>Biglietto NIS</strong>"};
+    const message={to:"partecipante@example.com",replyTo:"info@nazionaleitalianasanitari.com",subject:"NIS Gala Charity Night - Il tuo biglietto",text:"Biglietto NIS",html:"<strong>Biglietto NIS</strong>"};
     await provider.send(message);
     await provider.send({...message,to:"secondo@example.com"});
 
@@ -192,6 +193,7 @@ test("Microsoft Graph obtains an app-only token, sends from the NIS mailbox and 
     assert.equal(payload.message.from.emailAddress.address,"biglietti@nazionaleitalianasanitari.com");
     assert.equal(payload.message.from.emailAddress.name,"Biglietti NIS");
     assert.equal(payload.message.toRecipients[0].emailAddress.address,"partecipante@example.com");
+    assert.equal(payload.message.replyTo[0].emailAddress.address,"info@nazionaleitalianasanitari.com");
     assert.equal(payload.saveToSentItems,true);
   }finally{restore();}
 });

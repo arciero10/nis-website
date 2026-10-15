@@ -1,5 +1,6 @@
 import {getEmailProvider} from "@/lib/email/provider";
 import {buildTicketEmailContent} from "@/lib/ticketing/email-content";
+import {GALA_REPLY_TO} from "@/lib/ticketing/email-config";
 import {buildPartnerInvitationEmailContent} from "@/lib/ticketing/partner-email-content";
 import {ticketingRepository,type TicketConfirmation,type TicketEmailPayload} from "@/lib/ticketing/repository";
 import {walletLinksForToken} from "@/lib/ticketing/wallet/config";
@@ -7,7 +8,7 @@ import {walletLinksForToken} from "@/lib/ticketing/wallet/config";
 export async function deliverTicketEmail(payload:TicketEmailPayload,force=false){
   try{if(!await ticketingRepository.claimTicketEmail(payload.ticketId,force))return {status:"SKIPPED" as const};}
   catch{console.error("Ticket email claim failed");return {status:"FAILED" as const};}
-  try{const content=buildTicketEmailContent({...payload,walletLinks:walletLinksForToken(payload.qrToken)});await getEmailProvider().send({to:payload.email,subject:content.subject,text:content.text,html:content.html});await ticketingRepository.markTicketEmailSent(payload.ticketId);return {status:"SENT" as const};}
+  try{const content=buildTicketEmailContent({...payload,walletLinks:walletLinksForToken(payload.qrToken)});await getEmailProvider().send({to:payload.email,replyTo:GALA_REPLY_TO,subject:content.subject,text:content.text,html:content.html});await ticketingRepository.markTicketEmailSent(payload.ticketId);return {status:"SENT" as const};}
   catch(error){try{await ticketingRepository.markTicketEmailFailed(payload.ticketId,error instanceof Error?error.message:"Errore provider email");}catch{console.error("Ticket email failure state could not be saved");}console.error("Ticket email delivery failed");return {status:"FAILED" as const};}
 }
 
