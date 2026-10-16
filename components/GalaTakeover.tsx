@@ -52,11 +52,14 @@ export default function GalaTakeover(){
         <Image src={galaPromotion.artwork} alt="The NIS Gala Charity Night, 28 ottobre 2026, Roma" fill priority sizes="(max-width: 720px) calc(100vw - 32px), 58vw"/>
       </div>
       <div className="gala-takeover-content">
-        <p className="gala-kicker">{galaPromotion.date} · {galaPromotion.location}</p>
-        <h2 id="gala-takeover-title">{galaPromotion.title}<span>{galaPromotion.subtitle}</span></h2>
+        <div className="gala-takeover-event-meta" aria-label="Data e luogo dell'evento">
+          <span>28 OTTOBRE 2026</span>
+          <span>ANOTHER STUDIO · ROMA</span>
+        </div>
+        <h2 id="gala-takeover-title"><span className="gala-takeover-title-line">THE NIS GALA 2026</span><span className="gala-takeover-subtitle">CHARITY NIGHT</span></h2>
         <p id="gala-takeover-description">{galaPromotion.description}</p>
         <div className="gala-takeover-actions">
-          <Link href={galaPromotion.checkoutPath} className="btn gala-primary-cta" onClick={dismiss}>SCOPRI L&apos;EVENTO</Link>
+          <Link href="/i/gala-2026" className="btn gala-primary-cta" onClick={dismiss}>ACQUISTA IL BIGLIETTO</Link>
           <button type="button" className="gala-continue" onClick={dismiss}>CONTINUA AL SITO</button>
         </div>
       </div>
