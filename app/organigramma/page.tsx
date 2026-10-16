@@ -55,7 +55,15 @@ const governanceRoles=[
   {role:"Segreteria del Direttivo",name:"Denise Donniacuo",details:["Responsabile Segreteria del Direttivo"]},
 ];
 
-const council=["Joseph Fiore","Luca Cipriano","Edoardo Marcucci","Ludovica Rossetti","Flavio Moretti","Patrizio Pasqualini","Dott.ssa Cristina Fiore"];
+const council=[
+  {name:"Joseph Fiore",email:"joseph.fiore@nazionaleitalianasanitari.com"},
+  {name:"Luca Cipriano",email:"luca.cipriano@nazionaleitalianasanitari.com"},
+  {name:"Edoardo Marcucci",email:"edoardo.marcucci@nazionaleitalianasanitari.com"},
+  {name:"Ludovica Rossetti",email:"ludovica.rossetti@nazionaleitalianasanitari.com"},
+  {name:"Flavio Moretti",email:"flavio.moretti@nazionaleitalianasanitari.com"},
+  {name:"Patrizio Pasqualini",email:"ufficiostampa@nazionaleitalianasanitari.com"},
+  {name:"Dott.ssa Cristina Fiore",email:"cristina.fiore@nazionaleitalianasanitari.com"},
+];
 
 const eventTeam=[
   {role:"Direttore Organizzazione Eventi",name:"Flavio Moretti",details:["Membro del Consiglio Direttivo","Manager Food & Beverage"]},
@@ -139,7 +147,7 @@ export default function OrganigrammaPage(){return <>
         <div className="org-entry-grid org-governance-leaders">{governanceRoles.slice(0,3).map(person=><PersonEntry key={person.role} {...person}/>)}</div>
         <div className="org-council">
           <div className="org-subheading"><p>Consiglio Direttivo</p><h3>Componenti</h3></div>
-          <ul>{council.map(name=><li key={name}><OrgAvatar name={name}/><span>{name}</span>{personEmails[name]&&<EmailLink email={personEmails[name]}/>}</li>)}</ul>
+          <ul>{council.map(({name,email})=><li key={name}><OrgAvatar name={name}/><span>{name}</span><EmailLink email={email}/></li>)}</ul>
         </div>
         <div className="org-entry-grid org-management-grid">{governanceRoles.slice(3).map(person=><PersonEntry key={person.role} {...person}/>)}</div>
         <div className="org-committee-section">
