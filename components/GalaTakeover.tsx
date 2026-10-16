@@ -5,8 +5,7 @@ import Link from "next/link";
 import {useEffect,useRef,useState} from "react";
 import {galaPromotion} from "@/data/gala-promotion";
 
-const STORAGE_KEY="nis-gala-takeover-dismissed-at-v2";
-const DISPLAY_INTERVAL=24*60*60*1000;
+const STORAGE_KEY="nis-gala-takeover-dismissed-session-v1";
 
 export default function GalaTakeover(){
   const [open,setOpen]=useState(false);
@@ -15,9 +14,9 @@ export default function GalaTakeover(){
 
   useEffect(()=>{
     if(!galaPromotion.enabled)return;
-    let dismissedAt=0;
-    try{dismissedAt=Number(window.localStorage.getItem(STORAGE_KEY)??0);}catch{/* Mostra comunque il contenuto se lo storage non è disponibile. */}
-    if(!Number.isFinite(dismissedAt)||Date.now()-dismissedAt>=DISPLAY_INTERVAL)setOpen(true);
+    let dismissed=false;
+    try{dismissed=window.sessionStorage.getItem(STORAGE_KEY)==="true";}catch{/* Mostra comunque il contenuto se lo storage non è disponibile. */}
+    if(!dismissed)setOpen(true);
   },[]);
 
   useEffect(()=>{
@@ -39,7 +38,7 @@ export default function GalaTakeover(){
   },[open]);
 
   function dismiss(){
-    try{window.localStorage.setItem(STORAGE_KEY,String(Date.now()));}catch{/* La chiusura deve restare disponibile anche senza storage. */}
+    try{window.sessionStorage.setItem(STORAGE_KEY,"true");}catch{/* La chiusura deve restare disponibile anche senza storage. */}
     setOpen(false);
   }
 

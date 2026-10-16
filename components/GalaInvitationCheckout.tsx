@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import {FormEvent,useRef,useState} from "react";
+import {panteleiaFooter} from "@/data/panteleia";
 import {formatEventPrice,NIS_GALA_DETAILS} from "@/data/ticketing";
 import type {Event} from "@/types/ticketing";
 
@@ -160,6 +161,6 @@ export default function GalaInvitationCheckout({event,availableSeats}:{event:Eve
       </div>
     </section>
 
-    <footer className="nis-gala-footer"><Image src="/logo/nis-logo-round-transparent.png" width={54} height={54} alt="Nazionale Italiana Sanitari"/><div><strong>Nazionale Italiana Sanitari</strong><span>Ticketing ufficiale NIS · Ingresso nominativo</span></div></footer>
+    <footer className="nis-gala-footer"><Image src="/logo/nis-logo-round-transparent.png" width={54} height={54} alt="Nazionale Italiana Sanitari"/><div><strong>Nazionale Italiana Sanitari</strong><span>Ticketing ufficiale NIS · Ingresso nominativo</span><span className="nis-gala-powered">Powered by {panteleiaFooter.name}</span></div></footer>
   </div>;
 }

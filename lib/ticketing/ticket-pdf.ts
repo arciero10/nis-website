@@ -2,6 +2,7 @@ import {readFile} from "node:fs/promises";
 import path from "node:path";
 import {PDFDocument,rgb,StandardFonts,type PDFFont} from "pdf-lib";
 import QRCode from "qrcode";
+import {panteleiaFooter} from "@/data/panteleia";
 import type {DigitalTicketRecord} from "@/lib/ticketing/repository";
 import {buildTicketQrPayload,invitationTypeLabel,ticketStatusLabel} from "@/lib/ticketing/presentation";
 import {formatTicketHolderName} from "@/lib/ticketing/name-format";
@@ -25,7 +26,11 @@ export async function createTicketPdf(record:DigitalTicketRecord){
   page.drawText("CODICE TICKET",{x:44,y:115,size:9,font:bold,color:muted});page.drawText(record.ticket.ticketCode,{x:44,y:94,size:15,font:bold,color:navy});
   page.drawText("STATO",{x:390,y:115,size:9,font:bold,color:muted});page.drawText(ticketStatusLabel(record.ticket.status),{x:390,y:94,size:13,font:bold,color:record.ticket.status==="ACTIVE"?rgb(10/255,140/255,73/255):navy});
   page.drawLine({start:{x:44,y:76},end:{x:551,y:76},thickness:1,color:rgb(.85,.89,.93)});
-  page.drawText("28 ottobre 2026 - Another Studio - Via di Pietralata 183, 00158 Roma RM",{x:44,y:56,size:9,font:regular,color:muted});
-  page.drawText("Parcheggio: Parking Pietralata - Via del Casale Rocchi 3, Roma",{x:44,y:40,size:9,font:regular,color:muted});
+  page.drawText("28 ottobre 2026 - Another Studio - Via di Pietralata 183, 00158 Roma RM",{x:44,y:66,size:8,font:regular,color:muted});
+  page.drawText("Parcheggio: Parking Pietralata - Via del Casale Rocchi 3, Roma",{x:44,y:54,size:8,font:regular,color:muted});
+  page.drawLine({start:{x:44,y:43},end:{x:551,y:43},thickness:.6,color:rgb(52/255,72/255,96/255)});
+  page.drawText(`${panteleiaFooter.poweredBy}  ${panteleiaFooter.name}  -  ${panteleiaFooter.subtitle}`,{x:44,y:31,size:7,font:bold,color:navy});
+  page.drawText(`${panteleiaFooter.copyright}  |  ${panteleiaFooter.legalLine}`,{x:44,y:20,size:6.2,font:regular,color:muted});
+  page.drawText(`${panteleiaFooter.fiscalCode}  |  ${panteleiaFooter.runts}`,{x:44,y:10,size:6.2,font:regular,color:muted});
   return document.save();
 }
