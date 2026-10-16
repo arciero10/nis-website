@@ -198,7 +198,8 @@ export const ticketingRepository={
         let attendeeId=participant.attendeeId;
         if(!attendeeId){
           attendeeId=randomUUID();
-          await client.query("INSERT INTO ticketing_attendees(id,event_id,first_name,last_name,email,phone,company) VALUES($1,$2,$3,$4,$5,$6,$7)",[attendeeId,event.id,participant.firstName,participant.lastName,participant.email,participant.phone||null,participant.company||null]);
+          const attendeeFirstName=formatPersonNamePart(participant.firstName);const attendeeLastName=formatPersonNamePart(participant.lastName);
+          await client.query("INSERT INTO ticketing_attendees(id,event_id,first_name,last_name,email,phone,company) VALUES($1,$2,$3,$4,$5,$6,$7)",[attendeeId,event.id,attendeeFirstName,attendeeLastName,participant.email,participant.phone||null,participant.company||null]);
           await client.query("UPDATE ticketing_order_participants SET attendee_id=$2 WHERE id=$1",[participant.id,attendeeId]);
         }
         await client.query("INSERT INTO ticketing_tickets(id,event_id,attendee_id,order_id,ticket_code,qr_token,category,access_mode,status) VALUES($1,$2,$3,$4,$5,$6,'STANDARD','ONE_SHOT','ACTIVE')",[randomUUID(),event.id,attendeeId,order.id,generateTicketCode(),generateQrToken()]);
