@@ -5,6 +5,7 @@ import {hashInvitationAccessToken} from "@/lib/ticketing/invitations";
 import {canBypassCheckInWindow,checkInWindowState,type CheckInMethod} from "@/lib/ticketing/checkin-rules";
 import {availableTicketCapacity,checkInEligibility,hasTicketCapacity,invitationBlockReason,orderAmountForQuantity,ticketsToIssue} from "@/lib/ticketing/rules";
 import {generateQrToken,generateTicketCode} from "@/lib/ticketing/security";
+import {formatPersonNamePart} from "@/lib/ticketing/name-format";
 import type {StaffSession} from "@/lib/ticketing/staff-auth";
 import type {AllocationType,Attendee,Event,Invitation,InvitationType,Order,OrderParticipant,PartnerAllocation,StaffInvitationTypeFilter,Ticket,TicketIssuanceSource,TicketLookup} from "@/types/ticketing";
 
@@ -126,6 +127,7 @@ export const ticketingRepository={
   async findInvitationByPublicSlug(publicSlug:string){const result=await query<InvitationRow>("SELECT * FROM ticketing_invitations WHERE public_slug=$1",[publicSlug]);if(!result.rows[0])return null;const invitation=mapInvitation(result.rows[0]);return invitationBlockReason(invitation)?null:invitation;},
 
   async createPendingCheckout(eventSlug:string,credential:InvitationCredential,requestId:string,inputs:AttendeeInput[],providerEnvironment:"SANDBOX"|"LIVE"):Promise<CheckoutRecord>{
+    const normalizedInputs=inputs.map(input=>({...input,firstName:formatPersonNamePart(input.firstName),lastName:formatPersonNamePart(input.lastName)}));
     return withTransaction(async client=>{
       const prior=await client.query<OrderRow>("SELECT * FROM ticketing_orders WHERE request_id=$1 FOR UPDATE",[requestId]);
       if(prior.rows[0]){
@@ -136,7 +138,7 @@ export const ticketingRepository={
 
       const eventResult=await client.query<EventRow>("SELECT * FROM ticketing_events WHERE slug=$1 FOR UPDATE",[eventSlug]);const eventRow=eventResult.rows[0];
       if(!eventRow)throw new TicketingConflictError("INVITATION_UNAVAILABLE","Evento non disponibile.");
-      const event=mapEvent(eventRow);const amount=orderAmountForQuantity(event.price,inputs.length);
+      const event=mapEvent(eventRow);const amount=orderAmountForQuantity(event.price,normalizedInputs.length);
       if(amount===null)throw new TicketingConflictError("INVALID_QUANTITY","Il numero di ingressi deve essere compreso tra 1 e 10.");
 
       const invitationResult="accessToken" in credential&&credential.accessToken
@@ -145,11 +147,11 @@ export const ticketingRepository={
       const invitationRow=invitationResult.rows[0];
       if(!invitationRow||invitationBlockReason(mapInvitation(invitationRow)))throw new TicketingConflictError("INVITATION_UNAVAILABLE","Invito non valido o esaurito.");
       const [issued,reserved]=await Promise.all([committedSeatCount(client,event.id),reservedTicketCount(client,event.id)]);
-      if(!hasTicketCapacity(event.capacity,issued,inputs.length,reserved))throw new TicketingConflictError("SOLD_OUT","Non ci sono abbastanza posti disponibili.");
+      if(!hasTicketCapacity(event.capacity,issued,normalizedInputs.length,reserved))throw new TicketingConflictError("SOLD_OUT","Non ci sono abbastanza posti disponibili.");
 
       const orderResult=await client.query<OrderRow>("INSERT INTO ticketing_orders(id,event_id,attendee_id,invitation_id,request_id,provider,provider_environment,amount,currency,payment_status) VALUES($1,$2,NULL,$3,$4,'PAYPAL',$5,$6,$7,'PENDING') RETURNING *",[randomUUID(),event.id,invitationRow.id,requestId,providerEnvironment,amount.toFixed(2),event.currency]);
       const order=mapOrder(orderResult.rows[0]);const participants:OrderParticipant[]=[];
-      for(const [index,input] of inputs.entries()){
+      for(const [index,input] of normalizedInputs.entries()){
         const result=await client.query<ParticipantRow>("INSERT INTO ticketing_order_participants(id,order_id,position,first_name,last_name,email,phone,company) VALUES($1,$2,$3,$4,$5,$6,$7,NULL) RETURNING *",[randomUUID(),order.id,index+1,input.firstName,input.lastName,input.email,input.phone||null]);
         participants.push(mapParticipant(result.rows[0]));
       }
@@ -298,21 +300,23 @@ export const ticketingRepository={
     });
   },
   async addPartnerNominee(allocationId:string,input:PartnerNomineeInput):Promise<TicketEmailPayload>{
+    const firstName=formatPersonNamePart(input.firstName);const lastName=formatPersonNamePart(input.lastName);
     return withTransaction(async client=>{
       const allocationResult=await client.query<PartnerAllocationRow>("SELECT * FROM ticketing_partner_allocations WHERE id=$1 FOR UPDATE",[allocationId]);const allocationRow=allocationResult.rows[0];if(!allocationRow||allocationRow.status!=="ACTIVE")throw new TicketingConflictError("ALLOCATION_UNAVAILABLE","Assegnazione partner non disponibile.");const allocation=mapPartnerAllocation(allocationRow);
       await client.query("SELECT id FROM ticketing_events WHERE id=$1 FOR UPDATE",[allocation.eventId]);
       const countResult=await client.query<{count:string}>("SELECT COUNT(*)::text AS count FROM ticketing_tickets WHERE partner_allocation_id=$1",[allocation.id]);if(Number(countResult.rows[0].count)>=allocation.allocatedQuantity)throw new TicketingConflictError("ALLOCATION_UNAVAILABLE","Tutti i posti partner sono già stati nominati.");
       const attendeeId=randomUUID();const ticketId=randomUUID();const ticketCode=generateTicketCode();const qrToken=generateQrToken();
-      await client.query("INSERT INTO ticketing_attendees(id,event_id,first_name,last_name,email,phone,company,source,partner_allocation_id) VALUES($1,$2,$3,$4,$5,$6,$7,'PARTNER',$8)",[attendeeId,allocation.eventId,input.firstName,input.lastName,input.email,input.phone||null,allocation.companyName,allocation.id]);
+      await client.query("INSERT INTO ticketing_attendees(id,event_id,first_name,last_name,email,phone,company,source,partner_allocation_id) VALUES($1,$2,$3,$4,$5,$6,$7,'PARTNER',$8)",[attendeeId,allocation.eventId,firstName,lastName,input.email,input.phone||null,allocation.companyName,allocation.id]);
       const sequenceNumber=Number(countResult.rows[0].count)+1;
       await client.query("INSERT INTO ticketing_tickets(id,event_id,attendee_id,order_id,partner_allocation_id,issuance_source,invitation_type,ticket_code,qr_token,category,access_mode,status,sequence_number,total_quantity) VALUES($1,$2,$3,NULL,$4,'COMPANY',$5,$6,$7,'PARTNER','ONE_SHOT','ACTIVE',$8,$9)",[ticketId,allocation.eventId,attendeeId,allocation.id,allocation.allocationType,ticketCode,qrToken,sequenceNumber,allocation.allocatedQuantity]);
-      return {ticketId,firstName:input.firstName,lastName:input.lastName,email:input.email,ticketCode,qrToken,category:"PARTNER",amount:null,currency:"EUR",source:"PARTNER",companyName:allocation.companyName,allocationType:allocation.allocationType,issuanceSource:"COMPANY",invitationType:allocation.allocationType};
+      return {ticketId,firstName,lastName,email:input.email,ticketCode,qrToken,category:"PARTNER",amount:null,currency:"EUR",source:"PARTNER",companyName:allocation.companyName,allocationType:allocation.allocationType,issuanceSource:"COMPANY",invitationType:allocation.allocationType};
     });
   },
   async updatePartnerNominee(allocationId:string,attendeeId:string,input:PartnerNomineeInput):Promise<PartnerNominee|null>{
+    const firstName=formatPersonNamePart(input.firstName);const lastName=formatPersonNamePart(input.lastName);
     return withTransaction(async client=>{
       const allocation=await client.query<PartnerAllocationRow>("SELECT * FROM ticketing_partner_allocations WHERE id=$1 FOR UPDATE",[allocationId]);if(!allocation.rows[0])return null;
-      const result=await client.query<AttendeeRow>("UPDATE ticketing_attendees SET first_name=$3,last_name=$4,email=$5,phone=$6,updated_at=NOW() WHERE id=$1 AND partner_allocation_id=$2 AND source='PARTNER' RETURNING *",[attendeeId,allocationId,input.firstName,input.lastName,input.email,input.phone||null]);if(!result.rows[0])return null;
+      const result=await client.query<AttendeeRow>("UPDATE ticketing_attendees SET first_name=$3,last_name=$4,email=$5,phone=$6,updated_at=NOW() WHERE id=$1 AND partner_allocation_id=$2 AND source='PARTNER' RETURNING *",[attendeeId,allocationId,firstName,lastName,input.email,input.phone||null]);if(!result.rows[0])return null;
       const ticket=await client.query<TicketRow&{email_sent_at:Date|null}>("SELECT * FROM ticketing_tickets WHERE attendee_id=$1 AND partner_allocation_id=$2",[attendeeId,allocationId]);const row=ticket.rows[0];if(!row)return null;
       return {attendeeId,firstName:result.rows[0].first_name,lastName:result.rows[0].last_name,email:result.rows[0].email,phone:result.rows[0].phone,ticketCode:row.ticket_code,ticketStatus:row.status,emailSentAt:iso(row.email_sent_at)};
     });

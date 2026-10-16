@@ -1,5 +1,6 @@
 import type {CreatePartnerAllocationInput,PartnerNomineeInput} from "@/lib/ticketing/repository";
 import {ALLOCATION_TYPES,type AllocationType} from "@/types/ticketing";
+import {formatPersonNamePart} from "@/lib/ticketing/name-format";
 
 const emailPattern=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const clean=(value:unknown,max:number)=>typeof value==="string"?value.replace(/[\u0000-\u001f\u007f]+/g," ").replace(/\s+/g," ").trim().slice(0,max):"";
@@ -16,7 +17,7 @@ export function parsePartnerAllocationInput(payload:Record<string,unknown>):Crea
 }
 
 export function parsePartnerNomineeInput(payload:Record<string,unknown>):PartnerNomineeInput|null{
-  const firstName=clean(payload.firstName,80);const lastName=clean(payload.lastName,80);const email=clean(payload.email,160).toLowerCase();const phone=clean(payload.phone,40);
+  const firstName=formatPersonNamePart(clean(payload.firstName,80));const lastName=formatPersonNamePart(clean(payload.lastName,80));const email=clean(payload.email,160).toLowerCase();const phone=clean(payload.phone,40);
   if(!firstName||!lastName||!emailPattern.test(email))return null;
   return {firstName,lastName,email,phone:phone||undefined};
 }

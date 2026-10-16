@@ -1,5 +1,6 @@
 import {NextResponse} from "next/server";
 import {ticketingRepository} from "@/lib/ticketing/repository";
+import {formatPersonNamePart} from "@/lib/ticketing/name-format";
 
 export const runtime="nodejs";
 
@@ -30,8 +31,8 @@ export async function POST(request:Request){
 
   const eventSlug=clean(payload.eventSlug,100);
   const accessToken=clean(payload.accessToken,128);
-  const firstName=clean(payload.firstName,80);
-  const lastName=clean(payload.lastName,80);
+  const firstName=formatPersonNamePart(clean(payload.firstName,80));
+  const lastName=formatPersonNamePart(clean(payload.lastName,80));
   const email=clean(payload.email,160);
   const phone=clean(payload.phone,40);
 

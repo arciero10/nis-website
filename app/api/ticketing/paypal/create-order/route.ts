@@ -2,6 +2,7 @@ import {NextResponse} from "next/server";
 import {createPayPalOrder,payPalEnvironment} from "@/lib/ticketing/paypal/client";
 import {TicketingConflictError,ticketingRepository} from "@/lib/ticketing/repository";
 import {orderAmountForQuantity,validTicketQuantity} from "@/lib/ticketing/rules";
+import {formatPersonNamePart} from "@/lib/ticketing/name-format";
 
 export const runtime="nodejs";
 const emailPattern=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -12,7 +13,7 @@ export async function POST(request:Request){
     const p=await request.json() as Record<string,unknown>;const accessToken=clean(p.accessToken,160);const invitationAlias=clean(p.invitationAlias,80);const requestId=clean(p.requestId,50);const quantity=Number(p.quantity);const rawParticipants=Array.isArray(p.participants)?p.participants:[];
     const hasSingleCredential=Boolean(accessToken)!==Boolean(invitationAlias);const validAlias=!invitationAlias||/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(invitationAlias);
     if(!/^[0-9a-f-]{36}$/i.test(requestId)||!hasSingleCredential||!validAlias||!validTicketQuantity(quantity)||rawParticipants.length!==quantity||p.privacyAccepted!==true)return NextResponse.json({message:"Controlla invito, quantità, partecipanti e consenso privacy."},{status:400});
-    const participants=rawParticipants.map(item=>{const value=(item&&typeof item==="object"?item:{}) as Record<string,unknown>;return {firstName:clean(value.firstName,80),lastName:clean(value.lastName,80),email:clean(value.email,160).toLowerCase(),phone:clean(value.phone,40)||undefined};});
+    const participants=rawParticipants.map(item=>{const value=(item&&typeof item==="object"?item:{}) as Record<string,unknown>;return {firstName:formatPersonNamePart(clean(value.firstName,80)),lastName:formatPersonNamePart(clean(value.lastName,80)),email:clean(value.email,160).toLowerCase(),phone:clean(value.phone,40)||undefined};});
     if(participants.some(person=>!person.firstName||!person.lastName||!emailPattern.test(person.email)))return NextResponse.json({message:"Controlla i dati obbligatori di ogni partecipante."},{status:400});
     const event=await ticketingRepository.findEventBySlug("nis-gala-2026");if(!event)return NextResponse.json({message:"Evento non trovato."},{status:404});
     const expectedAmount=orderAmountForQuantity(event.price,quantity);const clientTotal=Number(p.total);

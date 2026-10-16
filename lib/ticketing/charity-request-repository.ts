@@ -14,6 +14,7 @@ import {
   type ParticipantIdentity,
 } from "@/lib/ticketing/participant-identity";
 import {hasTicketCapacity} from "@/lib/ticketing/rules";
+import {formatPersonNamePart} from "@/lib/ticketing/name-format";
 import type {StaffSession} from "@/lib/ticketing/staff-auth";
 
 export type CharityRequestStatus="PENDING_DONATION"|"VERIFIED"|"TICKETS_ISSUED"|"CANCELLED";
@@ -125,6 +126,7 @@ function isDedupeUniqueViolation(error:unknown){
 }
 
 export async function createCharityParticipationRequest(eventSlug:string,publicSlug:string,input:CharityParticipationInput){
+  input={...input,firstName:formatPersonNamePart(input.firstName),lastName:formatPersonNamePart(input.lastName),participants:input.participants.map(participant=>({firstName:formatPersonNamePart(participant.firstName),lastName:formatPersonNamePart(participant.lastName)}))};
   try{
     return await withTransaction(async client=>{
       await client.query("SELECT pg_advisory_xact_lock(hashtext($1))",[input.requestId]);
