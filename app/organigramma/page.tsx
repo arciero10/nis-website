@@ -16,7 +16,9 @@ const personEmails:Record<string,string>={
   "Luca Cipriano":"luca.cipriano@nazionaleitalianasanitari.com",
   "Edoardo Marcucci":"edoardo.marcucci@nazionaleitalianasanitari.com",
   "Ludovica Rossetti":"ludovica.rossetti@nazionaleitalianasanitari.com",
+  "Flavio Moretti":"flavio.moretti@nazionaleitalianasanitari.com",
   "Patrizio Pasqualini":"ufficiostampa@nazionaleitalianasanitari.com",
+  "Dott.ssa Cristina Fiore":"cristina.fiore@nazionaleitalianasanitari.com",
 };
 
 const orgPhotos:Record<string,string>={
