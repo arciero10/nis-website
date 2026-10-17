@@ -41,6 +41,7 @@ export function allocationTypeLabel(type:AllocationType){
 
 export function issuanceSourceLabel(source:TicketIssuanceSource){
   if(source==="PAYPAL_CHARITY")return "PayPal Charity";
+  if(source==="CASH")return "Contanti";
   if(source==="BANK_TRANSFER")return "Bonifico";
   if(source==="COMPANY")return "Azienda";
   if(source==="ADMIN")return "Admin";

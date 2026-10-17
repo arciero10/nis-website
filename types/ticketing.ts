@@ -21,8 +21,13 @@ export type StaffRole="STAFF"|"SUPERADMIN";
 export type CheckInMethod="QR"|"MANUAL";
 export type CheckInStatus="ACTIVE"|"REVERSED";
 
-export const TICKET_ISSUANCE_SOURCES=["PAYPAL","PAYPAL_CHARITY","BANK_TRANSFER","COMPANY","ADMIN"] as const;
+export const TICKET_ISSUANCE_SOURCES=["PAYPAL","PAYPAL_CHARITY","CASH","BANK_TRANSFER","COMPANY","ADMIN"] as const;
 export type TicketIssuanceSource=(typeof TICKET_ISSUANCE_SOURCES)[number];
+
+export const MANUAL_PAYMENT_METHODS=["PAYPAL","CASH","BANK_TRANSFER","COMPLIMENTARY"] as const;
+export type ManualPaymentMethod=(typeof MANUAL_PAYMENT_METHODS)[number];
+export const CASH_COLLECTION_STATUSES=["DA_INCASSARE","INCASSATO"] as const;
+export type CashCollectionStatus=(typeof CASH_COLLECTION_STATUSES)[number];
 
 export const INVITATION_TYPES=["STANDARD","SPONSOR","DONATORE","AZIENDA","OSPITE","STAMPA","MEDIA","PRESS","OMAGGIO_NIS"] as const;
 export type InvitationType=(typeof INVITATION_TYPES)[number];

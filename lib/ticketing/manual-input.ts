@@ -1,4 +1,4 @@
-import type {AdminInvitationType,ComplimentaryReason} from "@/types/ticketing";
+import type {AdminInvitationType,CashCollectionStatus,ComplimentaryReason} from "@/types/ticketing";
 import {formatPersonNamePart} from "@/lib/ticketing/name-format";
 
 const ADMIN_TYPES:AdminInvitationType[]=["STAMPA","MEDIA","PRESS","OMAGGIO_NIS"];
@@ -14,6 +14,7 @@ const validDate=(value:string)=>!value||(/^\d{4}-\d{2}-\d{2}$/.test(value)&&!Num
 
 export type BankTransferIssuanceInput={source:"BANK_TRANSFER";firstName:string;lastName:string;email:string;phone?:string;quantity:number;declaredAmount:number;transferDate:string|null;transferReference:string|null;notes:string|null};
 export type PayPalCharityIssuanceInput={source:"PAYPAL_CHARITY";firstName:string;lastName:string;email:string;phone?:string;quantity:number;participants?:{firstName:string;lastName:string}[];declaredAmount:number;donationDate:string|null;paypalReference:string;notes:string|null};
+export type CashIssuanceInput={source:"CASH";firstName:string;lastName:string;email:string;phone?:string;quantity:number;declaredAmount:number;cashCollector:string;cashCollectionStatus:CashCollectionStatus;pendingCashAuthorized:boolean;notes:string|null};
 export type AdminIssuanceInput={source:"ADMIN";invitationType:AdminInvitationType;firstName:string;lastName:string;email:string;phone?:string;quantity:number;organization:string|null;reason:string;notes:string|null};
 
 export function parseBankTransferInput(data:FormData){
@@ -26,6 +27,16 @@ export function parsePayPalCharityInput(data:FormData){
   const firstName=formatPersonNamePart(clean(data.get("firstName"),80));const lastName=formatPersonNamePart(clean(data.get("lastName"),80));const email=clean(data.get("email"),254).toLowerCase();const phone=clean(data.get("phone"),40);const parsedQuantity=quantity(clean(data.get("quantity"),2)||"1");const declaredAmount=amount(clean(data.get("declaredAmount"),20));const donationDate=clean(data.get("donationDate"),10);const paypalReference=clean(data.get("paypalReference"),120);const notes=clean(data.get("notes"),1000);
   if(!firstName||!lastName||!validEmail(email)||parsedQuantity===null||declaredAmount===null||!validDate(donationDate)||paypalReference.length<4)return null;
   return {source:"PAYPAL_CHARITY",firstName,lastName,email,phone:phone||undefined,quantity:parsedQuantity,declaredAmount,donationDate:donationDate||null,paypalReference,notes:notes||null} satisfies PayPalCharityIssuanceInput;
+}
+
+export function parseCashInput(data:FormData){
+  const firstName=formatPersonNamePart(clean(data.get("firstName"),80));const lastName=formatPersonNamePart(clean(data.get("lastName"),80));const email=clean(data.get("email"),254).toLowerCase();const phone=clean(data.get("phone"),40);const parsedQuantity=quantity(clean(data.get("quantity"),2));const declaredAmount=amount(clean(data.get("declaredAmount"),20));const cashCollector=clean(data.get("cashCollector"),120);const cashCollectionStatus=clean(data.get("cashCollectionStatus"),20) as CashCollectionStatus;const pendingCashAuthorized=data.get("pendingCashAuthorized")==="on";const notes=clean(data.get("notes"),1000);
+  if(!firstName||!lastName||!validEmail(email)||parsedQuantity===null||declaredAmount===null||!cashCollector||!["DA_INCASSARE","INCASSATO"].includes(cashCollectionStatus))return null;
+  return {source:"CASH",firstName,lastName,email,phone:phone||undefined,quantity:parsedQuantity,declaredAmount,cashCollector,cashCollectionStatus,pendingCashAuthorized,notes:notes||null} satisfies CashIssuanceInput;
+}
+
+export function canIssueCash(input:CashIssuanceInput,role:"STAFF"|"SUPERADMIN"){
+  return input.cashCollectionStatus==="INCASSATO"||(role==="SUPERADMIN"&&input.pendingCashAuthorized);
 }
 
 export function parseAdminInput(data:FormData){
