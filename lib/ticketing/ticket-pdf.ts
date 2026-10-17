@@ -20,7 +20,6 @@ export async function createTicketPdf(record:DigitalTicketRecord){
   page.drawText(admin?`INVITO ${type.toUpperCase()}`:company?"INVITO AZIENDALE":"BIGLIETTO NOMINATIVO",{x:44,y:480,size:11,font:bold,color:blue});
   const holderSize=fittedFontSize(holder,507,bold);const holderX=company?44:44+(507-bold.widthOfTextAtSize(holder,holderSize))/2;page.drawText(holder,{x:holderX,y:445,size:holderSize,font:bold,color:navy,maxWidth:507});
   if(company)page.drawText(`${type} - Ingresso ${record.ticket.sequenceNumber??1} di ${record.ticket.totalQuantity??1}`,{x:44,y:420,size:12,font:regular,color:muted});
-  else if(admin)page.drawText(`Tipo invito: ${type}`,{x:44,y:420,size:12,font:regular,color:muted});
   page.drawImage(qr,{x:188,y:170,width:220,height:220});
   page.drawText("MOSTRA QUESTO QR ALL'INGRESSO",{x:179,y:148,size:10,font:bold,color:muted});
   page.drawText("CODICE TICKET",{x:44,y:115,size:9,font:bold,color:muted});page.drawText(record.ticket.ticketCode,{x:44,y:94,size:15,font:bold,color:navy});
@@ -28,9 +27,9 @@ export async function createTicketPdf(record:DigitalTicketRecord){
   page.drawLine({start:{x:44,y:76},end:{x:551,y:76},thickness:1,color:rgb(.85,.89,.93)});
   page.drawText("28 ottobre 2026 - Another Studio - Via di Pietralata 183, 00158 Roma RM",{x:44,y:66,size:8,font:regular,color:muted});
   page.drawText("Parcheggio: Parking Pietralata - Via del Casale Rocchi 3, Roma",{x:44,y:54,size:8,font:regular,color:muted});
-  page.drawLine({start:{x:44,y:43},end:{x:551,y:43},thickness:.6,color:rgb(52/255,72/255,96/255)});
-  page.drawText(`${panteleiaFooter.poweredBy}  ${panteleiaFooter.name}  -  ${panteleiaFooter.subtitle}`,{x:44,y:31,size:7,font:bold,color:navy});
-  page.drawText(`${panteleiaFooter.copyright}  |  ${panteleiaFooter.legalLine}`,{x:44,y:20,size:6.2,font:regular,color:muted});
-  page.drawText(`${panteleiaFooter.fiscalCode}  |  ${panteleiaFooter.runts}`,{x:44,y:10,size:6.2,font:regular,color:muted});
+  const footerNavy=rgb(7/255,29/255,55/255);const footerGold=rgb(216/255,188/255,114/255);const footerText=rgb(211/255,220/255,232/255);page.drawRectangle({x:0,y:0,width:595.28,height:43,color:footerNavy});page.drawLine({start:{x:44,y:43},end:{x:551,y:43},thickness:.6,color:rgb(52/255,72/255,96/255)});
+  const poweredSize=6.6;const nameSize=7.2;const subtitleSize=6.6;const footerGap=7;const poweredWidth=bold.widthOfTextAtSize(panteleiaFooter.poweredBy,poweredSize);const nameWidth=bold.widthOfTextAtSize(panteleiaFooter.name,nameSize);const subtitleWidth=regular.widthOfTextAtSize(panteleiaFooter.subtitle,subtitleSize);let footerX=(595.28-poweredWidth-nameWidth-subtitleWidth-footerGap*2)/2;
+  page.drawText(panteleiaFooter.poweredBy,{x:footerX,y:30,size:poweredSize,font:bold,color:footerGold});footerX+=poweredWidth+footerGap;page.drawText(panteleiaFooter.name,{x:footerX,y:30,size:nameSize,font:bold,color:rgb(1,1,1)});footerX+=nameWidth+footerGap;page.drawText(panteleiaFooter.subtitle,{x:footerX,y:30,size:subtitleSize,font:regular,color:footerText});
+  const legalSize=6.2;page.drawText(panteleiaFooter.compactLegalLine1,{x:(595.28-regular.widthOfTextAtSize(panteleiaFooter.compactLegalLine1,legalSize))/2,y:17,size:legalSize,font:regular,color:footerText});page.drawText(panteleiaFooter.compactLegalLine2,{x:(595.28-regular.widthOfTextAtSize(panteleiaFooter.compactLegalLine2,legalSize))/2,y:7,size:legalSize,font:regular,color:footerText});
   return document.save();
 }

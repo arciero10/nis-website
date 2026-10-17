@@ -7,10 +7,7 @@ export default function PanteleiaFooter({compact=false}:{compact?:boolean}){
     <span className="panteleia-footer-subtitle">{panteleiaFooter.subtitle}</span>
     <div className="panteleia-footer-separator" aria-hidden="true"/>
     <div className="panteleia-footer-legal">
-      <span>{panteleiaFooter.copyright}</span>
-      <span>{panteleiaFooter.legalLine}</span>
-      <span>{panteleiaFooter.fiscalCode}</span>
-      <span>{panteleiaFooter.runts}</span>
+      {compact?<><span>{panteleiaFooter.compactLegalLine1}</span><span>{panteleiaFooter.compactLegalLine2}</span></>:<><span>{panteleiaFooter.copyright}</span><span>{panteleiaFooter.legalLine}</span><span>{panteleiaFooter.fiscalCode}</span><span>{panteleiaFooter.runts}</span></>}
     </div>
   </div>;
 }
