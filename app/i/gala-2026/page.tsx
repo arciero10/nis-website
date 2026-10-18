@@ -8,5 +8,5 @@ const INVITATION_ALIAS="gala-2026";
 export default async function GalaAliasPage(){
   const [invitation,event,availability]=await Promise.all([ticketingRepository.findInvitationByPublicSlug(INVITATION_ALIAS),ticketingRepository.findEventBySlug("nis-gala-2026"),ticketingRepository.getEventAvailability("nis-gala-2026")]);
   if(!invitation||!event||!availability||invitation.eventId!==event.id)notFound();
-  return <GalaInvitationCheckout event={event} availableSeats={availability.available}/>;
+  return <GalaInvitationCheckout event={event} availableSeats={availability.available} invitationAlias={INVITATION_ALIAS} paypalClientId={process.env.PAYPAL_CLIENT_ID?.trim()??""}/>;
 }
