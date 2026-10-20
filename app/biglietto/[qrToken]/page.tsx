@@ -1,6 +1,7 @@
 import Image from "next/image";
 import {notFound} from "next/navigation";
 import QRCode from "qrcode";
+import GalaSponsorStrip from "@/components/GalaSponsorStrip";
 import PanteleiaFooter from "@/components/PanteleiaFooter";
 import {NIS_GALA_DETAILS} from "@/data/ticketing";
 import {buildTicketPdfUrl,buildTicketQrPayload,invitationTypeLabel,ticketStatusLabel} from "@/lib/ticketing/presentation";
@@ -25,6 +26,7 @@ export default async function DigitalTicketPage({params}:{params:Promise<{qrToke
       <a className="btn btn-blue nis-ticket-download" href={buildTicketPdfUrl(qrToken)}>Scarica PDF</a>
       {(walletLinks.apple||walletLinks.google)&&<section className="nis-ticket-wallets" aria-label="Aggiungi il biglietto al wallet">{walletLinks.apple&&<a className="nis-wallet-button nis-wallet-button-apple" href={walletLinks.apple}>Aggiungi ad Apple Wallet</a>}{walletLinks.google&&<a className="nis-wallet-button nis-wallet-button-google" href={walletLinks.google}>Aggiungi a Google Wallet</a>}</section>}
       <section className="nis-ticket-visit" aria-label="Location e parcheggio"><article><span>LOCATION</span><h2>Another Studio</h2><p>Via di Pietralata 183<br/>00158 Roma RM</p><a href={locationUrl} target="_blank" rel="noopener noreferrer">APRI LOCATION</a></article><article><span>PARCHEGGIO</span><h2>Parking Pietralata</h2><p>Via del Casale Rocchi 3<br/>Roma</p><a href={parkingUrl} target="_blank" rel="noopener noreferrer">APRI PARCHEGGIO</a></article></section>
+      <GalaSponsorStrip compact className="nis-ticket-sponsors"/>
       <p className="nis-ticket-event-date"><time dateTime="2026-10-28">{NIS_GALA_DETAILS.dateLabel}</time> · Roma</p>
     </div><footer className="nis-ticket-footer"><span className="nis-ticket-platform">Ticket gestito tramite piattaforma digitale NIS</span><PanteleiaFooter compact/></footer>
   </article></div></main>;

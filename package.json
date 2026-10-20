@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@zxing/browser": "^0.1.5",
+    "fflate": "^0.8.3",
     "next": "^15.5.28",
     "node-forge": "^1.4.0",
     "passkit-generator": "^3.7.0",

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import GalaSponsorStrip from "@/components/GalaSponsorStrip";
 import TicketPurchaseForm from "@/components/TicketPurchaseForm";
 import {panteleiaFooter} from "@/data/panteleia";
 import {formatEventPrice,NIS_GALA_DETAILS} from "@/data/ticketing";
@@ -43,6 +44,7 @@ export default function GalaInvitationCheckout({event,paypalClientId,availableSe
           <p>Categoria Standard · Accesso singolo</p>
         </aside>
       </div>
+      <div className="shell ticketing-checkout-sponsors"><GalaSponsorStrip/></div>
     </section>
 
     <footer className="nis-gala-footer"><Image src="/logo/nis-logo-round-transparent.png" width={54} height={54} alt="Nazionale Italiana Sanitari"/><div><strong>Nazionale Italiana Sanitari</strong><span>Ticketing ufficiale NIS · Ingresso nominativo</span><span className="nis-gala-powered">Powered by {panteleiaFooter.name}</span></div></footer>

@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import {useEffect,useRef,useState} from "react";
+import GalaSponsorStrip from "@/components/GalaSponsorStrip";
 import {galaPromotion} from "@/data/gala-promotion";
 
 const STORAGE_KEY="nis-gala-takeover-dismissed-session-v1";
@@ -57,6 +58,7 @@ export default function GalaTakeover(){
         </div>
         <h2 id="gala-takeover-title"><span className="gala-takeover-title-line">THE NIS GALA 2026</span><span className="gala-takeover-subtitle">CHARITY NIGHT</span></h2>
         <p id="gala-takeover-description">{galaPromotion.description}</p>
+        <GalaSponsorStrip compact className="gala-takeover-sponsors"/>
         <div className="gala-takeover-actions">
           <Link href="/i/gala-2026" className="btn gala-primary-cta" onClick={dismiss}>ACQUISTA IL BIGLIETTO</Link>
           <button type="button" className="gala-continue" onClick={dismiss}>CONTINUA AL SITO</button>

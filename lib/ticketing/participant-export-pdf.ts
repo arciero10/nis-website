@@ -1,0 +1,15 @@
+import {PDFDocument,StandardFonts,rgb} from "pdf-lib";
+import {typeLabel,type ParticipantExportDataset} from "@/lib/ticketing/participant-export-model";
+
+const clean=(value:string)=>value.replace(/[’‘]/g,"'").replace(/[–—]/g,"-").replace(/[^\x20-\x7EÀ-ÿ]/g," ");
+const when=(value:string|null)=>value?new Intl.DateTimeFormat("it-IT",{dateStyle:"short",timeStyle:"short",timeZone:"Europe/Rome"}).format(new Date(value)):"-";
+export async function buildParticipantPdf(data:ParticipantExportDataset){
+  const doc=await PDFDocument.create();doc.setTitle("Gala 2026 - Elenco partecipanti");const regular=await doc.embedFont(StandardFonts.Helvetica);const bold=await doc.embedFont(StandardFonts.HelveticaBold);const size:[number,number]=[841.89,595.28];const navy=rgb(7/255,29/255,55/255);const gold=rgb(216/255,188/255,114/255);const gray=rgb(.38,.43,.49);let page;let y=0;
+  const clipped=(text:string,max:number,fontSize=8)=>{let value=clean(text);while(value.length&&regular.widthOfTextAtSize(value,fontSize)>max)value=value.slice(0,-1);return value===clean(text)?value:`${value.slice(0,-1)}…`;};
+  const newPage=(first=false)=>{page=doc.addPage(size);page.drawRectangle({x:0,y:size[1]-78,width:size[0],height:78,color:navy});page.drawText("NAZIONALE ITALIANA SANITARI",{x:36,y:size[1]-28,size:9,font:bold,color:gold});page.drawText("Gala 2026 - Elenco partecipanti",{x:36,y:size[1]-55,size:18,font:bold,color:rgb(1,1,1)});y=size[1]-100;if(first){page.drawText(`Generato il ${when(data.generatedAt)}  |  Biglietti ${data.summary.total}  |  Validi ${data.summary.valid}  |  Annullati ${data.summary.cancelled}`,{x:36,y,size:8.5,font:regular,color:gray});y-=15;page.drawText(`Ingressi effettuati ${data.summary.used}  |  Ingressi ancora da effettuare ${data.summary.notUsed}`,{x:36,y,size:8.5,font:regular,color:gray});y-=24;}drawHeader();};
+  const widths=[190,120,120,155,115];const labels=["PARTECIPANTE","CODICE","TIPO","AZIENDA / ENTE","CHECK-IN"];
+  const drawHeader=()=>{let x=36;page!.drawRectangle({x,y:y-5,width:700,height:21,color:rgb(.92,.94,.96)});labels.forEach((label,index)=>{page!.drawText(label,{x:x+4,y:y+2,size:7.5,font:bold,color:navy});x+=widths[index];});y-=24;};
+  newPage(true);
+  for(const row of data.rows){if(y<58)newPage();let x=36;const values=[`${row.lastName} ${row.firstName}`,row.ticketCode,typeLabel(row.invitationType),row.organization??"-",row.checkedInAt?`ENTRATO ${when(row.checkedInAt)}`:row.checkInStatus];values.forEach((value,index)=>{page!.drawText(clipped(value,widths[index]-8),{x:x+4,y:y-2,size:8,font:index===0?bold:regular,color:index===4&&row.checkInStatus==="ENTRATO"?rgb(0,.42,.24):navy});x+=widths[index];});page!.drawLine({start:{x:36,y:y-9},end:{x:736,y:y-9},thickness:.35,color:rgb(.82,.85,.88)});y-=23;}
+  const pages=doc.getPages();pages.forEach((item,index)=>item.drawText(`Pagina ${index+1} di ${pages.length}`,{x:720,y:24,size:7,font:regular,color:gray}));return doc.save();
+}

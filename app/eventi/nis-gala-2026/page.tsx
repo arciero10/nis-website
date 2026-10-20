@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type {Metadata} from "next";
+import GalaSponsorStrip from "@/components/GalaSponsorStrip";
 import StructuredData from "@/components/StructuredData";
 import {galaPromotion} from "@/data/gala-promotion";
 import {createBreadcrumbJsonLd,createPageMetadata,SITE_URL} from "@/lib/seo";
@@ -43,6 +44,7 @@ export default function GalaPublicPage(){return <>
       <div><p className="eyebrow">UNA SERATA CHE LASCIA IL SEGNO</p><h2>Insieme, per trasformare la partecipazione in sostegno concreto.</h2></div>
       <p>Il NIS Gala Charity Night riunisce la comunità della Nazionale Italiana Sanitari per sostenere progetti dedicati alla salute, alla prevenzione e alla solidarietà.</p>
     </div></section>
+    <div className="shell gala-public-sponsors"><GalaSponsorStrip/></div>
   </article>
 </>}
 
