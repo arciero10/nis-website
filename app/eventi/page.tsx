@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import PageHero from "@/components/PageHero";
+import GalaSponsorStrip from "@/components/GalaSponsorStrip";
 import {createPageMetadata} from "@/lib/seo";
 import {galaPromotion} from "@/data/gala-promotion";
 
@@ -21,6 +22,7 @@ export default function Page(){return <>
         <dl><div><dt>Data</dt><dd>28 ottobre 2026</dd></div><div><dt>Luogo</dt><dd>Another Studio, Roma</dd></div></dl>
         <Link href={galaPromotion.publicPath} className="btn btn-blue">SCOPRI L&apos;EVENTO</Link>
       </div>
+      <GalaSponsorStrip className="gala-event-card-sponsors"/>
     </article>
   </div></section>
 </>}
