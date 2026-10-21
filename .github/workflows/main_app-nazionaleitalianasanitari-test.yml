@@ -104,4 +104,81 @@ jobs:
           app-name: 'app-nazionaleitalianasanitari-test'
           slot-name: 'Production'
           package: deploy
-          
+
+      - name: Restart Web App and verify Gala sponsors
+        uses: azure/cli@v2
+        with:
+          inlineScript: |
+            set -euo pipefail
+
+            resource_group="rg-panteleia-production"
+            app_name="app-nazionaleitalianasanitari-test"
+            public_origin="https://www.nazionaleitalianasanitari.com"
+
+            az webapp restart \
+              --resource-group "$resource_group" \
+              --name "$app_name"
+
+            for attempt in $(seq 1 30); do
+              state=$(az webapp show \
+                --resource-group "$resource_group" \
+                --name "$app_name" \
+                --query state \
+                --output tsv)
+
+              if [ "$state" = "Running" ]; then
+                break
+              fi
+
+              if [ "$attempt" -eq 30 ]; then
+                echo "::error::La Web App non e tornata nello stato Running dopo il deploy."
+                exit 1
+              fi
+
+              sleep 5
+            done
+
+            verify_page() {
+              path="$1"
+              expected="$2"
+              url="${public_origin}${path}?deploy=${GITHUB_SHA}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+
+              for attempt in $(seq 1 24); do
+                html=$(curl \
+                  --fail \
+                  --silent \
+                  --show-error \
+                  --header "Cache-Control: no-cache" \
+                  "$url" || true)
+
+                if [[ "$html" == *"$expected"* ]]; then
+                  return 0
+                fi
+
+                sleep 5
+              done
+
+              echo "::error::La pagina ${path} non contiene il markup sponsor atteso dopo il deploy."
+              return 1
+            }
+
+            verify_page "/eventi" "Sponsor ufficiali NIS Gala 2026"
+            verify_page "/" "PANTELEIA APS"
+
+            for sponsor_asset in \
+              "crai.png" \
+              "servizi-cherubini.png" \
+              "pic-event-solution.png" \
+              "another-studio.png" \
+              "gruppo-galli.png" \
+              "Italian-Pathology-Genomics.png" \
+              "limori.png" \
+              "moretti.png" \
+              "sakura.png"; do
+              curl \
+                --fail \
+                --silent \
+                --show-error \
+                --output /dev/null \
+                "${public_origin}/images/gala-2026/sponsor/${sponsor_asset}?deploy=${GITHUB_SHA}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+            done
