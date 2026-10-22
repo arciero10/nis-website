@@ -5,6 +5,9 @@ import GalaSponsorStrip from "@/components/GalaSponsorStrip";
 import {createPageMetadata} from "@/lib/seo";
 import {galaPromotion} from "@/data/gala-promotion";
 
+// Keep the event listing fresh across deployments instead of caching its HTML as immutable.
+export const dynamic="force-dynamic";
+
 export const metadata=createPageMetadata({title:"Eventi NIS | Sport, salute e prevenzione",description:"Scopri gli eventi sportivi, le iniziative solidali e le giornate dedicate alla prevenzione organizzate dalla Nazionale Italiana Sanitari.",path:"/eventi"});
 
 export default function Page(){return <>
