@@ -1,21 +1,258 @@
-import {PDFDocument,StandardFonts,rgb} from "pdf-lib";
-import {readFile} from "node:fs/promises";
+import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
+import { readFile } from "node:fs/promises";
 import path from "node:path";
-import {galaSponsors} from "@/data/gala-sponsors";
-import {typeLabel,type ParticipantExportDataset} from "@/lib/ticketing/participant-export-model";
+import { galaSponsors } from "@/data/gala-sponsors";
+import {
+  typeLabel,
+  type ParticipantExportDataset,
+} from "@/lib/ticketing/participant-export-model";
 
-const clean=(value:string)=>value.replace(/[’‘]/g,"'").replace(/[–—]/g,"-").replace(/[^\x20-\x7EÀ-ÿ]/g," ");
-const when=(value:string|null)=>value?new Intl.DateTimeFormat("it-IT",{dateStyle:"short",timeStyle:"short",timeZone:"Europe/Rome"}).format(new Date(value)):"-";
-export async function buildParticipantPdf(data:ParticipantExportDataset){
-  const doc=await PDFDocument.create();doc.setTitle("Gala 2026 - Elenco partecipanti");const regular=await doc.embedFont(StandardFonts.Helvetica);const bold=await doc.embedFont(StandardFonts.HelveticaBold);const size:[number,number]=[841.89,595.28];const navy=rgb(7/255,29/255,55/255);const gold=rgb(216/255,188/255,114/255);const gray=rgb(.38,.43,.49);let page;let y=0;
-  const logo=await doc.embedPng(await readFile(path.join(process.cwd(),"public","logo","nis-logo-square.png")));
-  const sponsorImages=await Promise.all(galaSponsors.map(async sponsor=>({sponsor,image:await doc.embedPng(await readFile(path.join(process.cwd(),"public",...sponsor.image.split("/").filter(Boolean))))})));
-  const clipped=(text:string,max:number,fontSize=8)=>{let value=clean(text);while(value.length&&regular.widthOfTextAtSize(value,fontSize)>max)value=value.slice(0,-1);return value===clean(text)?value:`${value.slice(0,-1)}…`;};
-  const drawSponsorBand=()=>{page!.drawRectangle({x:36,y:y-76,width:770,height:82,color:rgb(.97,.98,.985),borderColor:rgb(.84,.87,.9),borderWidth:.6});page!.drawText("CON IL SUPPORTO DI",{x:45,y:y-11,size:6.5,font:bold,color:gray});const cellWidth=138;const drawRow=(items:typeof sponsorImages,startX:number,rowY:number)=>items.forEach(({image},index)=>{const maxWidth=104,maxHeight=24;const scale=Math.min(maxWidth/image.width,maxHeight/image.height);const width=image.width*scale,height=image.height*scale;const x=startX+index*cellWidth+(cellWidth-width)/2;page!.drawImage(image,{x,y:rowY+(maxHeight-height)/2,width,height});});drawRow(sponsorImages.slice(0,5),76,y-39);drawRow(sponsorImages.slice(5),145,y-69);y-=92;};
-  const newPage=(first=false)=>{page=doc.addPage(size);const headerHeight=first?82:54;page.drawRectangle({x:0,y:size[1]-headerHeight,width:size[0],height:headerHeight,color:navy});const logoSize=first?55:34;page.drawImage(logo,{x:36,y:size[1]-headerHeight+(headerHeight-logoSize)/2,width:logoSize,height:logoSize});page.drawText("NAZIONALE ITALIANA SANITARI",{x:first?105:82,y:size[1]-(first?30:22),size:first?9:8,font:bold,color:gold});page.drawText("Gala 2026 - Elenco partecipanti",{x:first?105:82,y:size[1]-(first?58:41),size:first?18:13,font:bold,color:rgb(1,1,1)});y=size[1]-headerHeight-20;if(first){page.drawText(`Generato il ${when(data.generatedAt)}  |  Biglietti ${data.summary.total}  |  Validi ${data.summary.valid}  |  Annullati ${data.summary.cancelled}`,{x:36,y,size:8.5,font:regular,color:gray});y-=15;page.drawText(`Ingressi effettuati ${data.summary.used}  |  Ingressi ancora da effettuare ${data.summary.notUsed}`,{x:36,y,size:8.5,font:regular,color:gray});y-=16;drawSponsorBand();}drawHeader();};
-  const widths=[190,120,120,155,115];const labels=["PARTECIPANTE","CODICE","TIPO","AZIENDA / ENTE","CHECK-IN"];
-  const drawHeader=()=>{let x=36;page!.drawRectangle({x,y:y-5,width:700,height:21,color:rgb(.92,.94,.96)});labels.forEach((label,index)=>{page!.drawText(label,{x:x+4,y:y+2,size:7.5,font:bold,color:navy});x+=widths[index];});y-=24;};
+const clean = (value: string) =>
+  value
+    .replace(/[’‘]/g, "'")
+    .replace(/[–—]/g, "-")
+    .replace(/[^\x20-\x7EÀ-ÿ]/g, " ");
+
+const when = (value: string | null) =>
+  value
+    ? new Intl.DateTimeFormat("it-IT", {
+        dateStyle: "short",
+        timeStyle: "short",
+        timeZone: "Europe/Rome",
+      }).format(new Date(value))
+    : "-";
+
+const money = (value: number | null) =>
+  value === null
+    ? "N/D"
+    : `${new Intl.NumberFormat("it-IT", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(value)} EUR`;
+
+export async function buildParticipantPdf(data: ParticipantExportDataset) {
+  const doc = await PDFDocument.create();
+  doc.setTitle("Gala 2026 - Elenco partecipanti");
+  const regular = await doc.embedFont(StandardFonts.Helvetica);
+  const bold = await doc.embedFont(StandardFonts.HelveticaBold);
+  const size: [number, number] = [841.89, 595.28];
+  const navy = rgb(7 / 255, 29 / 255, 55 / 255);
+  const gold = rgb(216 / 255, 188 / 255, 114 / 255);
+  const gray = rgb(0.38, 0.43, 0.49);
+  let page;
+  let y = 0;
+
+  const logo = await doc.embedPng(
+    await readFile(
+      path.join(process.cwd(), "public", "logo", "nis-logo-square.png"),
+    ),
+  );
+  const sponsorImages = await Promise.all(
+    galaSponsors.map(async (sponsor) => ({
+      sponsor,
+      image: await doc.embedPng(
+        await readFile(
+          path.join(
+            process.cwd(),
+            "public",
+            ...sponsor.image.split("/").filter(Boolean),
+          ),
+        ),
+      ),
+    })),
+  );
+
+  const clipped = (text: string, max: number, fontSize = 6.8) => {
+    const original = clean(text);
+    let value = original;
+    while (value.length && regular.widthOfTextAtSize(value, fontSize) > max) {
+      value = value.slice(0, -1);
+    }
+    return value === original ? value : `${value.slice(0, -3)}...`;
+  };
+
+  const drawSponsorBand = () => {
+    page!.drawRectangle({
+      x: 36,
+      y: y - 76,
+      width: 770,
+      height: 82,
+      color: rgb(0.97, 0.98, 0.985),
+      borderColor: rgb(0.84, 0.87, 0.9),
+      borderWidth: 0.6,
+    });
+    page!.drawText("CON IL SUPPORTO DI", {
+      x: 45,
+      y: y - 11,
+      size: 6.5,
+      font: bold,
+      color: gray,
+    });
+    const cellWidth = 138;
+    const drawRow = (
+      items: typeof sponsorImages,
+      startX: number,
+      rowY: number,
+    ) =>
+      items.forEach(({ image }, index) => {
+        const maxWidth = 104;
+        const maxHeight = 24;
+        const scale = Math.min(
+          maxWidth / image.width,
+          maxHeight / image.height,
+        );
+        const width = image.width * scale;
+        const height = image.height * scale;
+        const x = startX + index * cellWidth + (cellWidth - width) / 2;
+        page!.drawImage(image, {
+          x,
+          y: rowY + (maxHeight - height) / 2,
+          width,
+          height,
+        });
+      });
+    drawRow(sponsorImages.slice(0, 5), 76, y - 39);
+    drawRow(sponsorImages.slice(5), 145, y - 69);
+    y -= 92;
+  };
+
+  const widths = [145, 90, 70, 95, 80, 95, 80, 115];
+  const labels = [
+    ["PARTECIPANTE"],
+    ["CODICE"],
+    ["TIPOLOGIA"],
+    ["AZIENDA / ENTE"],
+    ["MODALITA", "PAGAMENTO"],
+    ["STATO", "PAGAMENTO"],
+    ["INCASSATO", "(EUR)"],
+    ["CHECK-IN"],
+  ];
+
+  const drawHeader = () => {
+    let x = 36;
+    page!.drawRectangle({
+      x,
+      y: y - 7,
+      width: 770,
+      height: 29,
+      color: rgb(0.92, 0.94, 0.96),
+    });
+    labels.forEach((lines, index) => {
+      lines.forEach((label, lineIndex) => {
+        page!.drawText(label, {
+          x: x + 4,
+          y: y + 8 - lineIndex * 9,
+          size: 6.2,
+          font: bold,
+          color: navy,
+        });
+      });
+      x += widths[index];
+    });
+    y -= 34;
+  };
+
+  const newPage = (first = false) => {
+    page = doc.addPage(size);
+    const headerHeight = first ? 82 : 54;
+    page.drawRectangle({
+      x: 0,
+      y: size[1] - headerHeight,
+      width: size[0],
+      height: headerHeight,
+      color: navy,
+    });
+    const logoSize = first ? 55 : 34;
+    page.drawImage(logo, {
+      x: 36,
+      y: size[1] - headerHeight + (headerHeight - logoSize) / 2,
+      width: logoSize,
+      height: logoSize,
+    });
+    page.drawText("NAZIONALE ITALIANA SANITARI", {
+      x: first ? 105 : 82,
+      y: size[1] - (first ? 30 : 22),
+      size: first ? 9 : 8,
+      font: bold,
+      color: gold,
+    });
+    page.drawText("Gala 2026 - Elenco partecipanti", {
+      x: first ? 105 : 82,
+      y: size[1] - (first ? 58 : 41),
+      size: first ? 18 : 13,
+      font: bold,
+      color: rgb(1, 1, 1),
+    });
+    y = size[1] - headerHeight - 20;
+    if (first) {
+      page.drawText(
+        `Generato il ${when(data.generatedAt)}  |  Biglietti ${data.summary.total}  |  Validi ${data.summary.valid}  |  Annullati ${data.summary.cancelled}`,
+        { x: 36, y, size: 8.2, font: regular, color: gray },
+      );
+      y -= 14;
+      page.drawText(
+        `Ingressi effettuati ${data.summary.used}  |  Da effettuare ${data.summary.notUsed}  |  Pagati ${data.summary.paid}  |  Da incassare ${data.summary.toCollect}  |  Da verificare ${data.summary.toVerify}`,
+        { x: 36, y, size: 8.2, font: regular, color: gray },
+      );
+      y -= 14;
+      page.drawText(
+        `Incassi confermati ${money(data.summary.collected)}  |  Ancora da incassare ${money(data.summary.pending)}  |  Omaggio / non dovuti ${data.summary.notDue}`,
+        { x: 36, y, size: 8.2, font: regular, color: gray },
+      );
+      y -= 16;
+      drawSponsorBand();
+    }
+    drawHeader();
+  };
+
   newPage(true);
-  for(const row of data.rows){if(y<58)newPage();let x=36;const values=[`${row.lastName} ${row.firstName}`,row.ticketCode,typeLabel(row.invitationType),row.organization??"-",row.checkedInAt?`ENTRATO ${when(row.checkedInAt)}`:row.checkInStatus];values.forEach((value,index)=>{page!.drawText(clipped(value,widths[index]-8),{x:x+4,y:y-2,size:8,font:index===0?bold:regular,color:index===4&&row.checkInStatus==="ENTRATO"?rgb(0,.42,.24):navy});x+=widths[index];});page!.drawLine({start:{x:36,y:y-9},end:{x:736,y:y-9},thickness:.35,color:rgb(.82,.85,.88)});y-=23;}
-  const pages=doc.getPages();pages.forEach((item,index)=>item.drawText(`Pagina ${index+1} di ${pages.length}`,{x:720,y:24,size:7,font:regular,color:gray}));return doc.save();
+  for (const [index, row] of data.rows.entries()) {
+    const remainingRows = data.rows.length - index;
+    if (y < 58 || (remainingRows === 2 && y < 80)) newPage();
+    let x = 36;
+    const values = [
+      `${row.lastName} ${row.firstName}`,
+      row.ticketCode,
+      typeLabel(row.invitationType),
+      row.organization ?? "-",
+      row.paymentMethod,
+      row.paymentState,
+      money(row.collectedAmount),
+      row.checkedInAt
+        ? `ENTRATO ${when(row.checkedInAt)}`
+        : row.checkInStatus,
+    ];
+    values.forEach((value, index) => {
+      page!.drawText(clipped(value, widths[index] - 8), {
+        x: x + 4,
+        y: y - 2,
+        size: 6.8,
+        font: index === 0 ? bold : regular,
+        color:
+          index === 7 && row.checkInStatus === "ENTRATO"
+            ? rgb(0, 0.42, 0.24)
+            : navy,
+      });
+      x += widths[index];
+    });
+    page!.drawLine({
+      start: { x: 36, y: y - 9 },
+      end: { x: 806, y: y - 9 },
+      thickness: 0.35,
+      color: rgb(0.82, 0.85, 0.88),
+    });
+    y -= 22;
+  }
+
+  const pages = doc.getPages();
+  pages.forEach((item, index) =>
+    item.drawText(`Pagina ${index + 1} di ${pages.length}`, {
+      x: 720,
+      y: 24,
+      size: 7,
+      font: regular,
+      color: gray,
+    }),
+  );
+  return doc.save();
 }
