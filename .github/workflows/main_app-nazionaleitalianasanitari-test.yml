@@ -115,9 +115,12 @@ jobs:
             app_name="app-nazionaleitalianasanitari-test"
             public_origin="https://www.nazionaleitalianasanitari.com"
 
-            az webapp restart \
+            if ! az webapp restart \
               --resource-group "$resource_group" \
-              --name "$app_name"
+              --name "$app_name"; then
+              echo "::error::Riavvio Azure fallito per ${app_name}."
+              exit 1
+            fi
 
             for attempt in $(seq 1 30); do
               state=$(az webapp show \
@@ -138,32 +141,63 @@ jobs:
               sleep 5
             done
 
-            verify_page() {
+            wait_for_page() {
               path="$1"
-              expected="$2"
+              body_file="$2"
+              headers_file="$3"
               url="${public_origin}${path}?deploy=${GITHUB_SHA}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+              status="000"
 
               for attempt in $(seq 1 24); do
-                html=$(curl \
-                  --fail \
+                if ! status=$(curl \
                   --silent \
                   --show-error \
+                  --location \
                   --header "Cache-Control: no-cache" \
-                  "$url" || true)
+                  --dump-header "$headers_file" \
+                  --output "$body_file" \
+                  --write-out "%{http_code}" \
+                  "$url"); then
+                  status="000"
+                fi
 
-                if [[ "$html" == *"$expected"* ]]; then
+                if [ "$status" = "200" ]; then
+                  echo "${path}: HTTP ${status}"
+                  grep -iE '^(cache-control|x-nextjs-cache|etag):' "$headers_file" || true
                   return 0
                 fi
 
                 sleep 5
               done
 
-              echo "::error::La pagina ${path} non contiene il markup sponsor atteso dopo il deploy."
+              echo "::error::Applicazione non raggiungibile su ${path}: ultimo stato HTTP ${status}."
               return 1
             }
 
-            verify_page "/eventi" "Sponsor ufficiali NIS Gala 2026"
-            verify_page "/" "PANTELEIA APS"
+            verify_server_markup() {
+              path="$1"
+              expected="$2"
+              body_file="$3"
+              headers_file="$4"
+
+              wait_for_page "$path" "$body_file" "$headers_file"
+
+              if ! grep --fixed-strings --quiet "$expected" "$body_file"; then
+                echo "::error::Contenuto obsoleto su ${path}: risposta HTTP 200 senza il markup server-side atteso."
+                return 1
+              fi
+            }
+
+            eventi_body=$(mktemp)
+            eventi_headers=$(mktemp)
+            home_body=$(mktemp)
+            home_headers=$(mktemp)
+            trap 'rm -f "$eventi_body" "$eventi_headers" "$home_body" "$home_headers"' EXIT
+
+            echo "Verifica deploy commit ${GITHUB_SHA}"
+            verify_server_markup "/eventi" "Sponsor ufficiali NIS Gala 2026" "$eventi_body" "$eventi_headers"
+            wait_for_page "/" "$home_body" "$home_headers"
+            echo "Homepage raggiungibile. Verifica sponsor takeover non applicabile all'HTML iniziale: il popup e renderizzato dopo l'idratazione React."
 
             for sponsor_asset in \
               "crai.png" \
