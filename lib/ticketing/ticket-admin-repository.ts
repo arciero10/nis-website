@@ -2,6 +2,7 @@ import {randomUUID} from "node:crypto";
 import type {PoolClient} from "pg";
 import {withTransaction} from "@/lib/ticketing/db";
 import type {StaffSession} from "@/lib/ticketing/staff-auth";
+import {normalizeTicketCancellationReason} from "@/lib/ticketing/ticket-cancellation";
 
 type TicketAdminRow={id:string;event_id:string;attendee_id:string;order_id:string|null;partner_allocation_id:string|null;manual_issuance_id:string|null;ticket_code:string;issuance_source:string;status:"ACTIVE"|"USED"|"CANCELLED"|"REFUNDED";first_name:string;last_name:string};
 export type TicketAdminResult="CANCELLED"|"DELETED"|"NOT_FOUND"|"ALREADY_CANCELLED"|"CHECKIN_ACTIVE"|"NOT_ALLOWED"|"FORBIDDEN";
@@ -12,10 +13,10 @@ async function hasActiveCheckIn(client:PoolClient,ticketId:string){const result=
 async function reopenSoldOutEvent(client:PoolClient,eventId:string){await client.query("UPDATE ticketing_events SET status='ANNOUNCED',updated_at=NOW() WHERE id=$1 AND status='SOLD_OUT'",[eventId]);}
 
 export async function cancelTicket(ticketCode:string,reason:string,session:StaffSession):Promise<TicketAdminResult>{
-  if(session.role!=="SUPERADMIN")return "FORBIDDEN";if(!validReason(reason))return "NOT_ALLOWED";
-  return withTransaction(async client=>{const ticket=await lockedTicket(client,ticketCode);if(!ticket)return "NOT_FOUND";if(ticket.partner_allocation_id)return "NOT_ALLOWED";if(ticket.status==="CANCELLED")return "ALREADY_CANCELLED";if(ticket.status!=="ACTIVE"||await hasActiveCheckIn(client,ticket.id))return "CHECKIN_ACTIVE";
-    await client.query("INSERT INTO ticketing_ticket_cancellation_audit(id,event_id,ticket_id,ticket_code,holder_name,source,previous_status,cancelled_by_staff_id,cancelled_by_display_name,cancelled_by_role,session_id,cancellation_reason) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)",[randomUUID(),ticket.event_id,ticket.id,ticket.ticket_code,`${ticket.first_name} ${ticket.last_name}`,ticket.issuance_source,ticket.status,session.operatorId,session.displayName,session.role,session.sessionId,reason.trim()]);
-    await client.query("UPDATE ticketing_tickets SET status='CANCELLED',updated_at=NOW() WHERE id=$1",[ticket.id]);await reopenSoldOutEvent(client,ticket.event_id);return "CANCELLED";});
+  if(session.role!=="SUPERADMIN")return "FORBIDDEN";const normalizedReason=normalizeTicketCancellationReason(reason);if(!normalizedReason)return "NOT_ALLOWED";
+  return withTransaction(async client=>{const ticket=await lockedTicket(client,ticketCode);if(!ticket)return "NOT_FOUND";if(ticket.status==="CANCELLED")return "ALREADY_CANCELLED";if(ticket.status!=="ACTIVE"||await hasActiveCheckIn(client,ticket.id))return "CHECKIN_ACTIVE";
+    await client.query("INSERT INTO ticketing_ticket_cancellation_audit(id,event_id,ticket_id,ticket_code,holder_name,source,previous_status,cancelled_by_staff_id,cancelled_by_display_name,cancelled_by_role,session_id,cancellation_reason) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)",[randomUUID(),ticket.event_id,ticket.id,ticket.ticket_code,`${ticket.first_name} ${ticket.last_name}`,ticket.issuance_source,ticket.status,session.operatorId,session.displayName,session.role,session.sessionId,normalizedReason]);
+    await client.query("UPDATE ticketing_tickets SET status='CANCELLED',updated_at=NOW() WHERE id=$1",[ticket.id]);if(!ticket.partner_allocation_id)await reopenSoldOutEvent(client,ticket.event_id);return "CANCELLED";});
 }
 
 export async function deleteTicketPermanently(ticketCode:string,confirmationCode:string,reason:string,session:StaffSession):Promise<TicketAdminResult>{
