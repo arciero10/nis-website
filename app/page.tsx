@@ -10,6 +10,9 @@ import GalaHomeBanner from "@/components/GalaHomeBanner";
 import {ScuolaVivaHomeFeature} from "@/components/ScuolaVivaFeatures";
 import {createPageMetadata,organizationJsonLd,websiteJsonLd} from "@/lib/seo";
 
+// Keep editorial homepage updates fresh across deployments instead of caching its HTML as immutable.
+export const dynamic="force-dynamic";
+
 export const metadata:Metadata=createPageMetadata({
   title:"Nazionale Italiana Sanitari | Sport, Salute e Solidarietà",
   description:"La Nazionale Italiana Sanitari unisce professionisti della salute, sport e solidarietà per sostenere progetti concreti di prevenzione, cura e inclusione.",

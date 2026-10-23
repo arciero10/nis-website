@@ -2,6 +2,9 @@ import PageHero from "@/components/PageHero";
 import NewsArchive from "@/components/NewsArchive";
 import {createPageMetadata} from "@/lib/seo";
 
+// Keep the news catalogue fresh across deployments instead of caching its HTML as immutable.
+export const dynamic="force-dynamic";
+
 export const metadata=createPageMetadata({title:"News | Nazionale Italiana Sanitari",description:"Eventi, progetti e aggiornamenti ufficiali della Nazionale Italiana Sanitari.",path:"/news"});
 
 export default function Page(){return <>
