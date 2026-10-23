@@ -17,6 +17,18 @@ export type NewsItem={
 
 export const newsItems:NewsItem[]=[
   {
+    id:"gran-gala-2026-intervista-alessandro-ristori",
+    title:"Alessandro Ristori: “Sport e musica nascono da qualcosa di sano e le cose sane devono aiutare chi ha bisogno”",
+    date:"2026-10-23",
+    category:"Interviste",
+    excerpt:"Alessandro Ristori racconta la propria carriera, il rapporto con la musica e le ragioni della sua partecipazione al Gran Galà NIS.",
+    href:"/news/gran-gala-2026-intervista-alessandro-ristori",
+    image:"/images/news/alessandro-ristori.png",
+    imageAlt:"Alessandro Ristori",
+    imageFit:"contain",
+    linkLabel:"Leggi l’intervista",
+  },
+  {
     id:"gran-gala-2026-intervista-scuola-viva",
     title:"Gran Galà NIS, il 28 ottobre un aiuto concreto a Scuola Viva. L’intervista a Marco Evangelista",
     date:"2026-10-22",
