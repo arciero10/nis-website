@@ -13,7 +13,13 @@ export function parsePartnerAllocationInput(payload:Record<string,unknown>):Crea
     const amount=Number(rawAmount);if(!Number.isFinite(amount)||amount<0||amount>100_000_000)return null;partnershipAmountCents=Math.round(amount*100);
   }
   if(!companyName||!emailPattern.test(contactEmail)||!ALLOCATION_TYPES.includes(allocationType)||!Number.isInteger(allocatedQuantity)||allocatedQuantity<1||allocatedQuantity>10_000)return null;
-  return {companyName,contactEmail,allocationType,packageName:packageName||undefined,partnershipAmountCents,allocatedQuantity,notes:notes||undefined};
+  let nominees:PartnerNomineeInput[]|undefined;
+  if(payload.nominees!==undefined){
+    if(!Array.isArray(payload.nominees)||payload.nominees.length!==allocatedQuantity)return null;
+    nominees=payload.nominees.map(value=>value&&typeof value==="object"?parsePartnerNomineeInput(value as Record<string,unknown>):null).filter((value):value is PartnerNomineeInput=>Boolean(value));
+    if(nominees.length!==allocatedQuantity)return null;
+  }
+  return {companyName,contactEmail,allocationType,packageName:packageName||undefined,partnershipAmountCents,allocatedQuantity,notes:notes||undefined,nominees};
 }
 
 export function parsePartnerNomineeInput(payload:Record<string,unknown>):PartnerNomineeInput|null{

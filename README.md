@@ -53,7 +53,7 @@ NIS_TICKETING_ADMIN_EMAIL=alessandro.arciero@tiscali.it
 CANDIDATURE_TO=info@nazionaleitalianasanitari.com
 ```
 
-L'App Registration Microsoft Entra deve avere il permesso **Microsoft Graph > Application > Mail.Send** con **Admin Consent**. Non sono richiesti login utente o permessi delegated. Il mittente deve essere una casella esistente nel tenant; per mostrare esattamente `Biglietti NIS` come nome mittente, configurare quel display name sulla casella Microsoft 365.
+L'App Registration Microsoft Entra deve avere i permessi **Microsoft Graph > Application > Mail.Send** e **Mail.ReadWrite** con **Admin Consent**. `Mail.ReadWrite` e necessario per creare la bozza e la sessione di upload usate dagli archivi ZIP aziendali superiori a 3 MB; gli invii senza allegati continuano a usare il normale endpoint `sendMail`. Non sono richiesti login utente o permessi delegated. Il mittente deve essere una casella esistente nel tenant; per mostrare esattamente `Biglietti NIS` come nome mittente, configurare quel display name sulla casella Microsoft 365.
 
 Tutte le variabili sono esclusivamente server-side. Il client secret e gli access token non devono essere esposti nel browser, nelle risposte API o nei log.
 

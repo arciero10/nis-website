@@ -1,7 +1,8 @@
-import {getEmailProvider} from "@/lib/email/provider";
+import {EmailAttachmentDeliveryError,getEmailProvider} from "@/lib/email/provider";
 import {buildTicketEmailContent} from "@/lib/ticketing/email-content";
 import {GALA_REPLY_TO} from "@/lib/ticketing/email-config";
 import {buildPartnerInvitationEmailContent} from "@/lib/ticketing/partner-email-content";
+import {createPartnerTicketArchive} from "@/lib/ticketing/partner-ticket-archive";
 import {ticketingRepository,type TicketConfirmation,type TicketEmailPayload} from "@/lib/ticketing/repository";
 import {walletLinksForToken} from "@/lib/ticketing/wallet/config";
 
@@ -22,6 +23,25 @@ export async function deliverPartnerAllocationEmail(allocationId:string,force=fa
   const payload=await ticketingRepository.findPartnerAllocationEmailPayload(allocationId);if(!payload)return {status:"NOT_FOUND" as const};
   try{if(!await ticketingRepository.claimPartnerAllocationEmail(allocationId,force))return {status:"SKIPPED" as const};}
   catch{console.error("Partner invitation email claim failed");return {status:"FAILED" as const};}
-  try{const content=buildPartnerInvitationEmailContent({companyName:payload.companyName,allocationType:payload.allocationType,tickets:payload.tickets.map(ticket=>({...ticket,walletLinks:walletLinksForToken(ticket.qrToken)}))});await getEmailProvider().send({to:payload.contactEmail,replyTo:GALA_REPLY_TO,subject:content.subject,text:content.text,html:content.html});await ticketingRepository.markPartnerAllocationEmailSent(allocationId);return {status:"SENT" as const};}
+  try{
+    const tickets=payload.tickets.map(ticket=>({...ticket,walletLinks:walletLinksForToken(ticket.qrToken)}));const provider=getEmailProvider();
+    let archive:Awaited<ReturnType<typeof createPartnerTicketArchive>>|null=null;
+    try{archive=await createPartnerTicketArchive(payload);}catch{console.error("Partner ticket archive generation failed");}
+    if(archive){
+      const content=buildPartnerInvitationEmailContent({companyName:payload.companyName,allocationType:payload.allocationType,packageName:payload.packageName,archiveAttached:true,tickets});
+      try{await provider.send({to:payload.contactEmail,replyTo:GALA_REPLY_TO,subject:content.subject,text:content.text,html:content.html,attachments:[{name:archive.name,contentType:"application/zip",content:archive.content}]});}
+      catch(error){
+        if(!(error instanceof EmailAttachmentDeliveryError))throw error;
+        const fallback=buildPartnerInvitationEmailContent({companyName:payload.companyName,allocationType:payload.allocationType,packageName:payload.packageName,archiveAttached:false,tickets});
+        await provider.send({to:payload.contactEmail,replyTo:GALA_REPLY_TO,subject:fallback.subject,text:fallback.text,html:fallback.html});
+        await ticketingRepository.markPartnerAllocationEmailSent(allocationId);return {status:"SENT_WITHOUT_ARCHIVE" as const};
+      }
+    }else{
+      const fallback=buildPartnerInvitationEmailContent({companyName:payload.companyName,allocationType:payload.allocationType,packageName:payload.packageName,archiveAttached:false,tickets});
+      await provider.send({to:payload.contactEmail,replyTo:GALA_REPLY_TO,subject:fallback.subject,text:fallback.text,html:fallback.html});
+      await ticketingRepository.markPartnerAllocationEmailSent(allocationId);return {status:"SENT_WITHOUT_ARCHIVE" as const};
+    }
+    await ticketingRepository.markPartnerAllocationEmailSent(allocationId);return {status:"SENT" as const};
+  }
   catch(error){try{await ticketingRepository.markPartnerAllocationEmailFailed(allocationId,error instanceof Error?error.message:"Errore provider email");}catch{console.error("Partner invitation email failure state could not be saved");}console.error("Partner invitation email delivery failed");return {status:"FAILED" as const};}
 }

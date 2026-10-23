@@ -16,6 +16,9 @@ export default function StaffPartnerDashboard(){
   const [loading,setLoading]=useState(true);
   const [saving,setSaving]=useState(false);
   const [message,setMessage]=useState("");
+  const [nominative,setNominative]=useState(true);
+  const [quantity,setQuantity]=useState(1);
+  const [nominees,setNominees]=useState([{firstName:"",lastName:""}]);
   const visibleAllocations=useMemo(()=>filter==="ALL"?allocations:allocations.filter(item=>item.allocationType===filter),[allocations,filter]);
 
   const load=useCallback(async()=>{setLoading(true);try{const response=await fetch("/api/ticketing/staff/partner",{cache:"no-store"});if(response.status===401){window.location.assign("/checkin");return;}if(!response.ok)throw new Error();const body=await response.json() as {allocations:PartnerAllocationSummary[]};setAllocations(body.allocations);setMessage("");}catch{setMessage("Non è stato possibile caricare le assegnazioni aziendali.");}finally{setLoading(false);}},[]);
@@ -24,9 +27,10 @@ export default function StaffPartnerDashboard(){
   async function create(event:FormEvent<HTMLFormElement>){
     event.preventDefault();setSaving(true);setMessage("");const form=event.currentTarget;const data=new FormData(form);
     try{
-      const response=await fetch("/api/ticketing/staff/partner",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({companyName:data.get("companyName"),contactEmail:data.get("contactEmail"),allocationType:data.get("allocationType"),packageName:data.get("packageName"),partnershipAmount:data.get("partnershipAmount"),allocatedQuantity:Number(data.get("allocatedQuantity")),notes:data.get("notes")})});
+      const contactEmail=String(data.get("contactEmail")||"");
+      const response=await fetch("/api/ticketing/staff/partner",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({companyName:data.get("companyName"),contactEmail,allocationType:data.get("allocationType"),packageName:data.get("packageName"),partnershipAmount:data.get("partnershipAmount"),allocatedQuantity:quantity,notes:data.get("notes"),nominees:nominative?nominees.map(nominee=>({...nominee,email:contactEmail})):undefined})});
       if(response.status===401){window.location.assign("/checkin");return;}
-      const body=await response.json() as {message?:string};if(!response.ok)throw new Error(body.message||"Creazione non riuscita.");form.reset();setMessage(body.message||"Assegnazione aziendale creata.");await load();
+      const body=await response.json() as {message?:string};if(!response.ok)throw new Error(body.message||"Creazione non riuscita.");form.reset();setQuantity(1);setNominees([{firstName:"",lastName:""}]);setNominative(true);setMessage(body.message||"Assegnazione aziendale creata.");await load();
     }catch(error){setMessage(error instanceof Error?error.message:"Non è stato possibile creare l'assegnazione.");}finally{setSaving(false);}
   }
 
@@ -35,7 +39,9 @@ export default function StaffPartnerDashboard(){
     <label><span>Email referente *</span><input name="contactEmail" type="email" maxLength={160} required/></label>
     <label><span>Tipo assegnazione *</span><select name="allocationType" defaultValue="AZIENDA" required><option value="SPONSOR">Sponsor</option><option value="DONATORE">Donatore</option><option value="AZIENDA">Azienda</option><option value="OSPITE">Ospite</option></select></label>
     <label><span>Pacchetto / descrizione</span><input name="packageName" maxLength={120}/></label>
-    <div><label><span>Importo partnership</span><input name="partnershipAmount" type="number" inputMode="decimal" min="0" step="0.01"/></label><label><span>Biglietti inclusi *</span><input name="allocatedQuantity" type="number" inputMode="numeric" min="1" max="10000" required/></label></div>
+    <div><label><span>Importo partnership</span><input name="partnershipAmount" type="number" inputMode="decimal" min="0" step="0.01"/></label><label><span>Biglietti inclusi *</span><input name="allocatedQuantity" type="number" inputMode="numeric" min="1" max={nominative?100:10000} value={quantity} onChange={event=>{const next=Math.max(1,Math.min(nominative?100:10000,Number(event.target.value)||1));setQuantity(next);setNominees(current=>Array.from({length:next},(_,index)=>current[index]??{firstName:"",lastName:""}));}} required/></label></div>
+    <label className="staff-partner-nominative-toggle"><input type="checkbox" checked={nominative} onChange={event=>setNominative(event.target.checked)}/><span>Crea biglietti nominativi</span></label>
+    {nominative&&<fieldset className="staff-partner-nominative-list"><legend>Intestatari dei biglietti</legend>{nominees.map((nominee,index)=><div key={index} className="staff-partner-nominative-row"><strong>Ingresso {index+1}</strong><label><span>Nome *</span><input value={nominee.firstName} maxLength={80} onChange={event=>setNominees(current=>current.map((item,itemIndex)=>itemIndex===index?{...item,firstName:event.target.value}:item))} required/></label><label><span>Cognome *</span><input value={nominee.lastName} maxLength={80} onChange={event=>setNominees(current=>current.map((item,itemIndex)=>itemIndex===index?{...item,lastName:event.target.value}:item))} required/></label></div>)}</fieldset>}
     <label><span>Note</span><textarea name="notes" maxLength={2000} rows={4}/></label>
     <button type="submit" disabled={saving}>{saving?"CREAZIONE TICKET...":"CREA ASSEGNAZIONE E TICKET"}</button>
   </form></section>{message&&<p className="staff-feedback" role="status">{message}</p>}
