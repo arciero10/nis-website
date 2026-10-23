@@ -16,6 +16,7 @@ export default function sitemap():MetadataRoute.Sitemap{
     {path:"/eventi",changeFrequency:"weekly",priority:.8},
     {path:"/eventi/nis-gala-2026",changeFrequency:"weekly",priority:.9},
     {path:"/news",changeFrequency:"weekly",priority:.8},
+    {path:"/news/gran-gala-2026-intervista-scuola-viva",changeFrequency:"monthly",priority:.8},
     {path:"/dicono-di-noi",changeFrequency:"weekly",priority:.7},
     {path:"/5x1000",changeFrequency:"yearly",priority:.7},
     {path:"/diventa-socio",changeFrequency:"monthly",priority:.8},

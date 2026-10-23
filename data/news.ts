@@ -1,4 +1,4 @@
-export const newsCategories=["Tutte","Associazione","Eventi","Progetti"] as const;
+export const newsCategories=["Tutte","Interviste","Associazione","Eventi","Progetti"] as const;
 
 export type NewsCategory=Exclude<(typeof newsCategories)[number],"Tutte">;
 
@@ -12,9 +12,22 @@ export type NewsItem={
   image:string;
   imageAlt:string;
   imageFit?:"contain";
+  linkLabel?:string;
 };
 
 export const newsItems:NewsItem[]=[
+  {
+    id:"gran-gala-2026-intervista-scuola-viva",
+    title:"Gran Galà NIS, il 28 ottobre un aiuto concreto a Scuola Viva. L’intervista a Marco Evangelista",
+    date:"2026-10-22",
+    category:"Interviste",
+    excerpt:"Marco Evangelista racconta la missione di Scuola Viva e i progetti sostenuti dalla raccolta fondi del Gran Gala NIS.",
+    href:"/news/gran-gala-2026-intervista-scuola-viva",
+    image:"/images/news/scuola-viva-logo.jpeg",
+    imageAlt:"Scuola Viva ETS",
+    imageFit:"contain",
+    linkLabel:"Leggi l’intervista",
+  },
   {
     id:"consegna-50000-umberto-i",
     title:"€50.000 per l’Oncoematologia Pediatrica dell’Umberto I",

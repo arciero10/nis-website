@@ -18,7 +18,7 @@ function NewsCard({item}:{item:NewsItem}){
       <div className="nis-news-meta"><strong>{item.category}</strong><time dateTime={item.date}>{formatDate(item.date)}</time></div>
       <h2>{item.title}</h2>
       <p>{item.excerpt}</p>
-      <Link className="nis-news-link" href={item.href}>Approfondisci <span aria-hidden="true">→</span></Link>
+      <Link className="nis-news-link" href={item.href}>{item.linkLabel??"Approfondisci"} <span aria-hidden="true">→</span></Link>
     </div>
   </article>;
 }

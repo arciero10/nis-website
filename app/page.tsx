@@ -7,6 +7,7 @@ import SectorGrid from "@/components/SectorGrid";
 import StructuredData from "@/components/StructuredData";
 import GalaTakeover from "@/components/GalaTakeover";
 import GalaHomeBanner from "@/components/GalaHomeBanner";
+import {ScuolaVivaHomeFeature} from "@/components/ScuolaVivaFeatures";
 import {createPageMetadata,organizationJsonLd,websiteJsonLd} from "@/lib/seo";
 
 export const metadata:Metadata=createPageMetadata({
@@ -32,6 +33,8 @@ export default function Home(){return <>
   </section>
 
   <GalaHomeBanner/>
+
+  <ScuolaVivaHomeFeature/>
 
   <MetricStrip/>
 
