@@ -23,9 +23,8 @@ export const newsItems:NewsItem[]=[
     category:"Interviste",
     excerpt:"Alessandro Ristori racconta la propria carriera, il rapporto con la musica e le ragioni della sua partecipazione al Gran Galà NIS.",
     href:"/news/gran-gala-2026-intervista-alessandro-ristori",
-    image:"/images/news/alessandro-ristori.png",
+    image:"/images/news/alessandro-ristori.jpg",
     imageAlt:"Alessandro Ristori",
-    imageFit:"contain",
     linkLabel:"Leggi l’intervista",
   },
   {

@@ -75,8 +75,7 @@ export default function AlessandroRistoriInterviewPage(){
         <section className="editorial-introduction" aria-label="Introduzione"><p>{content.introduction}</p></section>
 
         <section className="editorial-interview" aria-label={`Intervista ad ${alessandroRistoriArticle.interviewee}`}>
-          {content.interviews.map((item,index)=><section className="editorial-question" key={item.question}>
-            <p className="editorial-question-number">DOMANDA {index+1}</p>
+          {content.interviews.map(item=><section className="editorial-question editorial-ristori-question" key={item.question}>
             <h2>{item.question}</h2>
             <div>{item.answers.map(answer=><p key={answer}>{answer}</p>)}</div>
           </section>)}

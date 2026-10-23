@@ -9,9 +9,9 @@ export const alessandroRistoriArticle={
   interviewee:"Alessandro Ristori",
   category:"Interviste",
   path:"/news/gran-gala-2026-intervista-alessandro-ristori",
-  image:"/images/news/alessandro-ristori.png",
-  imageWidth:335,
-  imageHeight:597,
+  image:"/images/news/alessandro-ristori.jpg",
+  imageWidth:1280,
+  imageHeight:1600,
 } as const;
 
 export type AlessandroRistoriInterview={question:string;answers:string[]};
