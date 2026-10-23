@@ -52,14 +52,15 @@ export default function GalaTakeover(){
         <Image src={galaPromotion.artwork} alt="The NIS Gala Charity Night, 28 ottobre 2026, Roma" fill priority sizes="(max-width: 720px) calc(100vw - 32px), 58vw"/>
       </div>
       <div className="gala-takeover-content">
-        <div className="gala-takeover-event-meta" aria-label="Data e luogo dell'evento">
-          <span>28 OTTOBRE 2026</span>
-          <span>ANOTHER STUDIO · ROMA</span>
-        </div>
-        <h2 id="gala-takeover-title"><span className="gala-takeover-title-line">THE NIS GALA 2026</span><span className="gala-takeover-subtitle">CHARITY NIGHT</span></h2>
+        <p className="gala-takeover-kicker">28 OTTOBRE 2026 · ROMA</p>
+        <h2 id="gala-takeover-title"><span className="gala-takeover-title-line">THE NIS GALA</span><span className="gala-takeover-subtitle">CHARITY NIGHT</span></h2>
         <p id="gala-takeover-description">{galaPromotion.description}</p>
+        <dl className="gala-takeover-details">
+          <div><dt>Data</dt><dd><time dateTime={galaPromotion.dateIso}>{galaPromotion.date}</time></dd></div>
+          <div><dt>Luogo</dt><dd>{galaPromotion.location}</dd></div>
+        </dl>
         <div className="gala-takeover-actions">
-          <Link href="/i/gala-2026" className="btn gala-primary-cta" onClick={dismiss}>ACQUISTA IL BIGLIETTO</Link>
+          <Link href={galaPromotion.publicPath} className="btn btn-blue" onClick={dismiss}>SCOPRI L&apos;EVENTO</Link>
           <button type="button" className="gala-continue" onClick={dismiss}>CONTINUA AL SITO</button>
         </div>
       </div>
