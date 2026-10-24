@@ -16,7 +16,7 @@ export type ParticipantExportRow={
   allocationId:string|null;allocationType:string|null;allocationQuantity:number|null;allocationIssued:number|null;allocationUsed:number|null;allocationAmount:number|null;
 };
 export type CompanyExportSummary={company:string;type:string;contact:string;assigned:number;issued:number;used:number;remaining:number;amount:number|null};
-export type ParticipantExportDataset={rows:ParticipantExportRow[];generatedAt:string;filters:ParticipantExportFilters;summary:{total:number;valid:number;used:number;cancelled:number;notUsed:number;paid:number;toCollect:number;toVerify:number;notDue:number;refunded:number;undetermined:number;bySource:Record<string,number>;byPaymentMethod:Record<string,number>;byType:Record<string,number>;collected:number;pending:number;partnership:number};companies:CompanyExportSummary[]};
+export type ParticipantExportDataset={rows:ParticipantExportRow[];cancelledRows:ParticipantExportRow[];generatedAt:string;filters:ParticipantExportFilters;summary:{total:number;valid:number;used:number;cancelled:number;notUsed:number;paid:number;toCollect:number;toVerify:number;notDue:number;refunded:number;undetermined:number;bySource:Record<string,number>;byPaymentMethod:Record<string,number>;byType:Record<string,number>;collected:number;pending:number;partnership:number};companies:CompanyExportSummary[]};
 
 export type ParticipantPaymentEvidence={source:TicketIssuanceSource;orderPaymentStatus:string|null;manualPaymentStatus:string|null;manualPaymentMethod:string|null;cashCollectionStatus:string|null;amount:number|null;ticketCount:number|null};
 
@@ -61,16 +61,22 @@ export function typeLabel(value:InvitationType){
   return ({STANDARD:"Standard",SPONSOR:"Sponsor",DONATORE:"Donatore",AZIENDA:"Azienda",OSPITE:"Ospite",STAMPA:"Stampa",MEDIA:"Media",PRESS:"Press",OMAGGIO_NIS:"Omaggio NIS"} as const)[value];
 }
 
+// Temporary operational exclusion until this known test ticket is removed through the audited admin flow.
+export const PARTICIPANT_EXPORT_EXCLUDED_TICKET_CODES=new Set(["NIS26-J89R4AL3"]);
+
 export function buildParticipantExportDataset(rows:ParticipantExportRow[],filters:ParticipantExportFilters,generatedAt=new Date().toISOString()):ParticipantExportDataset{
-  const sorted=[...rows].sort((a,b)=>a.lastName.localeCompare(b.lastName,"it",{sensitivity:"base"})||a.firstName.localeCompare(b.firstName,"it",{sensitivity:"base"})||a.ticketCode.localeCompare(b.ticketCode));
+  const operational=rows.filter(row=>!PARTICIPANT_EXPORT_EXCLUDED_TICKET_CODES.has(row.ticketCode));
+  const sorted=[...operational].sort((a,b)=>a.lastName.localeCompare(b.lastName,"it",{sensitivity:"base"})||a.firstName.localeCompare(b.firstName,"it",{sensitivity:"base"})||a.ticketCode.localeCompare(b.ticketCode));
+  const validRows=sorted.filter(row=>row.ticketStatus==="ACTIVE"||row.ticketStatus==="USED");
+  const cancelledRows=sorted.filter(row=>row.ticketStatus==="CANCELLED"||row.ticketStatus==="REFUNDED");
   const bySource:Record<string,number>={};const byPaymentMethod:Record<string,number>={};const byType:Record<string,number>={};const seenPayments=new Set<string>();
   let collected=0,pending=0,partnership=0;
-  for(const row of sorted){
+  for(const row of validRows){
     bySource[sourceLabel(row.source)]=(bySource[sourceLabel(row.source)]??0)+1;byPaymentMethod[row.paymentMethod]=(byPaymentMethod[row.paymentMethod]??0)+1;byType[typeLabel(row.invitationType)]=(byType[typeLabel(row.invitationType)]??0)+1;
     if(row.paymentGroupKey&&!seenPayments.has(row.paymentGroupKey)&&row.amount!==null){seenPayments.add(row.paymentGroupKey);if(row.paymentBucket==="COLLECTED")collected+=row.amount;else if(row.paymentBucket==="PENDING")pending+=row.amount;else if(row.paymentBucket==="PARTNERSHIP")partnership+=row.amount;}
   }
   const allocations=new Map<string,CompanyExportSummary>();
   for(const row of sorted){if(!row.allocationId||allocations.has(row.allocationId))continue;allocations.set(row.allocationId,{company:row.organization??"-",type:row.allocationType??"Azienda",contact:row.companyContact??"-",assigned:row.allocationQuantity??0,issued:row.allocationIssued??0,used:row.allocationUsed??0,remaining:Math.max(0,(row.allocationQuantity??0)-(row.allocationIssued??0)),amount:row.allocationAmount});}
-  const count=(state:ParticipantPaymentState)=>sorted.filter(row=>row.paymentState===state).length;
-  return {rows:sorted,generatedAt,filters,summary:{total:sorted.length,valid:sorted.filter(row=>row.ticketStatus==="ACTIVE"||row.ticketStatus==="USED").length,used:sorted.filter(row=>row.ticketStatus==="USED").length,cancelled:sorted.filter(row=>row.ticketStatus==="CANCELLED"||row.ticketStatus==="REFUNDED").length,notUsed:sorted.filter(row=>row.ticketStatus==="ACTIVE").length,paid:count("PAGATO"),toCollect:count("DA INCASSARE"),toVerify:count("DA VERIFICARE"),notDue:count("NON DOVUTO"),refunded:count("RIMBORSATO"),undetermined:count("NON DETERMINABILE"),bySource,byPaymentMethod,byType,collected,pending,partnership},companies:[...allocations.values()].sort((a,b)=>a.company.localeCompare(b.company,"it",{sensitivity:"base"}))};
+  const count=(state:ParticipantPaymentState)=>validRows.filter(row=>row.paymentState===state).length;
+  return {rows:validRows,cancelledRows,generatedAt,filters,summary:{total:validRows.length+cancelledRows.length,valid:validRows.length,used:validRows.filter(row=>row.ticketStatus==="USED").length,cancelled:cancelledRows.length,notUsed:validRows.filter(row=>row.ticketStatus==="ACTIVE").length,paid:count("PAGATO"),toCollect:count("DA INCASSARE"),toVerify:count("DA VERIFICARE"),notDue:count("NON DOVUTO"),refunded:cancelledRows.filter(row=>row.ticketStatus==="REFUNDED").length,undetermined:count("NON DETERMINABILE"),bySource,byPaymentMethod,byType,collected,pending,partnership},companies:[...allocations.values()].sort((a,b)=>a.company.localeCompare(b.company,"it",{sensitivity:"base"}))};
 }

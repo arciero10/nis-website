@@ -16,10 +16,13 @@ const clean = (value: string) =>
 const when = (value: string | null) =>
   value
     ? new Intl.DateTimeFormat("it-IT", {
-        dateStyle: "short",
-        timeStyle: "short",
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
         timeZone: "Europe/Rome",
-      }).format(new Date(value))
+      }).format(new Date(value)).replace(",", "")
     : "-";
 
 const money = (value: number | null) =>
@@ -152,7 +155,90 @@ export async function buildParticipantPdf(data: ParticipantExportDataset) {
     y -= 34;
   };
 
-  const newPage = (first = false) => {
+  const drawSummaryCard = (
+    x: number,
+    title: string,
+    metrics: Array<{ label: string; value: string }>,
+    subtitle?: string,
+  ) => {
+    const width = 186;
+    const height = 82;
+    page!.drawRectangle({
+      x,
+      y: y - height,
+      width,
+      height,
+      color: rgb(0.96, 0.975, 0.985),
+      borderColor: rgb(0.82, 0.85, 0.88),
+      borderWidth: 0.6,
+    });
+    const center = (
+      text: string,
+      left: number,
+      areaWidth: number,
+      top: number,
+      fontSize: number,
+      strong = false,
+      color = navy,
+    ) => {
+      const font = strong ? bold : regular;
+      let fittedSize = fontSize;
+      while (
+        fittedSize > 5.5 &&
+        font.widthOfTextAtSize(clean(text), fittedSize) > areaWidth - 6
+      ) {
+        fittedSize -= 0.5;
+      }
+      page!.drawText(clean(text), {
+        x:
+          left +
+          (areaWidth - font.widthOfTextAtSize(clean(text), fittedSize)) / 2,
+        y: top,
+        size: fittedSize,
+        font,
+        color,
+      });
+    };
+    center(title, x, width, y - 15, 6.8, true, gold);
+    if (subtitle) center(subtitle, x, width, y - 29, 6.5, false, gray);
+    const metricTop = subtitle ? y - 52 : y - 42;
+    const slotWidth = width / metrics.length;
+    metrics.forEach((metric, index) => {
+      const left = x + index * slotWidth;
+      center(metric.value, left, slotWidth, metricTop, 11, true);
+      center(metric.label, left, slotWidth, metricTop - 14, 5.4, false, gray);
+    });
+  };
+
+  const drawSummary = () => {
+    drawSummaryCard(
+      36,
+      "RIEPILOGO GENERALE",
+      [
+        { label: "TOTALI", value: String(data.summary.total) },
+        { label: "VALIDI", value: String(data.summary.valid) },
+        { label: "ANNULLATI", value: String(data.summary.cancelled) },
+      ],
+      `Generato il ${when(data.generatedAt)}`,
+    );
+    drawSummaryCard(230, "STATO INGRESSI", [
+      { label: "EFFETTUATI", value: String(data.summary.used) },
+      { label: "DA EFFETTUARE", value: String(data.summary.notUsed) },
+    ]);
+    drawSummaryCard(424, "STATO PAGAMENTI", [
+      { label: "PAGATI", value: String(data.summary.paid) },
+      { label: "DA INCASSARE", value: String(data.summary.toCollect) },
+      { label: "DA VERIFICARE", value: String(data.summary.toVerify) },
+    ]);
+    drawSummaryCard(618, "VALORI ECONOMICI", [
+      { label: "INCASSATI", value: money(data.summary.collected) },
+      { label: "DA INCASSARE", value: money(data.summary.pending) },
+      { label: "NON DOVUTI", value: String(data.summary.notDue) },
+    ]);
+    y -= 96;
+  };
+
+  const newPage = (first = false, withTableHeader = true) => {
     page = doc.addPage(size);
     const headerHeight = first ? 82 : 54;
     page.drawRectangle({
@@ -184,25 +270,8 @@ export async function buildParticipantPdf(data: ParticipantExportDataset) {
       color: rgb(1, 1, 1),
     });
     y = size[1] - headerHeight - 20;
-    if (first) {
-      page.drawText(
-        `Generato il ${when(data.generatedAt)}  |  Biglietti ${data.summary.total}  |  Validi ${data.summary.valid}  |  Annullati ${data.summary.cancelled}`,
-        { x: 36, y, size: 8.2, font: regular, color: gray },
-      );
-      y -= 14;
-      page.drawText(
-        `Ingressi effettuati ${data.summary.used}  |  Da effettuare ${data.summary.notUsed}  |  Pagati ${data.summary.paid}  |  Da incassare ${data.summary.toCollect}  |  Da verificare ${data.summary.toVerify}`,
-        { x: 36, y, size: 8.2, font: regular, color: gray },
-      );
-      y -= 14;
-      page.drawText(
-        `Incassi confermati ${money(data.summary.collected)}  |  Ancora da incassare ${money(data.summary.pending)}  |  Omaggio / non dovuti ${data.summary.notDue}`,
-        { x: 36, y, size: 8.2, font: regular, color: gray },
-      );
-      y -= 16;
-      drawSponsorBand();
-    }
-    drawHeader();
+    if (first) drawSummary();
+    if (withTableHeader) drawHeader();
   };
 
   newPage(true);
@@ -241,18 +310,122 @@ export async function buildParticipantPdf(data: ParticipantExportDataset) {
       thickness: 0.35,
       color: rgb(0.82, 0.85, 0.88),
     });
-    y -= 22;
+    y -= 20;
   }
 
+  const cancelledWidths = [200, 110, 100, 220, 140];
+  const cancelledLabels = [
+    ["PARTECIPANTE"],
+    ["CODICE"],
+    ["TIPOLOGIA"],
+    ["AZIENDA / ENTE"],
+    ["STATO"],
+  ];
+  const drawCancelledHeader = () => {
+    let x = 36;
+    page!.drawRectangle({
+      x,
+      y: y - 7,
+      width: 770,
+      height: 29,
+      color: rgb(0.98, 0.93, 0.94),
+    });
+    cancelledLabels.forEach((lines, index) => {
+      lines.forEach((label) =>
+        page!.drawText(label, {
+          x: x + 4,
+          y: y + 8,
+          size: 6.2,
+          font: bold,
+          color: navy,
+        }),
+      );
+      x += cancelledWidths[index];
+    });
+    y -= 34;
+  };
+
+  y -= 8;
+  if (y < 110) newPage(false, false);
+  page!.drawText("BIGLIETTI ANNULLATI", {
+    x: 36,
+    y,
+    size: 10,
+    font: bold,
+    color: rgb(0.62, 0.16, 0.2),
+  });
+  y -= 30;
+  drawCancelledHeader();
+  if (!data.cancelledRows.length) {
+    page!.drawText("Nessun biglietto annullato nel perimetro selezionato.", {
+      x: 40,
+      y: y - 2,
+      size: 7,
+      font: regular,
+      color: gray,
+    });
+    y -= 23;
+  }
+  for (const row of data.cancelledRows) {
+    if (y < 58) {
+      newPage(false, false);
+      page!.drawText("BIGLIETTI ANNULLATI - SEGUE", {
+        x: 36,
+        y,
+        size: 9,
+        font: bold,
+        color: rgb(0.62, 0.16, 0.2),
+      });
+      y -= 29;
+      drawCancelledHeader();
+    }
+    let x = 36;
+    const values = [
+      `${row.lastName} ${row.firstName}`,
+      row.ticketCode,
+      typeLabel(row.invitationType),
+      row.organization ?? "-",
+      row.ticketStatus === "REFUNDED" ? "RIMBORSATO" : "ANNULLATO",
+    ];
+    values.forEach((value, index) => {
+      page!.drawText(clipped(value, cancelledWidths[index] - 8), {
+        x: x + 4,
+        y: y - 2,
+        size: 6.8,
+        font: index === 0 ? bold : regular,
+        color: index === 4 ? rgb(0.62, 0.16, 0.2) : navy,
+      });
+      x += cancelledWidths[index];
+    });
+    page!.drawLine({
+      start: { x: 36, y: y - 9 },
+      end: { x: 806, y: y - 9 },
+      thickness: 0.35,
+      color: rgb(0.82, 0.85, 0.88),
+    });
+    y -= 20;
+  }
+
+  y -= 8;
+  if (y < 116) newPage(false, false);
+  drawSponsorBand();
+
   const pages = doc.getPages();
-  pages.forEach((item, index) =>
+  pages.forEach((item, index) => {
+    item.drawText("NIS Gala 2026 - Report operativo partecipanti", {
+      x: 36,
+      y: 24,
+      size: 6.5,
+      font: regular,
+      color: gray,
+    });
     item.drawText(`Pagina ${index + 1} di ${pages.length}`, {
       x: 720,
       y: 24,
       size: 7,
       font: regular,
       color: gray,
-    }),
-  );
+    });
+  });
   return doc.save();
 }
