@@ -479,3 +479,42 @@ body:has(.nis-checkin-page)>.site-header,body:has(.nis-checkin-page)>footer{disp
 @media(max-width:720px){.scuola-viva-home{padding:38px 0}.scuola-viva-logo-panel{padding:24px}.scuola-viva-home-copy{text-align:center}.scuola-viva-home-copy h3{font-size:16px}.scuola-viva-home-copy .btn,.scuola-viva-gala-copy .btn{width:100%}.scuola-viva-gala{padding:42px 0}.scuola-viva-gala-logo{padding:22px;border-top:3px solid #287950;border-left:0}.scuola-viva-gala-copy{text-align:center}.scuola-viva-gala-copy h2{font-size:31px}.scuola-viva-gala-copy ul{text-align:left}.editorial-article{padding-top:72px}.editorial-article-hero{padding:28px 0 34px}.editorial-breadcrumb{margin-bottom:18px}.editorial-article-logo{min-height:105px;padding:17px}.editorial-article-hero h1{font-size:clamp(29px,8.6vw,34px);line-height:1.14;overflow-wrap:break-word}.editorial-deck{margin-top:16px;font-size:16px;line-height:1.62}.editorial-meta{margin-top:18px;padding-top:14px;display:grid;gap:6px}.editorial-cover-media{margin-top:21px;border-radius:5px;box-shadow:0 10px 28px rgba(0,0,0,.18)}.editorial-cover-media-logo{padding:22px}.editorial-article-body{padding-top:34px;padding-bottom:50px}.editorial-introduction p,.editorial-question div p,.editorial-participation>p:not(.eyebrow){font-size:16px;line-height:1.72}.editorial-introduction p:first-child{font-size:18px}.editorial-pullquote{margin:32px 0;padding:23px 20px}.editorial-pullquote p{font-size:20px}.editorial-question{padding:29px 0}.editorial-question h2{font-size:20px}.editorial-participation{padding:27px 21px}.editorial-participation h2{font-size:29px}.editorial-participation .btn{width:100%;height:auto;min-height:50px;text-align:center}.editorial-ristori-question{padding:29px 0}.editorial-ristori-question h2{margin-bottom:16px;color:#0a315b;font-size:20px;font-weight:750;line-height:1.45}}
 @media(max-width:480px){.editorial-article-hero{padding:24px 0 30px}.editorial-article-hero-inner,.editorial-article-body{width:calc(100% - 28px)}.editorial-breadcrumb{gap:6px;margin-bottom:15px;font-size:12px}.editorial-article-hero h1{font-size:clamp(28px,8.8vw,32px);line-height:1.16}.editorial-deck{font-size:15px;line-height:1.58}.editorial-meta{font-size:12px}.editorial-cover-media{margin-top:18px}.editorial-article-body{padding-top:28px;padding-bottom:44px}.editorial-introduction p,.editorial-question div p,.editorial-participation>p:not(.eyebrow){font-size:16px;line-height:1.68}.editorial-introduction p:first-child{font-size:17px}.editorial-question,.editorial-ristori-question{padding:25px 0}.editorial-question h2,.editorial-ristori-question h2{font-size:19px;line-height:1.42}.editorial-participation{padding:23px 17px}.editorial-participation h2{font-size:27px}.nis-news-content{padding:18px 16px}.nis-news-meta{flex-direction:column;gap:4px}.nis-news-meta time{text-align:left}.nis-news-card h2{font-size:19px;overflow-wrap:anywhere}}
 @media(max-width:480px){.editorial-ristori-article{padding-top:64px}.editorial-ristori-article .editorial-article-hero{padding:18px 0 24px}.editorial-ristori-article .editorial-breadcrumb{margin-bottom:11px}.editorial-ristori-article .editorial-category{margin-bottom:7px;font-size:10px}.editorial-ristori-article .editorial-article-hero h1{font-size:clamp(26px,7.8vw,32px);line-height:1.08}.editorial-ristori-article .editorial-deck{margin-top:12px;font-size:14px;line-height:1.5}.editorial-ristori-article .editorial-meta{margin-top:13px;padding-top:11px;gap:4px}.editorial-ristori-article .editorial-cover-media{margin-top:15px}.editorial-ristori-article .editorial-article-body{padding-top:23px;padding-bottom:40px}.editorial-ristori-article .editorial-introduction p{margin-bottom:15px;font-size:16px;line-height:1.65}.editorial-ristori-article .editorial-question{padding:22px 0}.editorial-ristori-article .editorial-question h2{margin-bottom:12px;font-size:18px;line-height:1.35}.editorial-ristori-article .editorial-question div p{margin-bottom:13px;font-size:16px;line-height:1.65}}
+
+/* RISTORI DEFINITIVO */
+.editorial-question-number {
+  display: none !important;
+}
+
+.editorial-ristori-article .editorial-cover-media-portrait img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+@media (max-width: 480px) {
+  .editorial-ristori-article .editorial-article-hero h1 {
+    font-size: clamp(26px, 7.8vw, 32px);
+    line-height: 1.08;
+  }
+
+  .editorial-ristori-article .editorial-deck {
+    margin-top: 12px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .editorial-ristori-article .editorial-meta {
+    margin-top: 13px;
+    padding-top: 11px;
+  }
+
+  .editorial-ristori-article .editorial-question {
+    padding: 22px 0;
+  }
+
+  .editorial-ristori-article .editorial-question h2 {
+    margin-bottom: 12px;
+    font-size: 18px;
+    line-height: 1.35;
+  }
+}
