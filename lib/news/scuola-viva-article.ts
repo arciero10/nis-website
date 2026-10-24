@@ -1,5 +1,6 @@
 import {readFileSync} from "node:fs";
 import {join} from "node:path";
+import {scuolaVivaNewsItem} from "@/data/news";
 
 export const scuolaVivaArticle={
   title:"Gran Galà NIS, il 28 ottobre un aiuto concreto a Scuola Viva. L’intervista a Marco Evangelista",
@@ -7,8 +8,11 @@ export const scuolaVivaArticle={
   date:"2026-10-22",
   author:"Ufficio Stampa Nazionale Italiana Sanitari",
   category:"Interviste",
-  path:"/news/gran-gala-2026-intervista-scuola-viva",
-  logo:"/images/news/scuola-viva-logo.jpeg",
+  path:scuolaVivaNewsItem.href,
+  image:scuolaVivaNewsItem.image,
+  imageAlt:scuolaVivaNewsItem.imageAlt,
+  imageWidth:scuolaVivaNewsItem.imageWidth,
+  imageHeight:scuolaVivaNewsItem.imageHeight,
 } as const;
 
 export type ScuolaVivaInterview={question:string;answers:string[]};

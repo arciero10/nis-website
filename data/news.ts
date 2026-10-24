@@ -11,12 +11,13 @@ export type NewsItem={
   href:string;
   image:string;
   imageAlt:string;
+  imageWidth:number;
+  imageHeight:number;
   imageFit?:"contain";
   linkLabel?:string;
 };
 
-export const newsItems:NewsItem[]=[
-  {
+export const alessandroRistoriNewsItem:NewsItem={
     id:"gran-gala-2026-intervista-alessandro-ristori",
     title:"Alessandro Ristori: “Sport e musica nascono da qualcosa di sano e le cose sane devono aiutare chi ha bisogno”",
     date:"2026-10-23",
@@ -25,9 +26,12 @@ export const newsItems:NewsItem[]=[
     href:"/news/gran-gala-2026-intervista-alessandro-ristori",
     image:"/images/news/alessandro-ristori.jpg",
     imageAlt:"Alessandro Ristori",
+    imageWidth:1280,
+    imageHeight:1600,
     linkLabel:"Leggi l’intervista",
-  },
-  {
+};
+
+export const scuolaVivaNewsItem:NewsItem={
     id:"gran-gala-2026-intervista-scuola-viva",
     title:"Gran Galà NIS, il 28 ottobre un aiuto concreto a Scuola Viva. L’intervista a Marco Evangelista",
     date:"2026-10-22",
@@ -36,9 +40,15 @@ export const newsItems:NewsItem[]=[
     href:"/news/gran-gala-2026-intervista-scuola-viva",
     image:"/images/news/scuola-viva-logo.jpeg",
     imageAlt:"Scuola Viva ETS",
+    imageWidth:380,
+    imageHeight:138,
     imageFit:"contain",
     linkLabel:"Leggi l’intervista",
-  },
+};
+
+export const newsItems:NewsItem[]=[
+  alessandroRistoriNewsItem,
+  scuolaVivaNewsItem,
   {
     id:"consegna-50000-umberto-i",
     title:"€50.000 per l’Oncoematologia Pediatrica dell’Umberto I",
@@ -48,6 +58,8 @@ export const newsItems:NewsItem[]=[
     href:"/progetti/il-1-battito",
     image:"/images/progetti/il-primo-battito/consegna-policlinico-1.jpg",
     imageAlt:"La delegazione NIS durante la consegna del contributo al Policlinico Umberto I",
+    imageWidth:1600,
+    imageHeight:900,
   },
   {
     id:"crai-charity-award",
@@ -58,6 +70,8 @@ export const newsItems:NewsItem[]=[
     href:"/progetti/il-1-battito",
     image:"/images/progetti/il-primo-battito/firma-assegno-2.jpg",
     imageAlt:"Firma dell’assegno solidale del CRAI Charity Award",
+    imageWidth:900,
+    imageHeight:1600,
   },
   {
     id:"nascita-nis",
@@ -68,6 +82,8 @@ export const newsItems:NewsItem[]=[
     href:"/chi-siamo",
     image:"/images/brand/nis-is-nice.png",
     imageAlt:"NIS is NICE - Nazionale Italiana Sanitari",
+    imageWidth:1942,
+    imageHeight:809,
     imageFit:"contain",
   },
 ];

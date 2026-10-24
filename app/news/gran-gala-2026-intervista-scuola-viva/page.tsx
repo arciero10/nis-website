@@ -6,7 +6,7 @@ import {loadScuolaVivaArticle,scuolaVivaArticle} from "@/lib/news/scuola-viva-ar
 import {createBreadcrumbJsonLd,SITE_NAME,SITE_URL} from "@/lib/seo";
 
 const canonical=`${SITE_URL}${scuolaVivaArticle.path}`;
-const socialImage=`${SITE_URL}/images/nis-gala-2026-og.png`;
+const socialImage=`${SITE_URL}${scuolaVivaArticle.image}`;
 
 export const metadata:Metadata={
   title:scuolaVivaArticle.title,
@@ -21,7 +21,7 @@ export const metadata:Metadata={
     description:scuolaVivaArticle.subtitle,
     publishedTime:"2026-10-22T09:00:00+02:00",
     authors:[scuolaVivaArticle.author],
-    images:[{url:socialImage,width:1200,height:630,alt:"Gran Gala NIS 2026 a sostegno di Scuola Viva ETS"}],
+    images:[{url:socialImage,width:scuolaVivaArticle.imageWidth,height:scuolaVivaArticle.imageHeight,alt:scuolaVivaArticle.imageAlt}],
   },
   twitter:{card:"summary_large_image",title:scuolaVivaArticle.title,description:scuolaVivaArticle.subtitle,images:[socialImage]},
 };
@@ -48,11 +48,13 @@ export default function ScuolaVivaInterviewPage(){
       <header className="editorial-article-hero">
         <div className="shell editorial-article-hero-inner">
           <nav aria-label="Breadcrumb" className="editorial-breadcrumb"><Link href="/">Home</Link><span aria-hidden="true">/</span><Link href="/news">News</Link><span aria-hidden="true">/</span><span>Intervista</span></nav>
-          <div className="editorial-article-logo"><Image src={scuolaVivaArticle.logo} alt="Scuola Viva ETS" width={380} height={138} priority/></div>
           <p className="editorial-category">{scuolaVivaArticle.category}</p>
           <h1>{scuolaVivaArticle.title}</h1>
           <p className="editorial-deck">{scuolaVivaArticle.subtitle}</p>
           <div className="editorial-meta"><time dateTime={scuolaVivaArticle.date}>22 ottobre 2026</time><span>{scuolaVivaArticle.author}</span></div>
+          <figure className="editorial-cover-media editorial-cover-media-logo">
+            <Image src={scuolaVivaArticle.image} alt={scuolaVivaArticle.imageAlt} width={scuolaVivaArticle.imageWidth} height={scuolaVivaArticle.imageHeight} priority sizes="(max-width: 720px) calc(100vw - 62px), 580px"/>
+          </figure>
         </div>
       </header>
 

@@ -6,7 +6,7 @@ export function ScuolaVivaHomeFeature(){
   return <section className="scuola-viva-home" aria-labelledby="scuola-viva-home-title">
     <div className="shell scuola-viva-home-inner">
       <div className="scuola-viva-logo-panel">
-        <Image src={scuolaVivaArticle.logo} alt="Scuola Viva ETS" width={380} height={138} sizes="(max-width: 720px) 240px, 310px"/>
+        <Image src={scuolaVivaArticle.image} alt={scuolaVivaArticle.imageAlt} width={scuolaVivaArticle.imageWidth} height={scuolaVivaArticle.imageHeight} sizes="(max-width: 720px) 240px, 310px"/>
       </div>
       <div className="scuola-viva-home-copy">
         <p className="eyebrow">22 OTTOBRE 2026 · INTERVISTE</p>
@@ -23,7 +23,7 @@ export function ScuolaVivaGalaFeature(){
   return <section className="scuola-viva-gala" aria-labelledby="scuola-viva-gala-title">
     <div className="shell scuola-viva-gala-inner">
       <div className="scuola-viva-gala-logo">
-        <Image src={scuolaVivaArticle.logo} alt="Scuola Viva ETS" width={380} height={138} sizes="(max-width: 720px) 240px, 300px"/>
+        <Image src={scuolaVivaArticle.image} alt={scuolaVivaArticle.imageAlt} width={scuolaVivaArticle.imageWidth} height={scuolaVivaArticle.imageHeight} sizes="(max-width: 720px) 240px, 300px"/>
       </div>
       <div className="scuola-viva-gala-copy">
         <p className="eyebrow">IL PROGETTO CHE SOSTENIAMO</p>

@@ -1,5 +1,6 @@
 import {readFileSync} from "node:fs";
 import {join} from "node:path";
+import {alessandroRistoriNewsItem} from "@/data/news";
 
 export const alessandroRistoriArticle={
   title:"Alessandro Ristori: “Sport e musica nascono da qualcosa di sano e le cose sane devono aiutare chi ha bisogno”",
@@ -8,10 +9,11 @@ export const alessandroRistoriArticle={
   author:"Ufficio Stampa Nazionale Italiana Sanitari",
   interviewee:"Alessandro Ristori",
   category:"Interviste",
-  path:"/news/gran-gala-2026-intervista-alessandro-ristori",
-  image:"/images/news/alessandro-ristori.jpg",
-  imageWidth:1280,
-  imageHeight:1600,
+  path:alessandroRistoriNewsItem.href,
+  image:alessandroRistoriNewsItem.image,
+  imageAlt:alessandroRistoriNewsItem.imageAlt,
+  imageWidth:alessandroRistoriNewsItem.imageWidth,
+  imageHeight:alessandroRistoriNewsItem.imageHeight,
 } as const;
 
 export type AlessandroRistoriInterview={question:string;answers:string[]};

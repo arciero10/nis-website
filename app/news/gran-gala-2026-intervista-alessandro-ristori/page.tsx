@@ -53,21 +53,17 @@ export default function AlessandroRistoriInterviewPage(){
 
   return <>
     <StructuredData data={[articleJsonLd,createBreadcrumbJsonLd([{name:"Home",path:"/"},{name:"News",path:"/news"},{name:"Intervista ad Alessandro Ristori",path:alessandroRistoriArticle.path}])]}/>
-    <article className="editorial-article editorial-portrait-article">
+    <article className="editorial-article">
       <header className="editorial-article-hero">
         <div className="shell editorial-article-hero-inner">
           <nav aria-label="Breadcrumb" className="editorial-breadcrumb"><Link href="/">Home</Link><span aria-hidden="true">/</span><Link href="/news">News</Link><span aria-hidden="true">/</span><span>Intervista</span></nav>
-          <div className="editorial-portrait-hero">
-            <figure className="editorial-portrait-media">
-              <Image src={alessandroRistoriArticle.image} alt="Alessandro Ristori" width={alessandroRistoriArticle.imageWidth} height={alessandroRistoriArticle.imageHeight} priority sizes="(max-width: 800px) calc(100vw - 40px), 335px"/>
-            </figure>
-            <div className="editorial-portrait-copy">
-              <p className="editorial-category">{alessandroRistoriArticle.category}</p>
-              <h1>{alessandroRistoriArticle.title}</h1>
-              <p className="editorial-deck">{alessandroRistoriArticle.subtitle}</p>
-              <div className="editorial-meta"><time dateTime={alessandroRistoriArticle.date}>23 ottobre 2026</time><span>{alessandroRistoriArticle.author}</span></div>
-            </div>
-          </div>
+          <p className="editorial-category">{alessandroRistoriArticle.category}</p>
+          <h1>{alessandroRistoriArticle.title}</h1>
+          <p className="editorial-deck">{alessandroRistoriArticle.subtitle}</p>
+          <div className="editorial-meta"><time dateTime={alessandroRistoriArticle.date}>23 ottobre 2026</time><span>{alessandroRistoriArticle.author}</span></div>
+          <figure className="editorial-cover-media editorial-cover-media-portrait">
+            <Image src={alessandroRistoriArticle.image} alt={alessandroRistoriArticle.imageAlt} width={alessandroRistoriArticle.imageWidth} height={alessandroRistoriArticle.imageHeight} priority sizes="(max-width: 720px) calc(100vw - 28px), 720px"/>
+          </figure>
         </div>
       </header>
 
