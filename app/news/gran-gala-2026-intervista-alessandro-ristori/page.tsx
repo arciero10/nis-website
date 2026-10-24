@@ -12,6 +12,9 @@ import {
   SITE_URL,
 } from "@/lib/seo";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 const canonical = `${SITE_URL}${alessandroRistoriArticle.path}`;
 const socialImage = `${SITE_URL}${alessandroRistoriArticle.image}`;
 
@@ -188,4 +191,5 @@ export default function AlessandroRistoriInterviewPage() {
     </>
   );
 }
+
 
