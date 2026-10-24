@@ -53,7 +53,7 @@ export default function AlessandroRistoriInterviewPage(){
 
   return <>
     <StructuredData data={[articleJsonLd,createBreadcrumbJsonLd([{name:"Home",path:"/"},{name:"News",path:"/news"},{name:"Intervista ad Alessandro Ristori",path:alessandroRistoriArticle.path}])]}/>
-    <article className="editorial-article">
+    <article className="editorial-article editorial-ristori-article">
       <header className="editorial-article-hero">
         <div className="shell editorial-article-hero-inner">
           <nav aria-label="Breadcrumb" className="editorial-breadcrumb"><Link href="/">Home</Link><span aria-hidden="true">/</span><Link href="/news">News</Link><span aria-hidden="true">/</span><span>Intervista</span></nav>
