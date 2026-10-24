@@ -53,7 +53,7 @@ NIS_TICKETING_ADMIN_EMAIL=alessandro.arciero@tiscali.it
 CANDIDATURE_TO=info@nazionaleitalianasanitari.com
 ```
 
-L'App Registration Microsoft Entra deve avere i permessi **Microsoft Graph > Application > Mail.Send** e **Mail.ReadWrite** con **Admin Consent**. `Mail.ReadWrite` e necessario per creare la bozza e la sessione di upload usate dagli archivi ZIP aziendali superiori a 3 MB; gli invii senza allegati continuano a usare il normale endpoint `sendMail`. Non sono richiesti login utente o permessi delegated. Il mittente deve essere una casella esistente nel tenant; per mostrare esattamente `Biglietti NIS` come nome mittente, configurare quel display name sulla casella Microsoft 365.
+L'App Registration Microsoft Entra deve avere esclusivamente il permesso **Microsoft Graph > Application > Mail.Send** con **Admin Consent**. Non sono richiesti altri permessi applicativi, login utente o permessi delegated. Il mittente deve essere una casella esistente nel tenant; per mostrare esattamente `Biglietti NIS` come nome mittente, configurare quel display name sulla casella Microsoft 365.
 
 Tutte le variabili sono esclusivamente server-side. Il client secret e gli access token non devono essere esposti nel browser, nelle risposte API o nei log.
 
@@ -122,13 +122,20 @@ npm run ticketing:cleanup-sandbox -- --execute
 
 La pulizia elimina esclusivamente ordini marcati `PAYPAL` + `SANDBOX` e i relativi partecipanti, biglietti, check-in e stati di consegna email. Non modifica eventi, inviti, `used_count`, capienza, `public_slug`, sessioni staff, configurazioni applicative o storico migrazioni. L'operazione è transazionale e idempotente.
 
-## Contabili bonifici ticketing
+## Archivi temporanei dei biglietti aziendali
 
-Le emissioni manuali da bonifico salvano nel database soltanto i metadati della contabile. Il file viene archiviato in un container Azure Blob privato ed è leggibile esclusivamente dalla route autenticata riservata al ruolo `SUPERADMIN`.
+I PDF nominativi delle assegnazioni aziendali vengono raccolti in uno ZIP e caricati in un container Azure Blob privato. L'email contiene un link SAS con solo permesso di lettura, valido sette giorni, oltre ai link privati dei singoli biglietti. Lo ZIP non viene allegato tramite Microsoft Graph.
 
 ```text
 AZURE_STORAGE_CONNECTION_STRING=
-NIS_TICKETING_DOCUMENTS_CONTAINER=nis-ticketing-private
+NIS_TICKETING_ARCHIVES_CONTAINER=nis-ticketing-archives
 ```
 
-Il container viene creato senza accesso pubblico quando non esiste. La connection string è un'impostazione esclusivamente server-side e non deve essere inserita in variabili `NEXT_PUBLIC_*`, log o risposte API. Applicare la migration incrementale `013_manual_ticket_issuance.sql` prima di usare la pagina `/staff/emissione`.
+Il container viene creato senza accesso pubblico quando non esiste. La connection string è un'impostazione esclusivamente server-side e non deve essere inserita in variabili `NEXT_PUBLIC_*`, log o risposte API. Configurare sul container una lifecycle policy Azure che elimini i blob dopo 14 giorni. In alternativa, eseguire periodicamente prima in anteprima e poi in modalità esplicita:
+
+```bash
+npm run ticketing:cleanup-partner-archives
+node scripts/ticketing/cleanup-expired-partner-archives.mjs --execute
+```
+
+Lo script considera soltanto i blob `gala-2026/` con metadato di scadenza già trascorso; la modalità npm predefinita è sempre `--dry-run`.

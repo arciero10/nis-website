@@ -1,7 +1,8 @@
-import {EmailAttachmentDeliveryError,getEmailProvider} from "@/lib/email/provider";
+import {getEmailProvider} from "@/lib/email/provider";
 import {buildTicketEmailContent} from "@/lib/ticketing/email-content";
 import {GALA_REPLY_TO} from "@/lib/ticketing/email-config";
 import {buildPartnerInvitationEmailContent} from "@/lib/ticketing/partner-email-content";
+import {getPartnerArchiveStorage} from "@/lib/ticketing/partner-archive-storage";
 import {createPartnerTicketArchive} from "@/lib/ticketing/partner-ticket-archive";
 import {ticketingRepository,type TicketConfirmation,type TicketEmailPayload} from "@/lib/ticketing/repository";
 import {walletLinksForToken} from "@/lib/ticketing/wallet/config";
@@ -25,23 +26,12 @@ export async function deliverPartnerAllocationEmail(allocationId:string,force=fa
   catch{console.error("Partner invitation email claim failed");return {status:"FAILED" as const};}
   try{
     const tickets=payload.tickets.map(ticket=>({...ticket,walletLinks:walletLinksForToken(ticket.qrToken)}));const provider=getEmailProvider();
-    let archive:Awaited<ReturnType<typeof createPartnerTicketArchive>>|null=null;
-    try{archive=await createPartnerTicketArchive(payload);}catch{console.error("Partner ticket archive generation failed");}
-    if(archive){
-      const content=buildPartnerInvitationEmailContent({companyName:payload.companyName,allocationType:payload.allocationType,packageName:payload.packageName,archiveAttached:true,tickets});
-      try{await provider.send({to:payload.contactEmail,replyTo:GALA_REPLY_TO,subject:content.subject,text:content.text,html:content.html,attachments:[{name:archive.name,contentType:"application/zip",content:archive.content}]});}
-      catch(error){
-        if(!(error instanceof EmailAttachmentDeliveryError))throw error;
-        const fallback=buildPartnerInvitationEmailContent({companyName:payload.companyName,allocationType:payload.allocationType,packageName:payload.packageName,archiveAttached:false,tickets});
-        await provider.send({to:payload.contactEmail,replyTo:GALA_REPLY_TO,subject:fallback.subject,text:fallback.text,html:fallback.html});
-        await ticketingRepository.markPartnerAllocationEmailSent(allocationId);return {status:"SENT_WITHOUT_ARCHIVE" as const};
-      }
-    }else{
-      const fallback=buildPartnerInvitationEmailContent({companyName:payload.companyName,allocationType:payload.allocationType,packageName:payload.packageName,archiveAttached:false,tickets});
-      await provider.send({to:payload.contactEmail,replyTo:GALA_REPLY_TO,subject:fallback.subject,text:fallback.text,html:fallback.html});
-      await ticketingRepository.markPartnerAllocationEmailSent(allocationId);return {status:"SENT_WITHOUT_ARCHIVE" as const};
-    }
-    await ticketingRepository.markPartnerAllocationEmailSent(allocationId);return {status:"SENT" as const};
+    let archiveUrl:string|null=null;
+    try{const archive=await createPartnerTicketArchive(payload);const uploaded=await getPartnerArchiveStorage().upload(archive.name,archive.content);archiveUrl=uploaded.url;}
+    catch{console.error("Archive upload failed - email sent with private links only");}
+    const content=buildPartnerInvitationEmailContent({companyName:payload.companyName,allocationType:payload.allocationType,packageName:payload.packageName,archiveUrl,tickets});
+    await provider.send({to:payload.contactEmail,replyTo:GALA_REPLY_TO,subject:content.subject,text:content.text,html:content.html});
+    await ticketingRepository.markPartnerAllocationEmailSent(allocationId);return {status:"SENT" as const,archiveAvailable:Boolean(archiveUrl)};
   }
-  catch(error){try{await ticketingRepository.markPartnerAllocationEmailFailed(allocationId,error instanceof Error?error.message:"Errore provider email");}catch{console.error("Partner invitation email failure state could not be saved");}console.error("Partner invitation email delivery failed");return {status:"FAILED" as const};}
+  catch(error){try{await ticketingRepository.markPartnerAllocationEmailFailed(allocationId,error instanceof Error?error.message:"Errore provider email");}catch{console.error("Partner invitation email failure state could not be saved");}console.error("Partner invitation email delivery failed");return {status:"ERROR" as const};}
 }

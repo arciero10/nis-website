@@ -13,9 +13,11 @@
     "ticketing:cleanup-sandbox": "node scripts/ticketing/cleanup-sandbox-data.mjs",
     "ticketing:cleanup-marcucci": "node scripts/ticketing/cleanup-marcucci-test.mjs",
     "ticketing:cleanup-mauro": "node scripts/ticketing/cleanup-mauro-la-pietra.mjs",
+    "ticketing:cleanup-partner-archives": "node scripts/ticketing/cleanup-expired-partner-archives.mjs --dry-run",
     "test:ticketing": "node --test tests/ticketing-rules.test.mjs"
   },
   "dependencies": {
+    "@azure/storage-blob": "^12.32.0",
     "@zxing/browser": "^0.1.5",
     "fflate": "^0.8.3",
     "next": "^15.5.28",
