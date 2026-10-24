@@ -121,21 +121,3 @@ npm run ticketing:cleanup-sandbox -- --execute
 ```
 
 La pulizia elimina esclusivamente ordini marcati `PAYPAL` + `SANDBOX` e i relativi partecipanti, biglietti, check-in e stati di consegna email. Non modifica eventi, inviti, `used_count`, capienza, `public_slug`, sessioni staff, configurazioni applicative o storico migrazioni. L'operazione è transazionale e idempotente.
-
-## Archivi temporanei dei biglietti aziendali
-
-I PDF nominativi delle assegnazioni aziendali vengono raccolti in uno ZIP e caricati in un container Azure Blob privato. L'email contiene un link SAS con solo permesso di lettura, valido sette giorni, oltre ai link privati dei singoli biglietti. Lo ZIP non viene allegato tramite Microsoft Graph.
-
-```text
-AZURE_STORAGE_CONNECTION_STRING=
-NIS_TICKETING_ARCHIVES_CONTAINER=nis-ticketing-archives
-```
-
-Il container viene creato senza accesso pubblico quando non esiste. La connection string è un'impostazione esclusivamente server-side e non deve essere inserita in variabili `NEXT_PUBLIC_*`, log o risposte API. Configurare sul container una lifecycle policy Azure che elimini i blob dopo 14 giorni. In alternativa, eseguire periodicamente prima in anteprima e poi in modalità esplicita:
-
-```bash
-npm run ticketing:cleanup-partner-archives
-node scripts/ticketing/cleanup-expired-partner-archives.mjs --execute
-```
-
-Lo script considera soltanto i blob `gala-2026/` con metadato di scadenza già trascorso; la modalità npm predefinita è sempre `--dry-run`.
