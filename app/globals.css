@@ -518,3 +518,13 @@ body:has(.nis-checkin-page)>.site-header,body:has(.nis-checkin-page)>footer{disp
     line-height: 1.35;
   }
 }
+
+/* RISTORI - rimozione definitiva vecchie label domanda */
+.editorial-ristori-article .editorial-question-number,
+.editorial-question-number {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}

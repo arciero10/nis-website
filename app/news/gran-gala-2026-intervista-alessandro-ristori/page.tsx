@@ -118,7 +118,7 @@ export default function AlessandroRistoriInterviewPage() {
 
             <figure className="editorial-cover-media editorial-cover-media-portrait">
               <Image
-                src={alessandroRistoriArticle.image}
+                src={`${alessandroRistoriArticle.image}?v=20261024-3`}
                 alt={alessandroRistoriArticle.imageAlt}
                 width={alessandroRistoriArticle.imageWidth}
                 height={alessandroRistoriArticle.imageHeight}
@@ -188,3 +188,4 @@ export default function AlessandroRistoriInterviewPage() {
     </>
   );
 }
+
