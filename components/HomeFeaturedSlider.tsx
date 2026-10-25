@@ -3,10 +3,28 @@
 import Image from "next/image";
 import Link from "next/link";
 import {useCallback,useEffect,useState,type FocusEvent,type KeyboardEvent} from "react";
-import {newsItems} from "@/data/news";
+import {newsItems,type NewsItem} from "@/data/news";
+import {galaPromotion} from "@/data/gala-promotion";
 
 const AUTO_ROTATION_MS=7000;
-const featuredItems=[...newsItems].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
+type FeaturedItem=Pick<NewsItem,"id"|"title"|"date"|"href"|"image"|"imageAlt"|"imageWidth"|"imageHeight">&{category:string;cta:"LEGGI"|"SCOPRI"};
+const orderedNews=[...newsItems].sort((a,b)=>b.date.localeCompare(a.date));
+const galaItem:FeaturedItem={
+  id:"nis-gala-2026",
+  title:`${galaPromotion.title} ${galaPromotion.subtitle}`,
+  date:galaPromotion.dateIso,
+  category:"Evento",
+  href:galaPromotion.publicPath,
+  image:galaPromotion.artwork,
+  imageAlt:"The NIS Gala Charity Night, 28 ottobre 2026, Roma",
+  imageWidth:1200,
+  imageHeight:630,
+  cta:"SCOPRI",
+};
+const featuredItems:FeaturedItem[]=[
+  ...(galaPromotion.enabled?[galaItem]:[]),
+  ...orderedNews.slice(0,3).map(item=>({...item,cta:item.category==="Interviste"?"LEGGI" as const:"SCOPRI" as const})),
+].slice(0,4);
 
 function longDate(date:string){
   return new Intl.DateTimeFormat("it-IT",{day:"numeric",month:"long",year:"numeric",timeZone:"UTC"})
@@ -101,7 +119,7 @@ export default function HomeFeaturedSlider(){
                   </div>
                   <h2>{item.title}</h2>
                   <span className="home-featured-slide-cta">
-                    {item.category==="Interviste"?"LEGGI":"SCOPRI"} <span aria-hidden="true">→</span>
+                    {item.cta} <span aria-hidden="true">→</span>
                   </span>
                 </div>
               </Link>

@@ -10,8 +10,7 @@ const revealGroups=[
   ".info-card",
   ".press-card",
   ".nis-news-card",
-  ".community-home-band-inner > *",
-  ".donate-cta-inner > *",
+  ".home-closing-inner > *",
   ".project-highlight > *",
   ".cards-4 > *",
   ".support-card",
@@ -23,7 +22,6 @@ const revealGroups=[
 const singleRevealSelectors=[
   ".impact-heading",
   ".section-head",
-  ".brand-divider-inner",
   ".org-pdf-panel",
   ".org-section-header",
   ".org-council",

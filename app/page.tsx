@@ -6,10 +6,7 @@ import ProjectFeature from "@/components/ProjectFeature";
 import SectorGrid from "@/components/SectorGrid";
 import StructuredData from "@/components/StructuredData";
 import GalaTakeover from "@/components/GalaTakeover";
-import GalaHomeBanner from "@/components/GalaHomeBanner";
-import HomeLatestNews from "@/components/HomeLatestNews";
 import HomeFeaturedSlider from "@/components/HomeFeaturedSlider";
-import {ScuolaVivaHomeFeature} from "@/components/ScuolaVivaFeatures";
 import {createPageMetadata,organizationJsonLd,websiteJsonLd} from "@/lib/seo";
 
 // Keep editorial homepage updates fresh across deployments instead of caching its HTML as immutable.
@@ -39,32 +36,21 @@ export default function Home(){return <>
 
   <HomeFeaturedSlider/>
 
-  <GalaHomeBanner/>
+  <MetricStrip compact/>
 
-  <ScuolaVivaHomeFeature/>
+  <section className="home-flow-section home-projects"><div className="shell">
+    <div className="section-head home-flow-heading"><div><div className="eyebrow">PROGETTI</div><h2>La solidarietà diventa un risultato concreto.</h2></div><Link href="/progetti" className="section-link">Tutti i progetti <span aria-hidden="true">→</span></Link></div>
+    <ProjectFeature/>
+  </div></section>
 
-  <MetricStrip/>
-
-  <section className="home-section project-section"><div className="shell"><ProjectFeature/></div></section>
-
-  <section className="brand-divider" aria-label="NIS is NICE">
-    <div className="shell brand-divider-inner">
-      <Image src="/images/brand/nis-is-nice.png" alt="NIS is NICE - Nazionale Italiana Sanitari" width={1942} height={809} sizes="(max-width: 720px) calc(100vw - 48px), 820px"/>
-    </div>
-  </section>
-
-  <section className="home-section soft sectors-section"><div className="shell">
-    <div className="section-head"><div><div className="eyebrow">I NOSTRI SETTORI</div><h2>Diversi sport. Un unico obiettivo.</h2></div><Link href="/settori" className="section-link">Tutti i settori <span aria-hidden="true">→</span></Link></div>
+  <section className="home-flow-section home-sectors"><div className="shell">
+    <div className="section-head home-flow-heading"><div><div className="eyebrow">SETTORI</div><h2>Diversi sport. Un unico obiettivo.</h2></div><Link href="/settori" className="section-link">Tutti i settori <span aria-hidden="true">→</span></Link></div>
     <SectorGrid/>
   </div></section>
 
-  <HomeLatestNews/>
-
-  <section className="community-home-band"><div className="shell community-home-band-inner">
-    <div><div className="eyebrow white">BE NIS. BE NICE.</div><h2>Entra nella Community NIS</h2><p>Medici, sanitari, sportivi, studenti, sostenitori e famiglie: scegli il modo più adatto per vivere e sostenere la community NIS.</p></div>
-    <Link href="/diventa-socio" className="btn community-home-button">SCOPRI BE NIS. BE NICE.</Link>
+  <section className="home-closing"><div className="shell home-closing-inner">
+    <div className="home-closing-copy"><div className="eyebrow white">BE NIS. BE NICE.</div><h2>Entra nella Community. Sostieni il cambiamento.</h2><p>Professionisti, sportivi, famiglie e sostenitori: insieme possiamo trasformare partecipazione e solidarietà in progetti concreti per la salute.</p></div>
+    <div className="home-closing-actions"><Link href="/diventa-socio" className="btn home-closing-primary">ENTRA NELLA COMMUNITY</Link><Link href="/dona" className="btn home-closing-secondary">SOSTIENI I PROGETTI</Link></div>
   </div></section>
-
-  <section className="donate-cta"><div className="shell donate-cta-inner"><div><div className="eyebrow white">SOSTIENI I PROGETTI NIS</div><h2>Ogni contributo può diventare cura, prevenzione e futuro.</h2></div><Link href="/dona" className="btn btn-blue">DONA ORA</Link></div></section>
 </>}
 
