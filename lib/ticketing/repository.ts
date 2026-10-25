@@ -2,7 +2,7 @@ import {randomUUID} from "node:crypto";
 import type {PoolClient,QueryResultRow} from "pg";
 import {query,withTransaction} from "@/lib/ticketing/db";
 import {hashInvitationAccessToken} from "@/lib/ticketing/invitations";
-import {canBypassCheckInWindow,checkInWindowState,type CheckInMethod} from "@/lib/ticketing/checkin-rules";
+import {resolveCheckInOperationalState,type CheckInManualOverride,type CheckInMethod,type CheckInWindowState} from "@/lib/ticketing/checkin-rules";
 import {availableTicketCapacity,checkInEligibility,hasTicketCapacity,invitationBlockReason,orderAmountForQuantity,ticketsToIssue} from "@/lib/ticketing/rules";
 import {generateQrToken,generateTicketCode} from "@/lib/ticketing/security";
 import {formatPersonNamePart} from "@/lib/ticketing/name-format";
@@ -16,7 +16,7 @@ type AttendeeRow=QueryResultRow&{id:string;event_id:string;first_name:string;las
 type OrderRow=QueryResultRow&{id:string;event_id:string;attendee_id:string|null;invitation_id:string;request_id:string;provider:"PAYPAL";provider_environment:"SANDBOX"|"LIVE";provider_order_id:string|null;provider_capture_id:string|null;amount:string;currency:"EUR";payment_status:Order["paymentStatus"];created_at:Date;updated_at:Date;paid_at:Date|null};
 type ParticipantRow=QueryResultRow&{id:string;order_id:string;attendee_id:string|null;position:number;first_name:string;last_name:string;email:string;phone:string|null;company:string|null;created_at:Date};
 type TicketRow=QueryResultRow&{id:string;event_id:string;attendee_id:string;order_id:string|null;partner_allocation_id:string|null;manual_issuance_id:string|null;issuance_source:TicketIssuanceSource;invitation_type:InvitationType;ticket_code:string;qr_token:string;category:Ticket["category"];access_mode:Ticket["accessMode"];status:Ticket["status"];sequence_number:number|null;total_quantity:number|null;created_at:Date;updated_at:Date;first_check_in_at:Date|null;last_check_in_at:Date|null};
-type CheckInTicketRow=TicketRow&{first_name:string;last_name:string;event_slug:string;event_status:Event["status"];checkin_opens_at:Date|null;checkin_closes_at:Date|null;payment_status:Order["paymentStatus"]|null;company_name:string|null;allocation_type:AllocationType|null};
+type CheckInTicketRow=TicketRow&{first_name:string;last_name:string;event_slug:string;event_status:Event["status"];checkin_opens_at:Date|null;checkin_closes_at:Date|null;checkin_override_state:CheckInManualOverride;payment_status:Order["paymentStatus"]|null;company_name:string|null;allocation_type:AllocationType|null};
 type ActiveCheckInRow=QueryResultRow&{id:string;checked_in_at:Date;checked_in_by_display_name:string|null;checkin_method:CheckInMethod;window_bypassed:boolean};
 type PartnerAllocationRow=QueryResultRow&{id:string;event_id:string;company_name:string;allocation_type:AllocationType;contact_email:string|null;package_name:string|null;partnership_amount_cents:string|null;allocated_quantity:number;status:PartnerAllocation["status"];notes:string|null;email_delivery_status:PartnerAllocation["emailDeliveryStatus"];email_sent_at:Date|null;email_send_attempts:number;email_last_error:string|null;created_at:Date;updated_at:Date};
 
@@ -25,7 +25,7 @@ export type InvitationCredential={accessToken:string;publicSlug?:never}|{accessT
 export type CheckoutRecord={event:Event;invitation:Invitation;participants:OrderParticipant[];order:Order};
 export type TicketConfirmation={event:Event;attendees:Attendee[];order:Order;tickets:Ticket[]};
 type StaffTicketIdentity={firstName:string;lastName:string;ticketCode:string;category:Ticket["category"];companyName:string|null;allocationType:AllocationType|null;sequenceNumber:number|null;totalQuantity:number|null};
-export type StaffCheckInResponse=({status:"VALID";windowState:"OPEN";canBypassWindow:false}|{status:"NOT_OPEN"|"CLOSED";windowState:"NOT_OPEN"|"CLOSED";canBypassWindow:boolean}|{status:"AUTHORIZED";checkedInAt:string;method:CheckInMethod;operatorName:string;windowBypassed:boolean}|{status:"ALREADY_USED";checkedInAt:string;method:CheckInMethod|null;operatorName:string|null;windowBypassed:boolean})&StaffTicketIdentity|{status:"INVALID"};
+export type StaffCheckInResponse=({status:"VALID";windowState:"OPEN"}|{status:"NOT_OPEN"|"CLOSED";windowState:"NOT_OPEN"|"CLOSED"}|{status:"AUTHORIZED";checkedInAt:string;method:CheckInMethod;operatorName:string;windowBypassed:boolean}|{status:"ALREADY_USED";checkedInAt:string;method:CheckInMethod|null;operatorName:string|null;windowBypassed:boolean})&StaffTicketIdentity|{status:"INVALID"};
 export type StaffTicketSearchResult={firstName:string;lastName:string;ticketCode:string;category:Ticket["category"];source:"STANDARD"|"PARTNER";companyName:string|null;allocationType:AllocationType|null;sequenceNumber:number|null;totalQuantity:number|null;status:"VALID"|"USED";checkedInAt:string|null;checkinMethod:CheckInMethod|null;checkedInBy:string|null};
 export type StaffIngressEntry={checkInId:string;firstName:string;lastName:string;ticketCode:string;category:Ticket["category"];companyName:string|null;allocationType:AllocationType|null;sequenceNumber:number|null;totalQuantity:number|null;checkedInAt:string;method:CheckInMethod;operatorName:string|null;status:"ACTIVE"|"REVERSED";windowBypassed:boolean;reversedAt:string|null;reversedBy:string|null;reverseReason:string|null};
 export type StaffIngressDashboard={totalIssued:number;totalCheckedIn:number;totalPending:number;entries:StaffIngressEntry[]};
@@ -75,39 +75,41 @@ async function loadConfirmation(client:PoolClient,order:Order):Promise<TicketCon
 }
 
 const ticketIdentity=(row:CheckInTicketRow,ticket:Ticket):StaffTicketIdentity=>({firstName:row.first_name,lastName:row.last_name,ticketCode:ticket.ticketCode,category:ticket.category,companyName:row.company_name,allocationType:row.allocation_type,sequenceNumber:ticket.sequenceNumber,totalQuantity:ticket.totalQuantity});
-const checkInSelect=(column:"qr_token"|"ticket_code")=>`SELECT ticket.*,attendee.first_name,attendee.last_name,event.slug AS event_slug,event.status AS event_status,event.checkin_opens_at,event.checkin_closes_at,orders.payment_status,allocation.company_name,allocation.allocation_type FROM ticketing_tickets ticket JOIN ticketing_attendees attendee ON attendee.id=ticket.attendee_id JOIN ticketing_events event ON event.id=ticket.event_id LEFT JOIN ticketing_orders orders ON orders.id=ticket.order_id LEFT JOIN ticketing_partner_allocations allocation ON allocation.id=ticket.partner_allocation_id WHERE ticket.${column}=$1`;
+const checkInSelect=(column:"qr_token"|"ticket_code")=>`SELECT ticket.*,attendee.first_name,attendee.last_name,event.slug AS event_slug,event.status AS event_status,event.checkin_opens_at,event.checkin_closes_at,event.checkin_override_state,orders.payment_status,allocation.company_name,allocation.allocation_type FROM ticketing_tickets ticket JOIN ticketing_attendees attendee ON attendee.id=ticket.attendee_id JOIN ticketing_events event ON event.id=ticket.event_id LEFT JOIN ticketing_orders orders ON orders.id=ticket.order_id LEFT JOIN ticketing_partner_allocations allocation ON allocation.id=ticket.partner_allocation_id WHERE ticket.${column}=$1`;
 const configuredWindow=(row:CheckInTicketRow)=>{
   const opens=row.event_slug==="nis-gala-2026"?(process.env.NIS_GALA_CHECKIN_OPENS_AT?.trim()||iso(row.checkin_opens_at)):iso(row.checkin_opens_at);
   const closes=row.event_slug==="nis-gala-2026"?(process.env.NIS_GALA_CHECKIN_CLOSES_AT?.trim()||iso(row.checkin_closes_at)):iso(row.checkin_closes_at);
-  return {opens,closes,state:checkInWindowState(new Date(),opens,closes)};
+  const state=resolveCheckInOperationalState(new Date(),opens,closes,row.checkin_override_state);
+  const windowState:CheckInWindowState=state==="SCHEDULED"?"NOT_OPEN":state;
+  return {opens,closes,state:windowState};
 };
 
 async function activeCheckIn(client:PoolClient,ticketId:string){const result=await client.query<ActiveCheckInRow>("SELECT id,checked_in_at,checked_in_by_display_name,checkin_method,window_bypassed FROM ticketing_check_ins WHERE ticket_id=$1 AND result='ALLOWED' AND status='ACTIVE' ORDER BY checked_in_at DESC LIMIT 1",[ticketId]);return result.rows[0]??null;}
 
-async function inspectTicketCheckIn(column:"qr_token"|"ticket_code",value:string,session:StaffSession):Promise<StaffCheckInResponse>{
+async function inspectTicketCheckIn(column:"qr_token"|"ticket_code",value:string):Promise<StaffCheckInResponse>{
   return withTransaction(async client=>{
     const result=await client.query<CheckInTicketRow>(checkInSelect(column),[value]);const row=result.rows[0];if(!row)return {status:"INVALID"};
     const ticket=mapTicket(row);const identity=ticketIdentity(row,ticket);const eligibility=checkInEligibility({ticketStatus:ticket.status,firstCheckInAt:ticket.firstCheckInAt,paymentStatus:ticket.partnerAllocationId||ticket.manualIssuanceId?"PAID":row.payment_status??"PENDING",eventStatus:row.event_status});
     if(eligibility==="INVALID")return {status:"INVALID"};
     if(eligibility==="ALREADY_USED"){const checkin=await activeCheckIn(client,ticket.id);return {...identity,status:"ALREADY_USED",checkedInAt:checkin?.checked_in_at.toISOString()??ticket.firstCheckInAt??ticket.lastCheckInAt??ticket.updatedAt,method:checkin?.checkin_method??null,operatorName:checkin?.checked_in_by_display_name??null,windowBypassed:checkin?.window_bypassed??false};}
-    const window=configuredWindow(row);if(window.state!=="OPEN")return {...identity,status:window.state,windowState:window.state,canBypassWindow:canBypassCheckInWindow(session.role)};
-    return {...identity,status:"VALID",windowState:"OPEN",canBypassWindow:false};
+    const window=configuredWindow(row);if(window.state!=="OPEN")return {...identity,status:window.state,windowState:window.state};
+    return {...identity,status:"VALID",windowState:"OPEN"};
   });
 }
 
-async function performTicketCheckIn(column:"qr_token"|"ticket_code",value:string,session:StaffSession,method:CheckInMethod,bypassWindow=false):Promise<StaffCheckInResponse>{
+async function performTicketCheckIn(column:"qr_token"|"ticket_code",value:string,session:StaffSession,method:CheckInMethod):Promise<StaffCheckInResponse>{
   return withTransaction(async client=>{
-    const result=await client.query<CheckInTicketRow>(`${checkInSelect(column)} FOR UPDATE OF ticket`,[value]);const row=result.rows[0];if(!row)return {status:"INVALID"};
+    const result=await client.query<CheckInTicketRow>(`${checkInSelect(column)} FOR UPDATE OF ticket,event`,[value]);const row=result.rows[0];if(!row)return {status:"INVALID"};
     const ticket=mapTicket(row);const identity=ticketIdentity(row,ticket);const eligibility=checkInEligibility({ticketStatus:ticket.status,firstCheckInAt:ticket.firstCheckInAt,paymentStatus:ticket.partnerAllocationId||ticket.manualIssuanceId?"PAID":row.payment_status??"PENDING",eventStatus:row.event_status});
     if(eligibility==="INVALID")return {status:"INVALID"};
     if(eligibility==="ALREADY_USED"){const checkin=await activeCheckIn(client,ticket.id);console.info("[NIS-CHECKIN] duplicate",{ticketCode:ticket.ticketCode,operatorId:session.operatorId});return {...identity,status:"ALREADY_USED",checkedInAt:checkin?.checked_in_at.toISOString()??ticket.firstCheckInAt??ticket.lastCheckInAt??ticket.updatedAt,method:checkin?.checkin_method??null,operatorName:checkin?.checked_in_by_display_name??null,windowBypassed:checkin?.window_bypassed??false};}
-    const window=configuredWindow(row);const mayBypass=window.state!=="OPEN"&&bypassWindow&&canBypassCheckInWindow(session.role);
-    if(window.state!=="OPEN"&&!mayBypass)return {...identity,status:window.state,windowState:window.state,canBypassWindow:canBypassCheckInWindow(session.role)};
+    const window=configuredWindow(row);
+    if(window.state!=="OPEN")return {...identity,status:window.state,windowState:window.state};
     const checkedInAt=new Date();
-    await client.query("INSERT INTO ticketing_check_ins(id,ticket_id,event_id,checked_in_at,result,checked_in_by_staff_id,checked_in_by_display_name,checkin_method,session_id,status,window_bypassed) VALUES($1,$2,$3,$4,'ALLOWED',$5,$6,$7,$8,'ACTIVE',$9)",[randomUUID(),ticket.id,ticket.eventId,checkedInAt,session.operatorId,session.displayName,method,session.sessionId,mayBypass]);
+    await client.query("INSERT INTO ticketing_check_ins(id,ticket_id,event_id,checked_in_at,result,checked_in_by_staff_id,checked_in_by_display_name,checkin_method,session_id,status,window_bypassed) VALUES($1,$2,$3,$4,'ALLOWED',$5,$6,$7,$8,'ACTIVE',FALSE)",[randomUUID(),ticket.id,ticket.eventId,checkedInAt,session.operatorId,session.displayName,method,session.sessionId]);
     await client.query("UPDATE ticketing_tickets SET status='USED',first_check_in_at=COALESCE(first_check_in_at,$2),last_check_in_at=$2,updated_at=NOW() WHERE id=$1",[ticket.id,checkedInAt]);
-    console.info("[NIS-CHECKIN] allowed",{ticketCode:ticket.ticketCode,operatorId:session.operatorId,method,windowBypassed:mayBypass});
-    return {...identity,status:"AUTHORIZED",checkedInAt:checkedInAt.toISOString(),method,operatorName:session.displayName,windowBypassed:mayBypass};
+    console.info("[NIS-CHECKIN] allowed",{ticketCode:ticket.ticketCode,operatorId:session.operatorId,method,windowBypassed:false});
+    return {...identity,status:"AUTHORIZED",checkedInAt:checkedInAt.toISOString(),method,operatorName:session.displayName,windowBypassed:false};
   });
 }
 
@@ -221,17 +223,17 @@ export const ticketingRepository={
     const event=mapEvent({id:row.event_id,slug:row.event_slug,title:row.event_title,description:row.event_description,location:row.event_location,event_date:row.event_date,doors_open_at:row.doors_open_at,checkin_opens_at:row.checkin_opens_at,checkin_closes_at:row.checkin_closes_at,price:row.event_price,currency:row.event_currency,capacity:row.event_capacity,status:row.event_status,created_at:row.event_created_at,updated_at:row.event_updated_at});
     return {event,attendee,ticket:mapTicket(row),companyName:row.company_name,allocationType:row.allocation_type,packageName:row.package_name};
   },
-  async inspectByQrToken(qrToken:string,session:StaffSession):Promise<StaffCheckInResponse>{
-    return inspectTicketCheckIn("qr_token",qrToken,session);
+  async inspectByQrToken(qrToken:string):Promise<StaffCheckInResponse>{
+    return inspectTicketCheckIn("qr_token",qrToken);
   },
-  async checkInByQrToken(qrToken:string,session:StaffSession,bypassWindow=false):Promise<StaffCheckInResponse>{
-    return performTicketCheckIn("qr_token",qrToken,session,"QR",bypassWindow);
+  async checkInByQrToken(qrToken:string,session:StaffSession):Promise<StaffCheckInResponse>{
+    return performTicketCheckIn("qr_token",qrToken,session,"QR");
   },
-  async inspectByTicketCode(ticketCode:string,session:StaffSession):Promise<StaffCheckInResponse>{
-    return inspectTicketCheckIn("ticket_code",ticketCode,session);
+  async inspectByTicketCode(ticketCode:string):Promise<StaffCheckInResponse>{
+    return inspectTicketCheckIn("ticket_code",ticketCode);
   },
-  async checkInByTicketCode(ticketCode:string,session:StaffSession,bypassWindow=false):Promise<StaffCheckInResponse>{
-    return performTicketCheckIn("ticket_code",ticketCode,session,"MANUAL",bypassWindow);
+  async checkInByTicketCode(ticketCode:string,session:StaffSession):Promise<StaffCheckInResponse>{
+    return performTicketCheckIn("ticket_code",ticketCode,session,"MANUAL");
   },
   async searchStaffTickets(eventSlug:string,search:string):Promise<StaffTicketSearchResult[]>{
     const result=await query<{first_name:string;last_name:string;ticket_code:string;category:Ticket["category"];source:"STANDARD"|"PARTNER";company_name:string|null;allocation_type:AllocationType|null;sequence_number:number|null;total_quantity:number|null;status:Ticket["status"];checked_in_at:Date|null;checkin_method:CheckInMethod|null;checked_in_by_display_name:string|null}>("SELECT attendee.first_name,attendee.last_name,ticket.ticket_code,ticket.category,attendee.source,allocation.company_name,allocation.allocation_type,ticket.sequence_number,ticket.total_quantity,ticket.status,active_checkin.checked_in_at,active_checkin.checkin_method,active_checkin.checked_in_by_display_name FROM ticketing_tickets ticket JOIN ticketing_attendees attendee ON attendee.id=ticket.attendee_id JOIN ticketing_events event ON event.id=ticket.event_id LEFT JOIN ticketing_orders orders ON orders.id=ticket.order_id LEFT JOIN ticketing_partner_allocations allocation ON allocation.id=ticket.partner_allocation_id LEFT JOIN LATERAL (SELECT checked_in_at,checkin_method,checked_in_by_display_name FROM ticketing_check_ins WHERE ticket_id=ticket.id AND result='ALLOWED' AND status='ACTIVE' ORDER BY checked_in_at DESC LIMIT 1) active_checkin ON TRUE WHERE event.slug=$1 AND (orders.payment_status='PAID' OR ticket.partner_allocation_id IS NOT NULL OR ticket.manual_issuance_id IS NOT NULL) AND ticket.status IN ('ACTIVE','USED') AND (attendee.first_name ILIKE $2 ESCAPE '\\' OR attendee.last_name ILIKE $2 ESCAPE '\\' OR allocation.company_name ILIKE $2 ESCAPE '\\' OR ticket.ticket_code ILIKE $2 ESCAPE '\\') ORDER BY COALESCE(allocation.company_name,attendee.last_name),ticket.sequence_number NULLS LAST,ticket.ticket_code LIMIT 50",[eventSlug,staffSearchPattern(search)]);
