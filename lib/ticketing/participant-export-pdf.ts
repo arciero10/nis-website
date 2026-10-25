@@ -215,8 +215,8 @@ export async function buildParticipantPdf(data: ParticipantExportDataset) {
       36,
       "RIEPILOGO GENERALE",
       [
-        { label: "TOTALI", value: String(data.summary.total) },
-        { label: "VALIDI", value: String(data.summary.valid) },
+        { label: "TOTALE OPERATIVO", value: String(data.summary.total) },
+        { label: "DI CUI OMAGGIO", value: String(data.summary.complimentary) },
         { label: "ANNULLATI", value: String(data.summary.cancelled) },
       ],
       `Generato il ${when(data.generatedAt)}`,
@@ -233,7 +233,7 @@ export async function buildParticipantPdf(data: ParticipantExportDataset) {
     drawSummaryCard(618, "VALORI ECONOMICI", [
       { label: "INCASSATI", value: money(data.summary.collected) },
       { label: "DA INCASSARE", value: money(data.summary.pending) },
-      { label: "NON DOVUTI", value: String(data.summary.notDue) },
+      { label: "RICAVI OMAGGI", value: money(0) },
     ]);
     y -= 96;
   };
