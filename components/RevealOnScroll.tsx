@@ -32,7 +32,7 @@ const singleRevealSelectors=[
 ];
 
 const introSelectors=[
-  ".home-content > *",
+  ".home-hero-slide-copy > *",
   ".page-hero .hero-content > *",
   ".battito-hero-content > *",
   ".community-hero-content > *",
