@@ -15,15 +15,27 @@ export const metadata:Metadata=createPageMetadata({title,description,path:galaPr
 const eventJsonLd={
   "@context":"https://schema.org",
   "@type":"Event",
-  name:"The NIS Gala Charity Night",
+  name:"NIS Gala Charity Night",
   description,
   startDate:"2026-10-28",
+  endDate:"2026-10-28",
   eventStatus:"https://schema.org/EventScheduled",
   eventAttendanceMode:"https://schema.org/OfflineEventAttendanceMode",
   url:`${SITE_URL}${galaPromotion.publicPath}`,
   image:[`${SITE_URL}${galaPromotion.artwork}`],
-  location:{"@type":"Place",name:"Another Studio",address:{"@type":"PostalAddress",addressLocality:"Roma",addressCountry:"IT"}},
+  location:{"@type":"Place",name:"Another Studio",address:{"@type":"PostalAddress",streetAddress:"Via di Pietralata 183",postalCode:"00158",addressLocality:"Roma",addressRegion:"RM",addressCountry:"IT"}},
   organizer:{"@type":"Organization",name:"Nazionale Italiana Sanitari",url:SITE_URL},
+  performer:[
+    {"@type":"Person",name:"Alessandro Ristori"},
+    {"@type":"MusicGroup",name:"The Portofinos"},
+  ],
+  offers:{
+    "@type":"Offer",
+    url:`${SITE_URL}${galaPromotion.checkoutPath}`,
+    price:"200",
+    priceCurrency:"EUR",
+    availability:"https://schema.org/InStock",
+  },
 };
 
 export default function GalaPublicPage(){return <>
