@@ -7,6 +7,8 @@ import SectorGrid from "@/components/SectorGrid";
 import StructuredData from "@/components/StructuredData";
 import GalaTakeover from "@/components/GalaTakeover";
 import GalaHomeBanner from "@/components/GalaHomeBanner";
+import HomeLatestNews from "@/components/HomeLatestNews";
+import HomeNewsTicker from "@/components/HomeNewsTicker";
 import {ScuolaVivaHomeFeature} from "@/components/ScuolaVivaFeatures";
 import {createPageMetadata,organizationJsonLd,websiteJsonLd} from "@/lib/seo";
 
@@ -35,6 +37,8 @@ export default function Home(){return <>
     <div className="tricolor-swoosh"/>
   </section>
 
+  <HomeNewsTicker/>
+
   <GalaHomeBanner/>
 
   <ScuolaVivaHomeFeature/>
@@ -54,19 +58,7 @@ export default function Home(){return <>
     <SectorGrid/>
   </div></section>
 
-  <section className="home-section updates-section"><div className="shell">
-    <div className="section-head"><div><div className="eyebrow">NEWS ED EVENTI</div><h2>Le attività della nostra squadra.</h2></div></div>
-    <div className="home-cards home-cards-essential">
-      <Link href="/progetti/il-1-battito" className="info-card">
-        <div className="media"><Image className="battito-card-image" src="/images/progetti/il-primo-battito/consegna-policlinico-2.jpg" alt="Consegna del contributo del progetto Il 1° Battito al Policlinico Umberto I" fill sizes="(max-width: 720px) calc(100vw - 40px), 50vw"/></div>
-        <div className="body"><div className="eyebrow">PROGETTI</div><h3>Il 1° Battito</h3><p>Il progetto NIS dedicato alla salute di donne e bambini.</p><strong>Scopri il progetto <span aria-hidden="true">→</span></strong></div>
-      </Link>
-      <Link href="/eventi" className="info-card">
-        <div className="media"><Image src="/images/hero-events.jpg" alt="Eventi e iniziative NIS" fill sizes="(max-width: 720px) calc(100vw - 40px), 50vw"/></div>
-        <div className="body"><div className="eyebrow">EVENTI</div><h3>In campo, insieme.</h3><p>Sport, prevenzione e solidarietà nelle iniziative NIS.</p><strong>Vai agli eventi <span aria-hidden="true">→</span></strong></div>
-      </Link>
-    </div>
-  </div></section>
+  <HomeLatestNews/>
 
   <section className="community-home-band"><div className="shell community-home-band-inner">
     <div><div className="eyebrow white">BE NIS. BE NICE.</div><h2>Entra nella Community NIS</h2><p>Medici, sanitari, sportivi, studenti, sostenitori e famiglie: scegli il modo più adatto per vivere e sostenere la community NIS.</p></div>
