@@ -13,7 +13,7 @@
     "ticketing:cleanup-sandbox": "node scripts/ticketing/cleanup-sandbox-data.mjs",
     "ticketing:cleanup-marcucci": "node scripts/ticketing/cleanup-marcucci-test.mjs",
     "ticketing:cleanup-mauro": "node scripts/ticketing/cleanup-mauro-la-pietra.mjs",
-    "test:ticketing": "node --test tests/ticketing-rules.test.mjs"
+    "test:ticketing": "node --test tests/ticketing-rules.test.mjs tests/checkin-window-ui.test.mjs"
   },
   "dependencies": {
     "@zxing/browser": "^0.1.5",
