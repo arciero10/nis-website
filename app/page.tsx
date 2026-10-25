@@ -8,7 +8,7 @@ import StructuredData from "@/components/StructuredData";
 import GalaTakeover from "@/components/GalaTakeover";
 import GalaHomeBanner from "@/components/GalaHomeBanner";
 import HomeLatestNews from "@/components/HomeLatestNews";
-import HomeNewsTicker from "@/components/HomeNewsTicker";
+import HomeFeaturedSlider from "@/components/HomeFeaturedSlider";
 import {ScuolaVivaHomeFeature} from "@/components/ScuolaVivaFeatures";
 import {createPageMetadata,organizationJsonLd,websiteJsonLd} from "@/lib/seo";
 
@@ -37,7 +37,7 @@ export default function Home(){return <>
     <div className="tricolor-swoosh"/>
   </section>
 
-  <HomeNewsTicker/>
+  <HomeFeaturedSlider/>
 
   <GalaHomeBanner/>
 
