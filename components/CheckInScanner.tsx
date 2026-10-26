@@ -15,7 +15,15 @@ const formatTime=(value:string)=>new Intl.DateTimeFormat("it-IT",{dateStyle:"sho
 const formatClock=(value:string)=>new Intl.DateTimeFormat("it-IT",{hour:"2-digit",minute:"2-digit",second:"2-digit",timeZone:"Europe/Rome"}).format(new Date(value));
 const formatOpening=(value:string)=>new Intl.DateTimeFormat("it-IT",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit",timeZone:"Europe/Rome"}).format(new Date(value));
 const AUTHORIZED_RETURN_DELAY=1400;
-const DENIED_RETURN_DELAY=2800;
+
+function playCheckInTone(authorized:boolean){
+  try{
+    const AudioContextConstructor=window.AudioContext||(window as typeof window&{webkitAudioContext?:typeof AudioContext}).webkitAudioContext;if(!AudioContextConstructor)return;
+    const context=new AudioContextConstructor();
+    const play=()=>{const tones=authorized?[{frequency:880,offset:0,duration:.14}]:[{frequency:280,offset:0,duration:.12},{frequency:190,offset:.14,duration:.16}];let remaining=tones.length;for(const tone of tones){const oscillator=context.createOscillator();const gain=context.createGain();const startsAt=context.currentTime+tone.offset;const endsAt=startsAt+tone.duration;oscillator.type=authorized?"sine":"triangle";oscillator.frequency.setValueAtTime(tone.frequency,startsAt);gain.gain.setValueAtTime(.0001,startsAt);gain.gain.exponentialRampToValueAtTime(authorized ? .12 : .1,startsAt+.018);gain.gain.exponentialRampToValueAtTime(.0001,endsAt);oscillator.connect(gain);gain.connect(context.destination);oscillator.addEventListener("ended",()=>{remaining-=1;if(remaining===0)void context.close().catch(()=>undefined);});oscillator.start(startsAt);oscillator.stop(endsAt);}};
+    if(context.state==="suspended")void context.resume().then(play).catch(()=>context.close().catch(()=>undefined));else play();
+  }catch{}
+}
 
 export default function CheckInScanner(){
   const [screen,setScreen]=useState<Screen>("checking-session");const [message,setMessage]=useState("");const [result,setResult]=useState<StaffCheckInResponse|null>(null);const [scannedToken,setScannedToken]=useState("");const [role,setRole]=useState<StaffRole>("STAFF");const [checkInWindow,setCheckInWindow]=useState<CheckInOperationalStatus|null>(null);const [windowBusy,setWindowBusy]=useState(false);const videoRef=useRef<HTMLVideoElement>(null);const busyRef=useRef(false);
@@ -45,7 +53,9 @@ export default function CheckInScanner(){
     if(screen!=="result"||!result)return;
     const authorized=result.status==="AUTHORIZED";
     if("vibrate" in navigator)navigator.vibrate(authorized?80:[100,80,100]);
-    const timer=window.setTimeout(nextScan,authorized?AUTHORIZED_RETURN_DELAY:DENIED_RETURN_DELAY);
+    playCheckInTone(authorized);
+    if(!authorized)return;
+    const timer=window.setTimeout(nextScan,AUTHORIZED_RETURN_DELAY);
     return()=>window.clearTimeout(timer);
   },[screen,result]);
 
