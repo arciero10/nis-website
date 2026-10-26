@@ -29,7 +29,7 @@ export async function loadParticipantExportRows(eventSlug:string,filters:Partici
     AND ($2='' OR CONCAT_WS(' ',attendee.first_name,attendee.last_name,attendee.email,ticket.ticket_code) ILIKE '%'||$2||'%')
     AND ($3='ALL' OR ($3='VALID' AND ticket.status IN ('ACTIVE','USED')) OR ($3='USED' AND ticket.status='USED') OR ($3='CANCELLED' AND ticket.status IN ('CANCELLED','REFUNDED')) OR ($3='NOT_USED' AND ticket.status='ACTIVE'))
     AND ($4='ALL' OR ticket.issuance_source=$4)
-    AND ($5='ALL' OR ticket.invitation_type=$5 OR ($5='OMAGGIO' AND ticket.issuance_source='ADMIN' AND ticket.invitation_type IN ('STAMPA','MEDIA','PRESS','OMAGGIO_NIS')))
+    AND ($5='ALL' OR ticket.invitation_type=$5 OR ($5='OMAGGIO' AND ticket.issuance_source='ADMIN' AND ticket.invitation_type IN ('STAMPA','MEDIA','PRESS','OMAGGIO_NIS','SPONSOR')))
     AND ($6::date IS NULL OR ticket.created_at>=($6::date AT TIME ZONE 'Europe/Rome'))
     AND ($7::date IS NULL OR ticket.created_at<(($7::date+1) AT TIME ZONE 'Europe/Rome'))
   ORDER BY attendee.last_name,attendee.first_name,ticket.ticket_code LIMIT 5001`,values);

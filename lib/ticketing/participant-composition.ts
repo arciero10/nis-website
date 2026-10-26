@@ -11,7 +11,7 @@ export type OperationalParticipantEvidence={
   cashCollectionStatus:string|null;
 };
 
-const complimentaryTypes=new Set<InvitationType>(["STAMPA","MEDIA","PRESS","OMAGGIO_NIS"]);
+const complimentaryTypes=new Set<InvitationType>(["STAMPA","MEDIA","PRESS","OMAGGIO_NIS","SPONSOR"]);
 
 export function classifyOperationalParticipant(evidence:OperationalParticipantEvidence):OperationalParticipantBucket{
   if(evidence.partnerAllocationId||evidence.source==="COMPANY")return "COMPANY";

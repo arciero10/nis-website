@@ -1,7 +1,6 @@
-import type {AdminInvitationType,CashCollectionStatus,ComplimentaryReason} from "@/types/ticketing";
+import {ADMIN_INVITATION_TYPES,type AdminInvitationType,type CashCollectionStatus,type ComplimentaryReason} from "@/types/ticketing";
 import {formatPersonNamePart} from "@/lib/ticketing/name-format";
 
-const ADMIN_TYPES:AdminInvitationType[]=["STAMPA","MEDIA","PRESS","OMAGGIO_NIS"];
 const LEGACY_REASONS:ComplimentaryReason[]=["INSTITUTIONAL_GUEST","NIS_GUEST","SPEAKER","STAFF_ORGANIZATION","COURTESY","OTHER"];
 
 export const MANUAL_TICKET_MAX_QUANTITY=10;
@@ -41,7 +40,7 @@ export function canIssueCash(input:CashIssuanceInput,role:"STAFF"|"SUPERADMIN"){
 
 export function parseAdminInput(data:FormData){
   const invitationType=clean(data.get("invitationType"),20) as AdminInvitationType;const firstName=formatPersonNamePart(clean(data.get("firstName"),80));const lastName=formatPersonNamePart(clean(data.get("lastName"),80));const email=clean(data.get("email"),254).toLowerCase();const phone=clean(data.get("phone"),40);const parsedQuantity=quantity(clean(data.get("quantity"),2));const organization=clean(data.get("organization"),180);const reason=clean(data.get("reason"),500);const notes=clean(data.get("notes"),1000);
-  if(!ADMIN_TYPES.includes(invitationType)||!firstName||!lastName||!validEmail(email)||parsedQuantity===null||!reason)return null;
+  if(!ADMIN_INVITATION_TYPES.includes(invitationType)||!firstName||!lastName||!validEmail(email)||parsedQuantity===null||!reason)return null;
   return {source:"ADMIN",invitationType,firstName,lastName,email,phone:phone||undefined,quantity:parsedQuantity,organization:organization||null,reason,notes:notes||null} satisfies AdminIssuanceInput;
 }
 
