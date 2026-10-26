@@ -6,5 +6,5 @@ export const dynamic="force-dynamic";
 
 export default async function StaffParticipantsPage(){
   const session=await requireStaffSession();
-  return <main className="nis-checkin-page nis-staff-page"><div className="staff-workspace"><StaffNavigation/><header className="staff-page-heading"><span>NIS GALA CHARITY NIGHT</span><h1>Partecipanti</h1><p>Controllo affluenza e registrazione manuale degli ingressi.</p></header><StaffParticipantsDashboard canExport={session.role==="SUPERADMIN"}/></div></main>;
+  return <main className="nis-checkin-page nis-staff-page"><div className="staff-workspace"><StaffNavigation role={session.role}/><header className="staff-page-heading"><span>NIS GALA CHARITY NIGHT</span><h1>Partecipanti</h1><p>Controllo affluenza e registrazione manuale degli ingressi.</p></header><StaffParticipantsDashboard role={session.role}/></div></main>;
 }

@@ -9,3 +9,9 @@ export async function requireStaffSession(){
   if(!session)redirect("/checkin");
   return session;
 }
+
+export async function requireSuperadminSession(){
+  const session=await requireStaffSession();
+  if(session.role!=="SUPERADMIN")redirect("/checkin");
+  return session;
+}

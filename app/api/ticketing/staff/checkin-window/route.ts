@@ -10,7 +10,8 @@ export async function GET(request:Request){
   try{
     const window=await getCheckInOperationalStatus();
     if(!window)return NextResponse.json({message:"Evento non trovato."},{status:404});
-    return NextResponse.json({window,role:session.role},{headers:{"Cache-Control":"private, no-store"}});
+    const visibleWindow=session.role==="SUPERADMIN"?window:{...window,changedBy:null,changedAt:null};
+    return NextResponse.json({window:visibleWindow,role:session.role},{headers:{"Cache-Control":"private, no-store"}});
   }catch(error){
     console.error("Check-in window lookup failed",error instanceof Error?error.message:"unknown");
     return NextResponse.json({message:"Stato check-in non disponibile."},{status:500});
