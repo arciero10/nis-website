@@ -31,3 +31,18 @@ test("only SUPERADMIN sees window controls while the operational state remains v
   assert.match(route,/session\.role!=="SUPERADMIN"/);
   assert.match(route,/status:403/);
 });
+
+test("camera check-in auto-returns while manual entry keeps preview and confirmation",async()=>{
+  const scanner=await source("../components/CheckInScanner.tsx");
+  assert.match(scanner,/AUTHORIZED_RETURN_DELAY=1400/);
+  assert.match(scanner,/DENIED_RETURN_DELAY=2800/);
+  assert.match(scanner,/window\.setTimeout\(nextScan,authorized\?AUTHORIZED_RETURN_DELAY:DENIED_RETURN_DELAY\)/);
+  assert.match(scanner,/window\.clearTimeout\(timer\)/);
+  assert.match(scanner,/navigator\.vibrate\(authorized\?80:\[100,80,100\]\)/);
+  assert.match(scanner,/manualCheck[\s\S]*void inspectTicket\(value\)/);
+  assert.match(scanner,/inspectTicket[\s\S]*method:"POST"[\s\S]*lookup\.status==="VALID"\?"confirm":"result"/);
+  assert.match(scanner,/CONFERMA INGRESSO/);
+  assert.match(scanner,/checkInScannedTicket[\s\S]*method:"PATCH"/);
+  assert.match(scanner,/GIÀ UTILIZZATO/);
+  assert.match(scanner,/Registrato alle/);
+});
