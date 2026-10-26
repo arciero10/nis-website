@@ -346,11 +346,12 @@ export const ticketingRepository={
       return true;
     });
   },
-  async reverseCheckIn(checkInId:string,reason:string,session:StaffSession):Promise<"REVERSED"|"NOT_FOUND"|"ALREADY_REVERSED"|"FORBIDDEN">{
+  async reverseCheckIn(checkInId:string,reason:string,session:StaffSession):Promise<"REVERSED"|"NOT_FOUND"|"ALREADY_REVERSED"|"TICKET_NOT_REVERSIBLE"|"FORBIDDEN">{
     if(session.role!=="SUPERADMIN")return "FORBIDDEN";
     return withTransaction(async client=>{
-      const result=await client.query<{id:string;ticket_id:string;status:"ACTIVE"|"REVERSED";ticket_code:string}>("SELECT checkin.id,checkin.ticket_id,checkin.status,ticket.ticket_code FROM ticketing_check_ins checkin JOIN ticketing_tickets ticket ON ticket.id=checkin.ticket_id JOIN ticketing_events event ON event.id=checkin.event_id WHERE checkin.id=$1 AND event.slug='nis-gala-2026' FOR UPDATE OF checkin,ticket",[checkInId]);
+      const result=await client.query<{id:string;ticket_id:string;status:"ACTIVE"|"REVERSED";ticket_code:string;ticket_status:Ticket["status"]}>("SELECT checkin.id,checkin.ticket_id,checkin.status,ticket.ticket_code,ticket.status AS ticket_status FROM ticketing_check_ins checkin JOIN ticketing_tickets ticket ON ticket.id=checkin.ticket_id JOIN ticketing_events event ON event.id=checkin.event_id WHERE checkin.id=$1 AND event.slug='nis-gala-2026' FOR UPDATE OF checkin,ticket",[checkInId]);
       const row=result.rows[0];if(!row)return "NOT_FOUND";if(row.status!=="ACTIVE")return "ALREADY_REVERSED";
+      if(row.ticket_status!=="USED"&&row.ticket_status!=="ACTIVE")return "TICKET_NOT_REVERSIBLE";
       await client.query("UPDATE ticketing_check_ins SET status='REVERSED',reversed_at=NOW(),reversed_by_staff_id=$2,reversed_by_display_name=$3,reverse_reason=$4,reverse_session_id=$5 WHERE id=$1",[checkInId,session.operatorId,session.displayName,reason.trim(),session.sessionId]);
       await client.query("UPDATE ticketing_tickets SET status='ACTIVE',first_check_in_at=NULL,last_check_in_at=NULL,updated_at=NOW() WHERE id=$1 AND status='USED'",[row.ticket_id]);
       console.info("[NIS-CHECKIN] reversed",{ticketCode:row.ticket_code,operatorId:session.operatorId});
