@@ -60,6 +60,11 @@ export function invitationTypeLabel(type:InvitationType){
   return "Omaggio NIS";
 }
 
+export function invitationDisplayLabel(type:InvitationType,companyName:string|null){
+  if(type==="OSPITE"&&companyName?.trim())return `Ospite di ${companyName.trim()}`;
+  return invitationTypeLabel(type);
+}
+
 export function complimentaryReasonLabel(reason:ComplimentaryReason|null){
   if(reason==="INSTITUTIONAL_GUEST")return "Ospite istituzionale";
   if(reason==="NIS_GUEST")return "Invitato NIS";

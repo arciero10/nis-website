@@ -5,7 +5,7 @@ import QRCode from "qrcode";
 import {GALA_SPONSOR_LABEL,galaSponsors} from "@/data/gala-sponsors";
 import {panteleiaFooter} from "@/data/panteleia";
 import type {DigitalTicketRecord} from "@/lib/ticketing/repository";
-import {buildTicketQrPayload,invitationTypeLabel,ticketStatusLabel} from "@/lib/ticketing/presentation";
+import {buildTicketQrPayload,invitationDisplayLabel,invitationTypeLabel,ticketStatusLabel} from "@/lib/ticketing/presentation";
 import {formatTicketHolderName} from "@/lib/ticketing/name-format";
 
 function fittedFontSize(text:string,maxWidth:number,font:PDFFont,preferred=28,minimum=14){
@@ -19,8 +19,8 @@ export async function createTicketPdf(record:DigitalTicketRecord){
   const hero=await document.embedPng(await readFile(path.join(process.cwd(),"public","images","nis-gala-2026-ticket-hero.png")));const qr=await document.embedPng(await QRCode.toBuffer(buildTicketQrPayload(record.ticket.qrToken),{errorCorrectionLevel:"M",margin:2,width:500,color:{dark:"#041d3b",light:"#ffffff"}}));const sponsorImages=await Promise.all(galaSponsors.map(async sponsor=>({sponsor,image:await document.embedPng(await readFile(path.join(process.cwd(),"public",...sponsor.image.split("/").filter(Boolean))))})));
   const navy=rgb(4/255,29/255,59/255);const blue=rgb(11/255,99/255,182/255);const muted=rgb(82/255,107/255,131/255);const scale=595.28/hero.width;const heroHeight=hero.height*scale;
   page.drawImage(hero,{x:0,y:841.89-heroHeight,width:595.28,height:heroHeight});
-  const admin=record.ticket.issuanceSource==="ADMIN";const company=record.ticket.issuanceSource==="COMPANY";const holderName=formatTicketHolderName(record.attendee.firstName,record.attendee.lastName);const companyName=record.companyName??"Invito aziendale";const namedCompanyHolder=company&&(Boolean(record.attendee.lastName.trim())||holderName.toLocaleUpperCase("it-IT")!==companyName.toLocaleUpperCase("it-IT"));const holder=company&&namedCompanyHolder?holderName:company?companyName:holderName;const type=invitationTypeLabel(record.ticket.invitationType);const companyType=record.packageName||type;
-  page.drawText(admin?`INVITO ${type.toUpperCase()}`:company?"INVITO AZIENDALE":"BIGLIETTO NOMINATIVO",{x:44,y:480,size:11,font:bold,color:blue});
+  const admin=record.ticket.issuanceSource==="ADMIN";const company=record.ticket.issuanceSource==="COMPANY";const guest=admin&&record.ticket.invitationType==="OSPITE"&&Boolean(record.companyName);const holderName=formatTicketHolderName(record.attendee.firstName,record.attendee.lastName);const companyName=record.companyName??"Invito aziendale";const namedCompanyHolder=company&&(Boolean(record.attendee.lastName.trim())||holderName.toLocaleUpperCase("it-IT")!==companyName.toLocaleUpperCase("it-IT"));const holder=company&&namedCompanyHolder?holderName:company?companyName:holderName;const type=invitationTypeLabel(record.ticket.invitationType);const displayType=invitationDisplayLabel(record.ticket.invitationType,record.companyName);const companyType=record.packageName?`${type} - ${record.packageName}`:type;
+  page.drawText(guest?displayType.toUpperCase():admin?`INVITO ${type.toUpperCase()}`:company?"INVITO AZIENDALE":"BIGLIETTO NOMINATIVO",{x:44,y:480,size:11,font:bold,color:blue});
   if(company&&namedCompanyHolder){const companySize=fittedFontSize(companyName,507,bold,16,10);page.drawText(companyName,{x:44,y:457,size:companySize,font:bold,color:muted,maxWidth:507});}
   const holderSize=fittedFontSize(holder,507,bold,company&&namedCompanyHolder?25:28,14);const holderY=company&&namedCompanyHolder?425:445;const holderX=company?44:44+(507-bold.widthOfTextAtSize(holder,holderSize))/2;page.drawText(holder,{x:holderX,y:holderY,size:holderSize,font:bold,color:navy,maxWidth:507});
   if(company)page.drawText(`${companyType} - Ingresso ${record.ticket.sequenceNumber??1} di ${record.ticket.totalQuantity??1}`,{x:44,y:company&&namedCompanyHolder?401:420,size:12,font:regular,color:muted});
