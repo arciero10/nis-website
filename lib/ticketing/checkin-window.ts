@@ -3,12 +3,15 @@ import type {PoolClient,QueryResultRow} from "pg";
 import {query,withTransaction} from "@/lib/ticketing/db";
 import {resolveCheckInOperationalState,type CheckInManualOverride,type CheckInOperationalState} from "@/lib/ticketing/checkin-rules";
 import type {StaffSession} from "@/lib/ticketing/staff-auth";
+import type {EventStatus} from "@/types/ticketing";
 
 export const GALA_CHECKIN_EVENT_SLUG="nis-gala-2026";
 
 type CheckInWindowRow=QueryResultRow&{
   id:string;
   slug:string;
+  status:EventStatus;
+  completed_at:Date|null;
   checkin_opens_at:Date|null;
   checkin_closes_at:Date|null;
   checkin_override_state:CheckInManualOverride;
@@ -18,7 +21,9 @@ type CheckInWindowRow=QueryResultRow&{
 
 export type CheckInOperationalStatus={
   effectiveState:CheckInOperationalState;
-  source:"AUTOMATIC"|"MANUAL";
+  source:"AUTOMATIC"|"MANUAL"|"EVENT";
+  eventStatus:EventStatus;
+  eventCompletedAt:string|null;
   manualOverride:CheckInManualOverride;
   opensAt:string|null;
   closesAt:string|null;
@@ -34,9 +39,12 @@ const configuredTimes=(row:CheckInWindowRow)=>({
 
 function statusFromRow(row:CheckInWindowRow,now=new Date()):CheckInOperationalStatus{
   const {opensAt,closesAt}=configuredTimes(row);
+  const completed=row.status==="COMPLETED";
   return {
-    effectiveState:resolveCheckInOperationalState(now,opensAt,closesAt,row.checkin_override_state),
-    source:row.checkin_override_state?"MANUAL":"AUTOMATIC",
+    effectiveState:completed?"CLOSED":resolveCheckInOperationalState(now,opensAt,closesAt,row.checkin_override_state),
+    source:completed?"EVENT":row.checkin_override_state?"MANUAL":"AUTOMATIC",
+    eventStatus:row.status,
+    eventCompletedAt:iso(row.completed_at),
     manualOverride:row.checkin_override_state,
     opensAt,
     closesAt,
@@ -45,7 +53,7 @@ function statusFromRow(row:CheckInWindowRow,now=new Date()):CheckInOperationalSt
   };
 }
 
-const selectWindow=(suffix="")=>`SELECT id,slug,checkin_opens_at,checkin_closes_at,checkin_override_state,checkin_override_changed_at,checkin_override_changed_by_display_name FROM ticketing_events WHERE slug=$1${suffix}`;
+const selectWindow=(suffix="")=>`SELECT id,slug,status,completed_at,checkin_opens_at,checkin_closes_at,checkin_override_state,checkin_override_changed_at,checkin_override_changed_by_display_name FROM ticketing_events WHERE slug=$1${suffix}`;
 
 export async function getCheckInOperationalStatus(slug=GALA_CHECKIN_EVENT_SLUG){
   const result=await query<CheckInWindowRow>(selectWindow(),[slug]);
@@ -58,6 +66,7 @@ export async function setCheckInManualOverride(action:"OPEN"|"CLOSE",session:Sta
     const result=await client.query<CheckInWindowRow>(selectWindow(" FOR UPDATE"),[slug]);
     const event=result.rows[0];
     if(!event)throw new Error("EVENT_NOT_FOUND");
+    if(event.status==="COMPLETED")throw new Error("EVENT_COMPLETED");
     const overrideState:Exclude<CheckInManualOverride,null>=action==="OPEN"?"OPEN":"CLOSED";
     const changedAt=new Date();
     await client.query(`UPDATE ticketing_events SET

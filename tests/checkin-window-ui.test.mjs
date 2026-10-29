@@ -23,13 +23,29 @@ test("only SUPERADMIN sees window controls while the operational state remains v
     source("../components/CheckInScanner.tsx"),
     source("../app/api/ticketing/staff/checkin-window/route.ts"),
   ]);
-  assert.match(scanner,/role==="SUPERADMIN"&&checkInWindow&&<button/);
+  assert.match(scanner,/!eventCompleted&&role==="SUPERADMIN"&&checkInWindow&&<button/);
   assert.match(scanner,/APRI CHECK-IN ORA/);
   assert.match(scanner,/CHIUDI CHECK-IN/);
   assert.match(scanner,/CHECK-IN APERTO MANUALMENTE/);
   assert.match(scanner,/setCheckInWindow\(body\.window\)/);
   assert.match(route,/session\.role!=="SUPERADMIN"/);
   assert.match(route,/status:403/);
+});
+
+test("completed event is shown as historical and cannot expose manual controls",async()=>{
+  const [scanner,repository,route]=await Promise.all([
+    source("../components/CheckInScanner.tsx"),
+    source("../lib/ticketing/checkin-window.ts"),
+    source("../app/api/ticketing/staff/checkin-window/route.ts"),
+  ]);
+  assert.match(scanner,/eventStatus==="COMPLETED"/);
+  assert.match(scanner,/EVENTO CONCLUSO/);
+  assert.match(scanner,/Storico ingressi/);
+  assert.match(scanner,/Concluso il:/);
+  assert.match(scanner,/!eventCompleted&&role==="SUPERADMIN"/);
+  assert.match(repository,/event\.status==="COMPLETED"/);
+  assert.match(repository,/throw new Error\("EVENT_COMPLETED"\)/);
+  assert.match(route,/EVENT_COMPLETED/);
 });
 
 test("camera check-in auto-returns only after authorization while denials remain visible",async()=>{

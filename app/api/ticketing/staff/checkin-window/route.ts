@@ -28,6 +28,7 @@ export async function POST(request:Request){
     const window=await setCheckInManualOverride(payload.action,session);
     return NextResponse.json({window},{headers:{"Cache-Control":"private, no-store"}});
   }catch(error){
+    if(error instanceof Error&&error.message==="EVENT_COMPLETED")return NextResponse.json({message:"L'evento è concluso e il check-in non può essere riaperto."},{status:409});
     console.error("Check-in window override failed",error instanceof Error?error.message:"unknown");
     return NextResponse.json({message:"Aggiornamento stato check-in non riuscito."},{status:500});
   }

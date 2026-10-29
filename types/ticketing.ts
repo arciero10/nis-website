@@ -58,6 +58,7 @@ export interface Event{
   currency:"EUR";
   capacity:number|null;
   status:EventStatus;
+  completedAt:IsoDateTime|null;
   createdAt:IsoDateTime;
   updatedAt:IsoDateTime;
 }

@@ -29,6 +29,7 @@ export const nisGala2026:Event={
   currency:"EUR",
   capacity:null,
   status:"ANNOUNCED",
+  completedAt:null,
   createdAt:"2026-10-08T00:00:00.000Z",
   updatedAt:"2026-10-08T00:00:00.000Z",
 };

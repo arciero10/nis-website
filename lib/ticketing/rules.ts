@@ -43,9 +43,14 @@ export function invitationUsesAfterOrder(currentUses:number){
 }
 
 export function checkInEligibility(input:{ticketStatus:string;firstCheckInAt:string|null;paymentStatus:string;eventStatus:string}){
+  if(input.eventStatus==="COMPLETED")return "EVENT_CLOSED" as const;
   if(input.paymentStatus!=="PAID"||input.eventStatus==="CANCELLED"||input.ticketStatus==="CANCELLED"||input.ticketStatus==="REFUNDED")return "INVALID" as const;
   if(input.ticketStatus==="USED"||input.firstCheckInAt)return "ALREADY_USED" as const;
   return "AUTHORIZED" as const;
+}
+
+export function eventAcceptsNewActivity(status:string){
+  return status!=="CANCELLED"&&status!=="COMPLETED";
 }
 
 export function invitationBlockReason(invitation:InvitationRuleInput,now=new Date()){

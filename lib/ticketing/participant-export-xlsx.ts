@@ -16,6 +16,8 @@ export function buildParticipantWorkbookParts(data:ParticipantExportDataset){
   const summary:Cell[][]=[
     [{value:"Riepilogo NIS Gala 2026",style:1}],
     [{value:"Generato il"},{value:date(data.generatedAt)}],
+    [{value:"Stato evento"},{value:data.event?.status==="COMPLETED"?"EVENTO CONCLUSO":data.event?.status??"N/D"}],
+    [{value:"Concluso il"},{value:data.event?.completedAt?date(data.event.completedAt):"-"}],
     [{value:"Totale operativo"},{value:data.summary.total}],
     [{value:"di cui omaggio (inclusi nel totale operativo)"},{value:data.summary.complimentary}],
     [{value:"Entrati"},{value:data.summary.used}],

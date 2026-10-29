@@ -1,10 +1,16 @@
 import type {QueryResultRow} from "pg";
 import {query} from "@/lib/ticketing/db";
 import {formatPersonNamePart} from "@/lib/ticketing/name-format";
-import {classifyParticipantPayment,type ParticipantExportFilters,type ParticipantExportRow} from "@/lib/ticketing/participant-export-model";
+import {classifyParticipantPayment,type ParticipantExportEvent,type ParticipantExportFilters,type ParticipantExportRow} from "@/lib/ticketing/participant-export-model";
 import type {InvitationType,TicketIssuanceSource,TicketStatus} from "@/types/ticketing";
 
 type ExportRow=QueryResultRow&{first_name:string;last_name:string;email:string;phone:string|null;ticket_code:string;invitation_type:InvitationType;issuance_source:TicketIssuanceSource;company_name:string|null;company_contact:string|null;ticket_status:TicketStatus;order_payment_status:string|null;manual_payment_status:string|null;manual_payment_method:string|null;cash_collection_status:string|null;order_amount:string|null;manual_amount:string|null;allocation_amount_cents:string|null;order_id:string|null;manual_issuance_id:string|null;allocation_id:string|null;payment_ticket_count:string|null;checked_in_at:Date|null;issued_at:Date;allocation_type:string|null;allocated_quantity:number|null;allocation_issued:string|null;allocation_used:string|null};
+
+export async function loadParticipantExportEvent(eventSlug:string):Promise<ParticipantExportEvent|null>{
+  const result=await query<{title:string;status:ParticipantExportEvent["status"];completed_at:Date|null}>("SELECT title,status,completed_at FROM ticketing_events WHERE slug=$1",[eventSlug]);
+  const row=result.rows[0];
+  return row?{title:row.title,status:row.status,completedAt:row.completed_at?.toISOString()??null}:null;
+}
 
 export async function loadParticipantExportRows(eventSlug:string,filters:ParticipantExportFilters):Promise<ParticipantExportRow[]>{
   const active=filters.scope==="FILTERED";const values:unknown[]=[eventSlug,active?filters.query:"",active?filters.status:"ALL",active?filters.source:"ALL",active?filters.type:"ALL",active?filters.from:null,active?filters.to:null];

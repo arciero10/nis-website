@@ -236,6 +236,16 @@ export async function buildParticipantPdf(data: ParticipantExportDataset) {
       { label: "RICAVI OMAGGI", value: money(0) },
     ]);
     y -= 96;
+    if (data.event?.status === "COMPLETED") {
+      page!.drawText(`EVENTO CONCLUSO${data.event.completedAt ? ` - ${when(data.event.completedAt)}` : ""}`, {
+        x: 36,
+        y: y + 3,
+        size: 7.2,
+        font: bold,
+        color: rgb(0.62, 0.16, 0.2),
+      });
+      y -= 14;
+    }
   };
 
   const newPage = (first = false, withTableHeader = true) => {
