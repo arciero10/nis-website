@@ -10,6 +10,7 @@ const revealGroups=[
   ".info-card",
   ".press-card",
   ".nis-news-card",
+  ".gala-post-event-gallery figure",
   ".home-closing-inner > *",
   ".project-highlight > *",
   ".cards-4 > *",
@@ -21,6 +22,8 @@ const revealGroups=[
 
 const singleRevealSelectors=[
   ".impact-heading",
+  ".gala-post-event-heading",
+  ".gala-post-event-video",
   ".section-head",
   ".org-pdf-panel",
   ".org-section-header",

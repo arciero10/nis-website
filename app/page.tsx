@@ -4,7 +4,7 @@ import MetricStrip from "@/components/MetricStrip";
 import ProjectFeature from "@/components/ProjectFeature";
 import SectorGrid from "@/components/SectorGrid";
 import StructuredData from "@/components/StructuredData";
-import GalaTakeover from "@/components/GalaTakeover";
+import GalaPostEvent from "@/components/GalaPostEvent";
 import HomeHeroSlider from "@/components/HomeHeroSlider";
 import {createPageMetadata,organizationJsonLd,websiteJsonLd} from "@/lib/seo";
 
@@ -19,8 +19,8 @@ export const metadata:Metadata=createPageMetadata({
 
 export default function Home(){return <>
   <StructuredData data={[organizationJsonLd,websiteJsonLd]}/>
-  <GalaTakeover/>
   <HomeHeroSlider/>
+  <GalaPostEvent/>
 
   <MetricStrip compact/>
 
