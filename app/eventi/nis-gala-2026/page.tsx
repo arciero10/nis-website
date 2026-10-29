@@ -1,17 +1,16 @@
 import Image from "next/image";
-import Link from "next/link";
 import type {Metadata} from "next";
-import GalaSponsorStrip from "@/components/GalaSponsorStrip";
 import GalaEventArchive from "@/components/GalaEventArchive";
 import StructuredData from "@/components/StructuredData";
-import {ScuolaVivaGalaFeature} from "@/components/ScuolaVivaFeatures";
+import {galaEventGalleryImages} from "@/data/gala-gallery";
 import {galaPromotion} from "@/data/gala-promotion";
 import {createBreadcrumbJsonLd,createPageMetadata,SITE_URL} from "@/lib/seo";
 
 const title="NIS Gala Charity Night 2026 | Nazionale Italiana Sanitari";
-const description="Il 28 ottobre 2026 a Roma il NIS Gala Charity Night: una serata di beneficenza a sostegno dei progetti della Nazionale Italiana Sanitari.";
+const description="Rivivi il NIS Gala Charity Night del 28 ottobre 2026 a Roma: immagini, progetti, testimonianze e momenti di una serata dedicata alla solidarietà.";
+const heroImage=galaEventGalleryImages[0];
 
-export const metadata:Metadata=createPageMetadata({title,description,path:galaPromotion.publicPath,image:galaPromotion.artwork});
+export const metadata:Metadata=createPageMetadata({title,description,path:galaPromotion.publicPath,image:heroImage.src});
 
 const eventJsonLd={
   "@context":"https://schema.org",
@@ -23,7 +22,7 @@ const eventJsonLd={
   eventStatus:"https://schema.org/EventCompleted",
   eventAttendanceMode:"https://schema.org/OfflineEventAttendanceMode",
   url:`${SITE_URL}${galaPromotion.publicPath}`,
-  image:[`${SITE_URL}${galaPromotion.artwork}`],
+  image:[`${SITE_URL}${heroImage.src}`],
   location:{"@type":"Place",name:"Another Studio",address:{"@type":"PostalAddress",streetAddress:"Via di Pietralata 183",postalCode:"00158",addressLocality:"Roma",addressRegion:"RM",addressCountry:"IT"}},
   organizer:{"@type":"Organization",name:"Nazionale Italiana Sanitari",url:SITE_URL},
   performer:[
@@ -42,25 +41,17 @@ const eventJsonLd={
 export default function GalaPublicPage(){return <>
   <StructuredData data={[eventJsonLd,createBreadcrumbJsonLd([{name:"Home",path:"/"},{name:"Eventi",path:"/eventi"},{name:"NIS Gala Charity Night",path:galaPromotion.publicPath}])]}/>
   <article className="gala-public-page">
-    <section className="gala-public-hero">
-      <div className="shell gala-public-hero-inner">
-        <div className="gala-public-artwork"><Image src={galaPromotion.artwork} alt="The NIS Gala Charity Night, 28 ottobre 2026, Another Studio Roma" fill priority sizes="(max-width: 900px) calc(100vw - 40px), 58vw"/></div>
-        <div className="gala-public-copy">
-          <p className="gala-kicker">NIS GALA 2026 · ROMA</p>
-          <h1>THE NIS GALA<span>CHARITY NIGHT</span></h1>
-          <p className="gala-public-lead">Una serata di partecipazione e solidarietà che ha riunito la comunità NIS a sostegno di progetti concreti per la salute.</p>
-          <dl><div><dt>Quando</dt><dd>28 ottobre 2026</dd></div><div><dt>Dove</dt><dd>Another Studio, Roma</dd></div></dl>
-          <Link href="#gallery" className="btn gala-primary-cta">SCOPRI FOTO E VIDEO</Link>
-        </div>
+    <section className="gala-archive-hero">
+      <div className="gala-archive-hero-image"><Image src={heroImage.src} alt={heroImage.alt} fill priority sizes="100vw" style={{objectPosition:heroImage.objectPosition}}/></div>
+      <div className="gala-archive-hero-overlay"/>
+      <div className="shell gala-archive-hero-content">
+        <p className="eyebrow white">ARCHIVIO EVENTO</p>
+        <h1>NIS Gala Charity Night 2026</h1>
+        <p className="gala-archive-subtitle">Una serata di solidarietà, salute e sport</p>
+        <div className="gala-archive-event-meta"><span>28 ottobre 2026</span><span>Another Studio, Roma</span></div>
       </div>
     </section>
-    <section className="gala-public-details"><div className="shell gala-public-details-inner">
-      <div><p className="eyebrow">UNA SERATA CHE LASCIA IL SEGNO</p><h2>Insieme, per trasformare la partecipazione in sostegno concreto.</h2></div>
-      <p>Il NIS Gala Charity Night ha riunito la comunità della Nazionale Italiana Sanitari per sostenere progetti dedicati alla salute, alla prevenzione e alla solidarietà.</p>
-    </div></section>
     <GalaEventArchive/>
-    <ScuolaVivaGalaFeature/>
-    <div className="shell gala-public-sponsors"><GalaSponsorStrip/></div>
   </article>
 </>}
 

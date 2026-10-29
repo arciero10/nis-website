@@ -8,9 +8,17 @@ export type ProjectGalleryImage={
   width:number;
   height:number;
   alt:string;
+  objectPosition?:string;
+  imageFit?:"contain";
 };
 
-export default function ProjectGallery({images}:{images:ProjectGalleryImage[]}){
+type ProjectGalleryProps={
+  images:ProjectGalleryImage[];
+  className?:string;
+  thumbnailSizes?:string;
+};
+
+export default function ProjectGallery({images,className="battito-gallery",thumbnailSizes="(max-width: 720px) calc(100vw - 40px), 50vw"}:ProjectGalleryProps){
   const [active,setActive]=useState<number|null>(null);
   const closeButton=useRef<HTMLButtonElement>(null);
   const triggers=useRef<Array<HTMLButtonElement|null>>([]);
@@ -56,10 +64,10 @@ export default function ProjectGallery({images}:{images:ProjectGalleryImage[]}){
   },[active,close]);
 
   return <>
-    <div className="battito-gallery">
-      {images.map((image,index)=><figure key={image.src}>
+    <div className={className}>
+      {images.map((image,index)=><figure className={image.imageFit==="contain"?"is-contained":undefined} key={image.src}>
         <button ref={element=>{triggers.current[index]=element;}} type="button" className="gallery-trigger" onClick={()=>setActive(index)} aria-label={`Apri immagine ${index+1} di ${images.length}: ${image.alt}`}>
-          <Image src={image.src} alt={image.alt} width={image.width} height={image.height} sizes="(max-width: 720px) calc(100vw - 40px), 50vw"/>
+          <Image src={image.src} alt={image.alt} width={image.width} height={image.height} sizes={thumbnailSizes} loading="lazy" style={{objectFit:image.imageFit??"cover",objectPosition:image.objectPosition}}/>
           <span className="gallery-zoom" aria-hidden="true">+</span>
         </button>
       </figure>)}

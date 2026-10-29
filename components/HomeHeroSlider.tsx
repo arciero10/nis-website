@@ -82,7 +82,7 @@ export default function HomeHeroSlider(){
         <h1>NIS Gala Charity Night 2026</h1>
         <p className="home-hero-kicker">Le immagini della serata</p>
         <p className="home-hero-description">Una serata di partecipazione e solidarietà che ha riunito la comunità NIS a sostegno di progetti concreti per la salute.</p>
-        <Link href="/eventi/nis-gala-2026#gallery" className="btn home-hero-cta">RIVIVI LA SERATA</Link>
+        <Link href="/eventi/nis-gala-2026" className="btn home-hero-cta">RIVIVI LA SERATA</Link>
       </div>
     </div>
     <button className="home-hero-arrow is-previous" type="button" onClick={showPrevious} aria-label="Immagine precedente"><span aria-hidden="true">←</span></button>
