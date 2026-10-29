@@ -4,8 +4,8 @@ import MetricStrip from "@/components/MetricStrip";
 import ProjectFeature from "@/components/ProjectFeature";
 import SectorGrid from "@/components/SectorGrid";
 import StructuredData from "@/components/StructuredData";
-import GalaPostEvent from "@/components/GalaPostEvent";
 import HomeHeroSlider from "@/components/HomeHeroSlider";
+import HomeNewsHighlights from "@/components/HomeNewsHighlights";
 import {createPageMetadata,organizationJsonLd,websiteJsonLd} from "@/lib/seo";
 
 // Keep editorial homepage updates fresh across deployments instead of caching its HTML as immutable.
@@ -20,7 +20,7 @@ export const metadata:Metadata=createPageMetadata({
 export default function Home(){return <>
   <StructuredData data={[organizationJsonLd,websiteJsonLd]}/>
   <HomeHeroSlider/>
-  <GalaPostEvent/>
+  <HomeNewsHighlights/>
 
   <MetricStrip compact/>
 

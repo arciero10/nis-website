@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type {Metadata} from "next";
 import GalaSponsorStrip from "@/components/GalaSponsorStrip";
+import GalaEventArchive from "@/components/GalaEventArchive";
 import StructuredData from "@/components/StructuredData";
 import {ScuolaVivaGalaFeature} from "@/components/ScuolaVivaFeatures";
 import {galaPromotion} from "@/data/gala-promotion";
@@ -19,7 +20,7 @@ const eventJsonLd={
   description,
   startDate:"2026-10-28",
   endDate:"2026-10-28",
-  eventStatus:"https://schema.org/EventScheduled",
+  eventStatus:"https://schema.org/EventCompleted",
   eventAttendanceMode:"https://schema.org/OfflineEventAttendanceMode",
   url:`${SITE_URL}${galaPromotion.publicPath}`,
   image:[`${SITE_URL}${galaPromotion.artwork}`],
@@ -31,10 +32,10 @@ const eventJsonLd={
   ],
   offers:{
     "@type":"Offer",
-    url:`${SITE_URL}${galaPromotion.checkoutPath}`,
+    url:`${SITE_URL}${galaPromotion.publicPath}`,
     price:"200",
     priceCurrency:"EUR",
-    availability:"https://schema.org/InStock",
+    availability:"https://schema.org/SoldOut",
   },
 };
 
@@ -45,18 +46,19 @@ export default function GalaPublicPage(){return <>
       <div className="shell gala-public-hero-inner">
         <div className="gala-public-artwork"><Image src={galaPromotion.artwork} alt="The NIS Gala Charity Night, 28 ottobre 2026, Another Studio Roma" fill priority sizes="(max-width: 900px) calc(100vw - 40px), 58vw"/></div>
         <div className="gala-public-copy">
-          <p className="gala-kicker">28 OTTOBRE 2026 · ROMA</p>
+          <p className="gala-kicker">NIS GALA 2026 · ROMA</p>
           <h1>THE NIS GALA<span>CHARITY NIGHT</span></h1>
-          <p className="gala-public-lead">{galaPromotion.description}</p>
+          <p className="gala-public-lead">Una serata di partecipazione e solidarietà che ha riunito la comunità NIS a sostegno di progetti concreti per la salute.</p>
           <dl><div><dt>Quando</dt><dd>28 ottobre 2026</dd></div><div><dt>Dove</dt><dd>Another Studio, Roma</dd></div></dl>
-          <Link href={galaPromotion.checkoutPath} className="btn gala-primary-cta">RICHIEDI IL TUO INVITO</Link>
+          <Link href="#gallery" className="btn gala-primary-cta">SCOPRI FOTO E VIDEO</Link>
         </div>
       </div>
     </section>
     <section className="gala-public-details"><div className="shell gala-public-details-inner">
       <div><p className="eyebrow">UNA SERATA CHE LASCIA IL SEGNO</p><h2>Insieme, per trasformare la partecipazione in sostegno concreto.</h2></div>
-      <p>Il NIS Gala Charity Night riunisce la comunità della Nazionale Italiana Sanitari per sostenere progetti dedicati alla salute, alla prevenzione e alla solidarietà.</p>
+      <p>Il NIS Gala Charity Night ha riunito la comunità della Nazionale Italiana Sanitari per sostenere progetti dedicati alla salute, alla prevenzione e alla solidarietà.</p>
     </div></section>
+    <GalaEventArchive/>
     <ScuolaVivaGalaFeature/>
     <div className="shell gala-public-sponsors"><GalaSponsorStrip/></div>
   </article>
