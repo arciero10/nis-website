@@ -10,6 +10,9 @@ const title="NIS Gala Charity Night 2026 | Nazionale Italiana Sanitari";
 const description="Rivivi il NIS Gala Charity Night del 28 ottobre 2026 a Roma: immagini, progetti, testimonianze e momenti di una serata dedicata alla solidarietà.";
 const heroImage=galaEventGalleryImages[0];
 
+export const dynamic="force-dynamic";
+export const revalidate=0;
+
 export const metadata:Metadata=createPageMetadata({title,description,path:galaPromotion.publicPath,image:heroImage.src});
 
 const eventJsonLd={
