@@ -16,9 +16,9 @@ export const galaReel={
 };
 
 export const galaYoutubeVideos:GalaYoutubeVideo[]=[
-  {title:"Video NIS Gala 2026 #1",youtubeId:"I8sY0HDjCpg",type:"official"},
-  {title:"Video NIS Gala 2026 #2",youtubeId:"SSg7SJWTJWc",type:"official"},
-  {title:"Video NIS Gala 2026 #3",youtubeId:"Swu13Bn8_sE",type:"official"},
+  {title:"Video NIS Gala 2026 #1",youtubeId:"HZ9sxX-fx_U",type:"official"},
+  {title:"Video NIS Gala 2026 #2",youtubeId:"axyT8-Her8o",type:"official"},
+  {title:"Video NIS Gala 2026 #3",youtubeId:"C38RxmUUA7Q",type:"official"},
 ];
 
 export const galaYoutubeChannelUrl=socialLinks.find(link=>link.label==="YouTube")?.href;
