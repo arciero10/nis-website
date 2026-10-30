@@ -13,6 +13,20 @@ const supportedProjects=[
 ];
 
 export default function GalaEventArchive(){return <>
+  <section className="gala-event-archive" id="gallery" aria-labelledby="gala-gallery-title"><div className="shell">
+    <div className="gala-event-archive-heading"><p className="eyebrow">GALLERY FOTOGRAFICA</p><h2 id="gala-gallery-title">I momenti del NIS Gala Charity Night 2026</h2><p>Una selezione dei momenti più significativi della serata. Apri la gallery per scorrere tutte le fotografie.</p></div>
+    <ProjectGallery images={galaEventGalleryImages} previewCount={5} className="gala-event-gallery is-compact" mainImageSizes="(max-width: 720px) calc(100vw - 40px), 1180px" thumbnailSizes="(max-width: 720px) calc((100vw - 49px) / 2), (max-width: 1050px) 25vw, 280px"/>
+  </div></section>
+
+  <EventVideoGallery reel={galaReel} poster={galaEventGalleryImages[0].src} videos={galaYoutubeVideos} channelUrl={galaYoutubeChannelUrl}/>
+
+  <section className="gala-event-partners" aria-labelledby="gala-partners-title"><div className="shell"><h2 className="sr-only" id="gala-partners-title">Sponsor e partner del NIS Gala 2026</h2><GalaSponsorStrip/></div></section>
+
+  <section className="gala-event-projects" aria-labelledby="gala-projects-title"><div className="shell">
+    <div className="gala-event-section-heading"><p className="eyebrow">PROGETTI SOSTENUTI</p><h2 id="gala-projects-title">Quattro direzioni, un impegno comune</h2><p>Durante la serata è stata illustrata una destinazione della raccolta articolata per il 60% a Scuola Viva, il 30% al Policlinico Umberto I e il 10% a Spirito NIS. Le percentuali descrivono la ripartizione presentata, non un consuntivo finale della raccolta.</p></div>
+    <div className="gala-event-project-grid">{supportedProjects.map((project,index)=><article key={project.name}><span>{String(index+1).padStart(2,"0")}</span><h3>{project.name}</h3><p>{project.description}</p>{project.href&&<Link href={project.href}>Approfondisci <span aria-hidden="true">→</span></Link>}</article>)}</div>
+  </div></section>
+
   <section className="gala-event-introduction" aria-labelledby="gala-introduction-title"><div className="shell gala-event-introduction-inner">
     <div><p className="eyebrow">NIS GALA CHARITY NIGHT 2026</p><h2 id="gala-introduction-title">Una comunità riunita per trasformare la partecipazione in cura.</h2></div>
     <p>Il 28 ottobre 2026, negli spazi di Another Studio a Roma, la Nazionale Italiana Sanitari ha riunito professionisti della salute, rappresentanti delle istituzioni, sportivi, artisti, aziende e sostenitori per condividere risultati, progetti e nuove prospettive di solidarietà.</p>
@@ -34,20 +48,6 @@ export default function GalaEventArchive(){return <>
       <p>La conduzione di Cristiana Buonamano e Federico Mosca ha accompagnato testimonianze, musica e spettacolo in un’unica narrazione: quella di una comunità che sceglie di esserci, mettendo in relazione competenze, energie e solidarietà.</p>
     </div>
   </div></section>
-
-  <section className="gala-event-projects" aria-labelledby="gala-projects-title"><div className="shell">
-    <div className="gala-event-section-heading"><p className="eyebrow">PROGETTI SOSTENUTI</p><h2 id="gala-projects-title">Quattro direzioni, un impegno comune</h2><p>Durante la serata è stata illustrata una destinazione della raccolta articolata per il 60% a Scuola Viva, il 30% al Policlinico Umberto I e il 10% a Spirito NIS. Le percentuali descrivono la ripartizione presentata, non un consuntivo finale della raccolta.</p></div>
-    <div className="gala-event-project-grid">{supportedProjects.map((project,index)=><article key={project.name}><span>{String(index+1).padStart(2,"0")}</span><h3>{project.name}</h3><p>{project.description}</p>{project.href&&<Link href={project.href}>Approfondisci <span aria-hidden="true">→</span></Link>}</article>)}</div>
-  </div></section>
-
-  <section className="gala-event-archive" id="gallery" aria-labelledby="gala-gallery-title"><div className="shell">
-    <div className="gala-event-archive-heading"><p className="eyebrow">GALLERY FOTOGRAFICA</p><h2 id="gala-gallery-title">I momenti del NIS Gala Charity Night 2026</h2><p>Una selezione dei momenti più significativi della serata. Apri la gallery per scorrere tutte le fotografie.</p></div>
-    <ProjectGallery images={galaEventGalleryImages} previewCount={5} className="gala-event-gallery is-compact" mainImageSizes="(max-width: 720px) calc(100vw - 40px), 1180px" thumbnailSizes="(max-width: 720px) calc((100vw - 49px) / 2), (max-width: 1050px) 25vw, 280px"/>
-  </div></section>
-
-  <EventVideoGallery reel={galaReel} poster={galaEventGalleryImages[0].src} videos={galaYoutubeVideos} channelUrl={galaYoutubeChannelUrl}/>
-
-  <section className="gala-event-partners" aria-labelledby="gala-partners-title"><div className="shell"><h2 className="sr-only" id="gala-partners-title">Sponsor e partner del NIS Gala 2026</h2><GalaSponsorStrip/></div></section>
 
   <section className="gala-event-related" aria-labelledby="gala-related-title"><div className="shell">
     <div className="gala-event-section-heading"><p className="eyebrow">DAL GALA</p><h2 id="gala-related-title">Voci e approfondimenti</h2></div>

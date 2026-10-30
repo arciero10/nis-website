@@ -475,7 +475,7 @@ body:has(.nis-checkin-page)>.site-header,body:has(.nis-checkin-page)>footer{disp
 .home-hero-slides,.home-hero-slide{position:absolute;inset:0}
 .home-hero-slide{visibility:hidden;opacity:0;transition:opacity 650ms ease,visibility 650ms ease}
 .home-hero-slide.is-active{visibility:visible;z-index:1;opacity:1}
-.home-hero-slide img{object-fit:cover;object-position:center}
+.home-hero-slide img,.home-hero-slide video{width:100%;height:100%;object-fit:cover;object-position:center}.home-hero-slide video{position:absolute;inset:0;display:block}
 .home-hero-shade{position:absolute;z-index:2;inset:0;background:linear-gradient(90deg,rgba(3,19,39,.94) 0%,rgba(3,19,39,.76) 36%,rgba(3,19,39,.2) 72%,rgba(3,19,39,.08) 100%)}
 .home-hero-slide-inner{position:relative;z-index:3;height:100%;display:flex;align-items:flex-end;padding-top:120px;padding-bottom:46px}
 .home-hero-slide-copy{width:min(620px,58vw)}

@@ -7,16 +7,24 @@ import {galaHeroImages} from "@/data/gala-gallery";
 
 const AUTO_ROTATION_MS=6200;
 const SWIPE_THRESHOLD=44;
+const GALA_REEL_SRC="/videos/gala-2026/nis-gala-2026-reel.mp4";
+const heroSlides=[
+  ...galaHeroImages.slice(0,1).map(image=>({type:"image" as const,image,key:image.src})),
+  {type:"video" as const,src:GALA_REEL_SRC,poster:galaHeroImages[0].src,key:GALA_REEL_SRC},
+  ...galaHeroImages.slice(1).map(image=>({type:"image" as const,image,key:image.src})),
+];
 
 export default function HomeHeroSlider(){
   const [activeIndex,setActiveIndex]=useState(0);
   const [isHovered,setIsHovered]=useState(false);
   const [hasFocus,setHasFocus]=useState(false);
   const [reducedMotion,setReducedMotion]=useState(false);
+  const [videoActivated,setVideoActivated]=useState(false);
   const touchStartX=useRef<number|null>(null);
+  const videoRef=useRef<HTMLVideoElement>(null);
 
-  const showPrevious=useCallback(()=>setActiveIndex(current=>(current-1+galaHeroImages.length)%galaHeroImages.length),[]);
-  const showNext=useCallback(()=>setActiveIndex(current=>(current+1)%galaHeroImages.length),[]);
+  const showPrevious=useCallback(()=>setActiveIndex(current=>(current-1+heroSlides.length)%heroSlides.length),[]);
+  const showNext=useCallback(()=>setActiveIndex(current=>(current+1)%heroSlides.length),[]);
 
   useEffect(()=>{
     const media=window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -27,16 +35,25 @@ export default function HomeHeroSlider(){
   },[]);
 
   useEffect(()=>{
-    if(reducedMotion||isHovered||hasFocus||galaHeroImages.length<2)return;
+    if(reducedMotion||isHovered||hasFocus||heroSlides.length<2)return;
     const timer=window.setInterval(showNext,AUTO_ROTATION_MS);
     return ()=>window.clearInterval(timer);
   },[activeIndex,hasFocus,isHovered,reducedMotion,showNext]);
+
+  useEffect(()=>{
+    const isVideoActive=heroSlides[activeIndex]?.type==="video";
+    if(isVideoActive)setVideoActivated(true);
+    const video=videoRef.current;
+    if(!video)return;
+    if(isVideoActive&&!reducedMotion)void video.play().catch(()=>{});
+    else video.pause();
+  },[activeIndex,reducedMotion,videoActivated]);
 
   function handleKeyDown(event:KeyboardEvent<HTMLElement>){
     if(event.key==="ArrowLeft"){event.preventDefault();showPrevious();}
     else if(event.key==="ArrowRight"){event.preventDefault();showNext();}
     else if(event.key==="Home"){event.preventDefault();setActiveIndex(0);}
-    else if(event.key==="End"){event.preventDefault();setActiveIndex(galaHeroImages.length-1);}
+    else if(event.key==="End"){event.preventDefault();setActiveIndex(heroSlides.length-1);}
   }
 
   function handleBlur(event:FocusEvent<HTMLElement>){
@@ -69,10 +86,10 @@ export default function HomeHeroSlider(){
     onTouchEnd={handleTouchEnd}
   >
     <div className="home-hero-slides">
-      {galaHeroImages.map((image,index)=>{
+      {heroSlides.map((slide,index)=>{
         const isActive=index===activeIndex;
-        return <article className={`home-hero-slide${isActive?" is-active":""}`} aria-hidden={!isActive} aria-label={`${index+1} di ${galaHeroImages.length}`} aria-roledescription="slide" key={image.src}>
-          <Image src={image.src} alt={isActive?image.alt:""} fill priority={index===0} loading={index===0?undefined:"lazy"} sizes="100vw" style={{objectPosition:image.objectPosition}}/>
+        return <article className={`home-hero-slide${isActive?" is-active":""}`} aria-hidden={!isActive} aria-label={`${index+1} di ${heroSlides.length}`} aria-roledescription="slide" key={slide.key}>
+          {slide.type==="image"?<Image src={slide.image.src} alt={isActive?slide.image.alt:""} fill priority={index===0} loading={index===0?undefined:"lazy"} sizes="100vw" style={{objectPosition:slide.image.objectPosition}}/>:<video ref={videoRef} muted playsInline loop preload="metadata" autoPlay={isActive&&!reducedMotion} poster={slide.poster} aria-label="Reel del NIS Gala Charity Night 2026" tabIndex={-1}>{videoActivated&&<source src={slide.src} type="video/mp4"/>}</video>}
         </article>;
       })}
     </div>
@@ -88,7 +105,7 @@ export default function HomeHeroSlider(){
     <button className="home-hero-arrow is-previous" type="button" onClick={showPrevious} aria-label="Immagine precedente"><span aria-hidden="true">←</span></button>
     <button className="home-hero-arrow is-next" type="button" onClick={showNext} aria-label="Immagine successiva"><span aria-hidden="true">→</span></button>
     <div className="home-hero-indicators" aria-label="Seleziona un'immagine">
-      {galaHeroImages.map((image,index)=><button type="button" key={image.src} className={index===activeIndex?"is-active":undefined} aria-label={`Mostra immagine ${index+1} di ${galaHeroImages.length}`} aria-current={index===activeIndex?"true":undefined} onClick={()=>setActiveIndex(index)}><span/></button>)}
+      {heroSlides.map((slide,index)=><button type="button" key={slide.key} className={index===activeIndex?"is-active":undefined} aria-label={`Mostra ${slide.type==="video"?"video":"immagine"} ${index+1} di ${heroSlides.length}`} aria-current={index===activeIndex?"true":undefined} onClick={()=>setActiveIndex(index)}><span/></button>)}
     </div>
     <div className="tricolor-swoosh" aria-hidden="true"/>
   </section>;
