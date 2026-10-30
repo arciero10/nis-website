@@ -1,4 +1,3 @@
-import Link from "next/link";
 import Image from "next/image";
 import PageHero from "@/components/PageHero";
 import GalaSponsorStrip from "@/components/GalaSponsorStrip";
@@ -16,15 +15,15 @@ export default function Page(){return <>
   <section className="section soft"><div className="shell">
     <div className="section-head gala-events-heading"><div><div className="eyebrow">ARCHIVIO EVENTI</div><h2>Rivivi gli appuntamenti NIS.</h2></div></div>
     <article className="gala-event-card is-concluded">
-      <Link href={galaPromotion.publicPath} className="gala-event-card-artwork" aria-label="Rivivi il NIS Gala Charity Night 2026">
+      <a href={galaPromotion.publicPath} className="gala-event-card-artwork" aria-label="Rivivi il NIS Gala Charity Night 2026">
         <Image src={galaEventGalleryImages[0].src} alt={galaEventGalleryImages[0].alt} fill sizes="(max-width: 720px) calc(100vw - 40px), 56vw" style={{objectPosition:galaEventGalleryImages[0].objectPosition}}/>
-      </Link>
+      </a>
       <div className="gala-event-card-copy">
         <p className="gala-kicker">EVENTO CONCLUSO</p>
         <h2>NIS Gala Charity Night 2026</h2>
         <p>Rivivi la serata attraverso il racconto editoriale, le immagini, i progetti sostenuti e le testimonianze della comunità NIS.</p>
         <dl><div><dt>Data</dt><dd>28 ottobre 2026</dd></div><div><dt>Luogo</dt><dd>Another Studio, Roma</dd></div></dl>
-        <Link href={galaPromotion.publicPath} className="btn btn-blue">RIVIVI L&apos;EVENTO</Link>
+        <a href={galaPromotion.publicPath} className="btn btn-blue">RIVIVI L&apos;EVENTO</a>
       </div>
       <GalaSponsorStrip className="gala-event-card-sponsors"/>
     </article>
