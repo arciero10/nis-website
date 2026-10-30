@@ -1,7 +1,9 @@
 import Link from "next/link";
+import EventVideoGallery from "@/components/EventVideoGallery";
 import GalaSponsorStrip from "@/components/GalaSponsorStrip";
 import ProjectGallery from "@/components/ProjectGallery";
 import {galaEventGalleryImages} from "@/data/gala-gallery";
+import {galaReel,galaYoutubeChannelUrl,galaYoutubeVideos} from "@/data/gala-videos";
 
 const supportedProjects=[
   {name:"Scuola Viva",description:"Percorsi, strumenti e nuove opportunità per persone con disabilità e per le loro famiglie.",href:"/news/gran-gala-2026-intervista-scuola-viva"},
@@ -9,13 +11,6 @@ const supportedProjects=[
   {name:"Spirito NIS",description:"Sport, scuola, rispetto e responsabilità per accompagnare i giovani nella crescita.",href:"/progetti/spirito-nis"},
   {name:"NIS Care",description:"Prevenzione e informazione sanitaria attraverso le competenze dei professionisti NIS."},
 ];
-
-function GalaEventVideo({embedUrl}:{embedUrl?:string}){
-  return <section className="gala-event-video-section" aria-labelledby="gala-video-title"><div className="shell">
-    <div className="gala-event-video-heading"><p className="eyebrow">VIDEO UFFICIALE</p><h2 id="gala-video-title">Il racconto della serata</h2></div>
-    {embedUrl?<div className="gala-event-video-embed"><iframe src={embedUrl} title="Video ufficiale NIS Gala Charity Night 2026" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen/></div>:<div className="gala-event-video-placeholder"><span aria-hidden="true">▶</span><div><strong>Video ufficiale in arrivo</strong><p>Il montaggio completo della serata sarà disponibile in questa sezione.</p></div></div>}
-  </div></section>;
-}
 
 export default function GalaEventArchive(){return <>
   <section className="gala-event-introduction" aria-labelledby="gala-introduction-title"><div className="shell gala-event-introduction-inner">
@@ -46,11 +41,11 @@ export default function GalaEventArchive(){return <>
   </div></section>
 
   <section className="gala-event-archive" id="gallery" aria-labelledby="gala-gallery-title"><div className="shell">
-    <div className="gala-event-archive-heading"><p className="eyebrow">GALLERY FOTOGRAFICA</p><h2 id="gala-gallery-title">Volti, incontri e momenti del NIS Gala 2026</h2><p>Una selezione delle immagini della serata. Seleziona una fotografia per visualizzarla a schermo intero e navigare l’intero racconto.</p></div>
-    <ProjectGallery images={galaEventGalleryImages} className="gala-event-gallery gala-event-gallery-interactive" thumbnailSizes="(max-width: 720px) calc(100vw - 40px), (max-width: 1050px) 50vw, 33vw"/>
+    <div className="gala-event-archive-heading"><p className="eyebrow">GALLERY FOTOGRAFICA</p><h2 id="gala-gallery-title">I momenti del NIS Gala Charity Night 2026</h2><p>Una selezione dei momenti più significativi della serata. Apri la gallery per scorrere tutte le fotografie.</p></div>
+    <ProjectGallery images={galaEventGalleryImages} previewCount={5} className="gala-event-gallery is-compact" mainImageSizes="(max-width: 720px) calc(100vw - 40px), 1180px" thumbnailSizes="(max-width: 720px) calc((100vw - 49px) / 2), (max-width: 1050px) 25vw, 280px"/>
   </div></section>
 
-  <GalaEventVideo/>
+  <EventVideoGallery reel={galaReel} poster={galaEventGalleryImages[0].src} videos={galaYoutubeVideos} channelUrl={galaYoutubeChannelUrl}/>
 
   <section className="gala-event-partners" aria-labelledby="gala-partners-title"><div className="shell"><h2 className="sr-only" id="gala-partners-title">Sponsor e partner del NIS Gala 2026</h2><GalaSponsorStrip/></div></section>
 

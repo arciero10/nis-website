@@ -16,17 +16,23 @@ type ProjectGalleryProps={
   images:ProjectGalleryImage[];
   className?:string;
   thumbnailSizes?:string;
+  mainImageSizes?:string;
+  previewCount?:number;
 };
 
-export default function ProjectGallery({images,className="battito-gallery",thumbnailSizes="(max-width: 720px) calc(100vw - 40px), 50vw"}:ProjectGalleryProps){
+export default function ProjectGallery({images,className="battito-gallery",thumbnailSizes="(max-width: 720px) calc(100vw - 40px), 50vw",mainImageSizes,previewCount}:ProjectGalleryProps){
   const [active,setActive]=useState<number|null>(null);
   const closeButton=useRef<HTMLButtonElement>(null);
   const triggers=useRef<Array<HTMLButtonElement|null>>([]);
+  const returnFocusIndex=useRef<number|null>(null);
   const touchStart=useRef<number|null>(null);
+  const visibleImages=previewCount?images.slice(0,previewCount):images;
+  const hiddenCount=Math.max(0,images.length-visibleImages.length);
 
   const close=useCallback(()=>setActive(null),[]);
   const previous=useCallback(()=>setActive(current=>current===null?null:(current-1+images.length)%images.length),[images.length]);
   const next=useCallback(()=>setActive(current=>current===null?null:(current+1)%images.length),[images.length]);
+  const open=useCallback((index:number)=>{returnFocusIndex.current=index;setActive(index);},[]);
 
   useEffect(()=>{
     if(active===null)return;
@@ -36,9 +42,9 @@ export default function ProjectGallery({images,className="battito-gallery",thumb
 
     const onKeyDown=(event:KeyboardEvent)=>{
       if(event.key==="Escape"){
-        const triggerIndex=active;
+        const triggerIndex=returnFocusIndex.current;
         close();
-        window.setTimeout(()=>triggers.current[triggerIndex]?.focus(),0);
+        window.setTimeout(()=>{if(triggerIndex!==null)triggers.current[triggerIndex]?.focus();},0);
       }
       if(event.key==="ArrowLeft")previous();
       if(event.key==="ArrowRight")next();
@@ -58,17 +64,18 @@ export default function ProjectGallery({images,className="battito-gallery",thumb
   },[active,close,next,previous]);
 
   const closeAndRestore=useCallback(()=>{
-    const triggerIndex=active;
+    const triggerIndex=returnFocusIndex.current;
     close();
     window.setTimeout(()=>{if(triggerIndex!==null)triggers.current[triggerIndex]?.focus();},0);
-  },[active,close]);
+  },[close]);
 
   return <>
     <div className={className}>
-      {images.map((image,index)=><figure className={image.imageFit==="contain"?"is-contained":undefined} key={image.src}>
-        <button ref={element=>{triggers.current[index]=element;}} type="button" className="gallery-trigger" onClick={()=>setActive(index)} aria-label={`Apri immagine ${index+1} di ${images.length}: ${image.alt}`}>
-          <Image src={image.src} alt={image.alt} width={image.width} height={image.height} sizes={thumbnailSizes} loading="lazy" style={{objectFit:image.imageFit??"cover",objectPosition:image.objectPosition}}/>
+      {visibleImages.map((image,index)=><figure className={`${image.imageFit==="contain"?"is-contained ":""}${index===0?"gallery-main":"gallery-thumbnail"}`.trim()} key={image.src}>
+        <button ref={element=>{triggers.current[index]=element;}} type="button" className="gallery-trigger" onClick={()=>open(index)} aria-label={`Apri immagine ${index+1} di ${images.length}: ${image.alt}`}>
+          <Image src={image.src} alt={image.alt} width={image.width} height={image.height} sizes={index===0&&mainImageSizes?mainImageSizes:thumbnailSizes} loading="lazy" style={{objectFit:image.imageFit??"cover",objectPosition:image.objectPosition}}/>
           <span className="gallery-zoom" aria-hidden="true">+</span>
+          {hiddenCount>0&&index===visibleImages.length-1&&<span className="gallery-more" aria-hidden="true"><strong>+{hiddenCount} FOTO</strong><small>Guarda tutte le foto</small></span>}
         </button>
       </figure>)}
     </div>
