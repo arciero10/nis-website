@@ -54,7 +54,7 @@ export function eventAcceptsNewActivity(status:string){
 }
 
 export function eventIsReadOnly(status:string){return status==="COMPLETED"||status==="ARCHIVED"||status==="CANCELLED";}
-export function eventIsPublic(status:string,visibility:string){return visibility==="PUBLIC"&&status!=="DRAFT"&&status!=="CANCELLED";}
+export function eventIsPublic(status:string,visibility:string){return visibility==="PUBLIC"&&["PUBLISHED","OPEN","CLOSED","COMPLETED","ARCHIVED","ANNOUNCED","SOLD_OUT"].includes(status);}
 
 export function invitationBlockReason(invitation:InvitationRuleInput,now=new Date()){
   if(invitation.status!=="ACTIVE") return invitation.status==="EXPIRED"?"EXPIRED":"DISABLED";

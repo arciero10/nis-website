@@ -1,8 +1,11 @@
 import type {MetadataRoute} from "next";
 import {sectors} from "@/data/site";
 import {SITE_URL} from "@/lib/seo";
+import {listPublicEvents} from "@/lib/ticketing/public-events";
 
-export default function sitemap():MetadataRoute.Sitemap{
+export const dynamic="force-dynamic";
+
+export default async function sitemap():Promise<MetadataRoute.Sitemap>{
   const routes:Array<{path:string;changeFrequency:MetadataRoute.Sitemap[number]["changeFrequency"];priority:number}>=[
     {path:"/",changeFrequency:"weekly",priority:1},
     {path:"/chi-siamo",changeFrequency:"monthly",priority:.9},
@@ -29,6 +32,8 @@ export default function sitemap():MetadataRoute.Sitemap{
     {path:"/privacy-policy",changeFrequency:"yearly",priority:.3},
     {path:"/cookie-policy",changeFrequency:"yearly",priority:.3},
   ];
+
+  try{for(const event of await listPublicEvents()){const path=`/eventi/${event.slug}`;if(!routes.some(route=>route.path===path))routes.push({path,changeFrequency:"monthly",priority:.7});}}catch{/* Keep the verified static sitemap available if the event store is temporarily unreachable. */}
 
   return routes.map(route=>({url:new URL(route.path,SITE_URL).toString(),changeFrequency:route.changeFrequency,priority:route.priority}));
 }
