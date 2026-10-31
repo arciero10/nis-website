@@ -4,14 +4,15 @@ import test from "node:test";
 
 const source=path=>readFile(new URL(path,import.meta.url),"utf8");
 
-test("STAFF navigation exposes only the four operational actions",async()=>{
+test("STAFF navigation exposes only operational sections and logout",async()=>{
   const [navigation,styles]=await Promise.all([source("../components/StaffNavigation.tsx"),source("../app/globals.css")]);
-  assert.match(navigation,/const operationalLinks=\[[\s\S]*Scanner[\s\S]*Partecipanti[\s\S]*Ingressi[\s\S]*\]/);
-  assert.match(navigation,/const administrativeLinks=\[[\s\S]*Aziende[\s\S]*Emissione[\s\S]*\]/);
-  assert.match(navigation,/role==="SUPERADMIN"\?\[\.\.\.operationalLinks\.slice\(0,2\),\.\.\.administrativeLinks,operationalLinks\[2\]\]:operationalLinks/);
+  assert.match(navigation,/const staffLinks=\[[\s\S]*Check-in[\s\S]*Partecipanti[\s\S]*Ingressi[\s\S]*\]/);
+  assert.match(navigation,/const superadminLinks=\[[\s\S]*Dashboard[\s\S]*Eventi[\s\S]*Biglietti[\s\S]*Aziende[\s\S]*Report[\s\S]*\]/);
+  assert.match(navigation,/role==="SUPERADMIN"\?superadminLinks:staffLinks/);
   assert.match(navigation,/loggingOut\?"Uscita\.\.\.":"Esci"/);
-  assert.match(styles,/staff-navigation\.is-staff\{grid-template-columns:repeat\(4/);
-  assert.match(styles,/@media\(max-width:720px\)\{\.staff-navigation\.is-staff\{grid-template-columns:repeat\(2/);
+  assert.match(styles,/staff-sidebar-toggle/);
+  assert.match(styles,/staff-navigation\.staff-sidebar/);
+  assert.match(styles,/@media\(max-width:960px\)/);
   assert.match(styles,/staff-dashboard-metrics-operational\{grid-template-columns:repeat\(3/);
 });
 

@@ -5,7 +5,7 @@ import type {StaffSession} from "@/lib/ticketing/staff-auth";
 import type {EventStatus,EventType,EventVisibility} from "@/types/ticketing";
 
 export type ManagedEventSummary={
-  id:string;slug:string;title:string;eventDate:string|null;endsAt:string|null;location:string|null;
+  id:string;slug:string;title:string;eventDate:string|null;endsAt:string|null;location:string|null;coverImage:string|null;
   status:EventStatus;eventType:EventType;visibility:EventVisibility;capacity:number|null;
   registered:number;operational:number;entered:number;noShow:number;cancelled:number;revenue:number;currency:string;
 };
@@ -17,12 +17,12 @@ export type CreateManagedEventInput={
   checkinOpensAt:string;checkinClosesAt:string;
 };
 
-type EventSummaryRow=QueryResultRow&{id:string;slug:string;title:string;event_date:Date|null;ends_at:Date|null;location:string|null;status:EventStatus;event_type:EventType;visibility:EventVisibility;capacity:number|null;registered:string;operational:string;entered:string;no_show:string;cancelled:string;revenue:string;currency:string};
+type EventSummaryRow=QueryResultRow&{id:string;slug:string;title:string;event_date:Date|null;ends_at:Date|null;location:string|null;cover_image:string|null;status:EventStatus;event_type:EventType;visibility:EventVisibility;capacity:number|null;registered:string;operational:string;entered:string;no_show:string;cancelled:string;revenue:string;currency:string};
 
 const iso=(value:Date|null)=>value?.toISOString()??null;
-const summary=(row:EventSummaryRow):ManagedEventSummary=>({id:row.id,slug:row.slug,title:row.title,eventDate:iso(row.event_date),endsAt:iso(row.ends_at),location:row.location,status:row.status,eventType:row.event_type,visibility:row.visibility,capacity:row.capacity,registered:Number(row.registered),operational:Number(row.operational),entered:Number(row.entered),noShow:Number(row.no_show),cancelled:Number(row.cancelled),revenue:Number(row.revenue),currency:row.currency});
+const summary=(row:EventSummaryRow):ManagedEventSummary=>({id:row.id,slug:row.slug,title:row.title,eventDate:iso(row.event_date),endsAt:iso(row.ends_at),location:row.location,coverImage:row.cover_image,status:row.status,eventType:row.event_type,visibility:row.visibility,capacity:row.capacity,registered:Number(row.registered),operational:Number(row.operational),entered:Number(row.entered),noShow:Number(row.no_show),cancelled:Number(row.cancelled),revenue:Number(row.revenue),currency:row.currency});
 
-const summarySql=`SELECT event.id,event.slug,event.title,event.event_date,event.ends_at,event.location,event.status,event.event_type,event.visibility,event.capacity,event.currency,
+const summarySql=`SELECT event.id,event.slug,event.title,event.event_date,event.ends_at,event.location,event.cover_image,event.status,event.event_type,event.visibility,event.capacity,event.currency,
   (SELECT COUNT(*) FROM ticketing_registrations registration WHERE registration.event_id=event.id AND registration.rsvp_status IN ('CONFIRMED','PENDING','WAITLIST'))::text AS registered,
   (SELECT COUNT(*) FROM ticketing_tickets ticket LEFT JOIN ticketing_orders orders ON orders.id=ticket.order_id WHERE ticket.event_id=event.id AND ticket.status IN ('ACTIVE','USED') AND (orders.payment_status='PAID' OR ticket.partner_allocation_id IS NOT NULL OR ticket.manual_issuance_id IS NOT NULL))::text AS operational,
   (SELECT COUNT(*) FROM ticketing_tickets ticket WHERE ticket.event_id=event.id AND ticket.status='USED')::text AS entered,

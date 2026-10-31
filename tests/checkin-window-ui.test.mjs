@@ -10,7 +10,7 @@ test("the staff Scanner menu opens the dynamic page that mounts the check-in con
     source("../components/StaffNavigation.tsx"),
     source("../components/CheckInScanner.tsx"),
   ]);
-  assert.match(navigation,/href:"\/checkin",label:"Scanner"/);
+  assert.match(navigation,/href:"\/checkin",label:"Check-in"/);
   assert.match(page,/dynamic="force-dynamic"/);
   assert.match(page,/<CheckInScanner\/>/);
   assert.match(scanner,/\/api\/ticketing\/staff\/checkin-window/);
