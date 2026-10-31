@@ -24,5 +24,5 @@ export const galaEventGalleryImages:GalaGalleryImage[]=[
   {id:"intervento",src:`${imageBase}/WhatsApp Image 2026-10-28 at 22.14.43.jpeg`,alt:"Intervento dal palco durante il NIS Gala Charity Night 2026",width:1512,height:1008,objectPosition:"center 34%"},
 ];
 
-const heroIds=new Set(["gruppo-palco","serata-ospiti","momento-istituzionale","intervista-nis","presentatori","intervento","rappresentanti","intervento-istituzionale","intervista-conclusiva"]);
-export const galaHeroImages=galaEventGalleryImages.filter(image=>heroIds.has(image.id));
+const heroImageIds=["gruppo-palco","serata-ospiti","momento-istituzionale","rappresentanti","presentatori"] as const;
+export const galaHeroImages=heroImageIds.map(id=>galaEventGalleryImages.find(image=>image.id===id)).filter((image):image is GalaGalleryImage=>Boolean(image));

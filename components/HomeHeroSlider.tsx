@@ -8,9 +8,8 @@ const AUTO_ROTATION_MS=6200;
 const SWIPE_THRESHOLD=44;
 const GALA_REEL_SRC="/videos/gala-2026/nis-gala-2026-reel.mp4";
 const heroSlides=[
-  ...galaHeroImages.slice(0,1).map(image=>({type:"image" as const,image,key:image.src})),
   {type:"video" as const,src:GALA_REEL_SRC,poster:galaHeroImages[0].src,key:GALA_REEL_SRC},
-  ...galaHeroImages.slice(1).map(image=>({type:"image" as const,image,key:image.src})),
+  ...galaHeroImages.map(image=>({type:"image" as const,image,key:image.src})),
 ];
 
 export default function HomeHeroSlider(){

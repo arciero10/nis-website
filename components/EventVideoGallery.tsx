@@ -12,13 +12,15 @@ type EventVideoGalleryProps={
 
 function LazyYoutubeEmbed({video}:{video:GalaYoutubeVideo}){
   const [playing,setPlaying]=useState(false);
+  const [descriptionExpanded,setDescriptionExpanded]=useState(false);
   const thumbnail=`https://i.ytimg.com/vi/${video.youtubeId}/hqdefault.jpg`;
+  const descriptionId=`gala-video-description-${video.youtubeId}`;
 
   return <article className="gala-youtube-card">
     <div className="gala-youtube-media">
       {playing?<iframe src={`https://www.youtube-nocookie.com/embed/${video.youtubeId}?autoplay=1`} title={video.title} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen/>:<button type="button" className="gala-youtube-play" onClick={()=>setPlaying(true)} style={{backgroundImage:`linear-gradient(rgba(3,19,39,.18),rgba(3,19,39,.42)),url(${thumbnail})`}} aria-label={`Riproduci ${video.title}`}><span aria-hidden="true">▶</span></button>}
     </div>
-    <div className="gala-youtube-copy"><span>{video.type==="official"?"VIDEO UFFICIALE":video.type.toUpperCase()}</span><h3>{video.title}</h3>{video.description&&<p>{video.description}</p>}</div>
+    <div className="gala-youtube-copy"><span>{video.type==="official"?"VIDEO UFFICIALE":video.type.toUpperCase()}</span><h3>{video.title}</h3>{video.description&&<><p id={descriptionId} className={`gala-youtube-description${descriptionExpanded?" is-expanded":""}`}>{video.description}</p><button type="button" className="gala-youtube-description-toggle" aria-expanded={descriptionExpanded} aria-controls={descriptionId} onClick={()=>setDescriptionExpanded(current=>!current)}>{descriptionExpanded?"Riduci":"Continua a leggere"}</button></>}</div>
   </article>;
 }
 
