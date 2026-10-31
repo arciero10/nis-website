@@ -3,8 +3,9 @@ import {notFound} from "next/navigation";
 import StaffNavigation from "@/components/StaffNavigation";
 import StaffPartnerDetail from "@/components/StaffPartnerDetail";
 import {ticketingRepository} from "@/lib/ticketing/repository";
+import {getStaffEventContext} from "@/lib/ticketing/staff-event-context";
 import {requireSuperadminSession} from "@/lib/ticketing/staff-page";
 
 export const dynamic="force-dynamic";
 
-export default async function StaffPartnerDetailPage({params}:{params:Promise<{id:string}>}){const session=await requireSuperadminSession();const {id}=await params;if(!/^[0-9a-f-]{36}$/i.test(id))notFound();const allocation=await ticketingRepository.getPartnerAllocation(id);if(!allocation)notFound();return <main className="nis-checkin-page nis-staff-page"><div className="staff-workspace"><StaffNavigation role={session.role}/><header className="staff-page-heading"><Link className="staff-back-link" href="/staff/partner">← Inviti aziendali</Link><span>NIS GALA CHARITY NIGHT</span><h1>{allocation.companyName}</h1><p>Gestione del blocco di inviti intestato alla società.</p></header><StaffPartnerDetail initialAllocation={allocation}/></div></main>;}
+export default async function StaffPartnerDetailPage({params}:{params:Promise<{id:string}>}){const session=await requireSuperadminSession();const {id}=await params;if(!/^[0-9a-f-]{36}$/i.test(id))notFound();const [allocation,event]=await Promise.all([ticketingRepository.getPartnerAllocation(id),getStaffEventContext(session)]);if(!allocation||allocation.eventId!==event.id)notFound();return <main className="nis-checkin-page nis-staff-page"><div className="staff-workspace"><StaffNavigation role={session.role}/><header className="staff-page-heading"><Link className="staff-back-link" href="/staff/partner">← Inviti aziendali</Link><span>{event.title}</span><h1>{allocation.companyName}</h1><p>Gestione del blocco di inviti intestato alla società.</p></header><StaffPartnerDetail initialAllocation={allocation}/></div></main>;}

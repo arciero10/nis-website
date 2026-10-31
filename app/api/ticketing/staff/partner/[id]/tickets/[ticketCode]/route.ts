@@ -1,11 +1,12 @@
 import {NextResponse} from "next/server";
 import {ticketingRepository} from "@/lib/ticketing/repository";
 import {getStaffSession} from "@/lib/ticketing/staff-auth";
+import {getStaffEventContext} from "@/lib/ticketing/staff-event-context";
 
 export const runtime="nodejs";
 
 export async function GET(request:Request,{params}:{params:Promise<{id:string;ticketCode:string}>}){
   const session=await getStaffSession(request);if(!session)return NextResponse.json({message:"Sessione staff non valida."},{status:401});if(session.role!=="SUPERADMIN")return NextResponse.json({message:"Operazione riservata al Superadmin."},{status:403});
   const {id,ticketCode}=await params;if(!/^[0-9a-f-]{36}$/i.test(id)||!/^[A-Za-z0-9-]{6,64}$/.test(ticketCode))return NextResponse.json({message:"Ticket non valido."},{status:400});
-  const qrToken=await ticketingRepository.findPartnerTicketQrToken(id,ticketCode);return qrToken?NextResponse.redirect(new URL(`/biglietto/${encodeURIComponent(qrToken)}`,request.url)):NextResponse.json({message:"Ticket non trovato."},{status:404});
+  const event=await getStaffEventContext(session);if(!await ticketingRepository.getPartnerAllocation(id,event.id))return NextResponse.json({message:"Ticket non trovato."},{status:404});const qrToken=await ticketingRepository.findPartnerTicketQrToken(id,ticketCode);return qrToken?NextResponse.redirect(new URL(`/biglietto/${encodeURIComponent(qrToken)}`,request.url)):NextResponse.json({message:"Ticket non trovato."},{status:404});
 }

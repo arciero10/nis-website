@@ -11,6 +11,7 @@ const operationalLinks=[
   {href:"/staff/ingressi",label:"Ingressi"},
 ];
 const administrativeLinks=[
+  {href:"/staff/eventi",label:"Eventi"},
   {href:"/staff/partner",label:"Aziende"},
   {href:"/staff/emissione",label:"Emissione"},
 ];

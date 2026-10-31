@@ -33,7 +33,7 @@ export default function GalaInvitationCheckout({event,paypalClientId,availableSe
         <div className="ticketing-form-panel">
           <p className="ticketing-section-label">PRENOTAZIONE NOMINATIVA</p>
           <h2 id="gala-checkout-title">{soldOut?"Posti esauriti":"I dati dei partecipanti"}</h2>
-          {soldOut?<div className="ticketing-sold-out" role="status"><strong>POSTI ESAURITI</strong><p>Non è più possibile acquistare ingressi per questo evento.</p></div>:<TicketPurchaseForm {...credential} paypalClientId={paypalClientId} unitPrice={event.price} maxQuantity={maxQuantity}/>}
+          {soldOut||event.price===null?<div className="ticketing-sold-out" role="status"><strong>{soldOut?"POSTI ESAURITI":"ACQUISTO NON DISPONIBILE"}</strong><p>Non è più possibile acquistare ingressi per questo evento.</p></div>:<TicketPurchaseForm {...credential} paypalClientId={paypalClientId} unitPrice={event.price} maxQuantity={maxQuantity}/>}
         </div>
         <aside className="ticketing-order-summary" aria-label="Riepilogo ordine">
           <span>RIEPILOGO</span>

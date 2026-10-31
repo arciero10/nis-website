@@ -20,16 +20,32 @@ export const nisGala2026:Event={
   slug:"nis-gala-2026",
   title:"NIS Gala Charity Night",
   description:"Evento charity della Nazionale Italiana Sanitari.",
+  longDescription:null,
   location:null,
+  address:null,
   eventDate:null,
+  endsAt:null,
   doorsOpenAt:null,
+  registrationOpensAt:null,
+  registrationClosesAt:null,
   checkinOpensAt:null,
   checkinClosesAt:null,
   price:200,
   currency:"EUR",
   capacity:null,
   status:"ANNOUNCED",
+  eventType:"CHARITY",
+  visibility:"PUBLIC",
+  isFree:false,
+  isCharity:true,
+  allowsCompanions:false,
+  maxCompanions:null,
+  coverImage:null,
+  organizationalNotes:null,
+  contactEmail:null,
+  publicUrl:"/eventi/nis-gala-2026",
   completedAt:null,
+  archivedAt:null,
   createdAt:"2026-10-08T00:00:00.000Z",
   updatedAt:"2026-10-08T00:00:00.000Z",
 };
@@ -41,5 +57,5 @@ export function getTicketingEventBySlug(slug:string){
 }
 
 export function formatEventPrice(event:Pick<Event,"price"|"currency">){
-  return new Intl.NumberFormat("it-IT",{style:"currency",currency:event.currency}).format(event.price);
+  return event.price===null?"Gratuito":new Intl.NumberFormat("it-IT",{style:"currency",currency:event.currency}).format(event.price);
 }

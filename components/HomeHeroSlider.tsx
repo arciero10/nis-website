@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import {useCallback,useEffect,useRef,useState,type FocusEvent,type KeyboardEvent,type TouchEvent} from "react";
 import {galaHeroImages} from "@/data/gala-gallery";
 
@@ -95,7 +96,7 @@ export default function HomeHeroSlider(){
     <div className="shell home-hero-slide-inner">
       <div className="home-hero-slide-copy">
         <h1>NIS Gala Charity Night 2026</h1>
-        <a href="/eventi/nis-gala-2026" className="btn home-hero-cta">RIVIVI LA SERATA</a>
+        <Link href="/eventi/nis-gala-2026" className="btn home-hero-cta">RIVIVI LA SERATA</Link>
       </div>
     </div>
     <button className="home-hero-arrow is-previous" type="button" onClick={showPrevious} aria-label="Immagine precedente"><span aria-hidden="true">←</span></button>

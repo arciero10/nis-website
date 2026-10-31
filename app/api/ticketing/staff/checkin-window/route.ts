@@ -1,6 +1,7 @@
 import {NextResponse} from "next/server";
 import {getCheckInOperationalStatus,setCheckInManualOverride} from "@/lib/ticketing/checkin-window";
 import {getStaffSession} from "@/lib/ticketing/staff-auth";
+import {getStaffEventContext} from "@/lib/ticketing/staff-event-context";
 
 export const runtime="nodejs";
 
@@ -8,7 +9,7 @@ export async function GET(request:Request){
   const session=await getStaffSession(request);
   if(!session)return NextResponse.json({message:"Sessione staff non valida."},{status:401});
   try{
-    const window=await getCheckInOperationalStatus();
+    const event=await getStaffEventContext(session);const window=await getCheckInOperationalStatus(event.slug);
     if(!window)return NextResponse.json({message:"Evento non trovato."},{status:404});
     const visibleWindow=session.role==="SUPERADMIN"?window:{...window,changedBy:null,changedAt:null};
     return NextResponse.json({window:visibleWindow,role:session.role},{headers:{"Cache-Control":"private, no-store"}});
@@ -25,7 +26,7 @@ export async function POST(request:Request){
   const payload=await request.json().catch(()=>({})) as {action?:unknown};
   if(payload.action!=="OPEN"&&payload.action!=="CLOSE")return NextResponse.json({message:"Azione non valida."},{status:400});
   try{
-    const window=await setCheckInManualOverride(payload.action,session);
+    const event=await getStaffEventContext(session);const window=await setCheckInManualOverride(payload.action,session,event.slug);
     return NextResponse.json({window},{headers:{"Cache-Control":"private, no-store"}});
   }catch(error){
     if(error instanceof Error&&error.message==="EVENT_COMPLETED")return NextResponse.json({message:"L'evento è concluso e il check-in non può essere riaperto."},{status:409});

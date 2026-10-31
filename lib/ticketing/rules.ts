@@ -28,8 +28,8 @@ export function validTicketQuantity(quantity:number){
   return Number.isInteger(quantity)&&quantity>=MIN_TICKETS_PER_ORDER&&quantity<=MAX_TICKETS_PER_ORDER;
 }
 
-export function orderAmountForQuantity(unitPrice:number,quantity:number){
-  if(!validTicketQuantity(quantity)) return null;
+export function orderAmountForQuantity(unitPrice:number|null,quantity:number){
+  if(unitPrice===null||!Number.isFinite(unitPrice)||!validTicketQuantity(quantity)) return null;
   return Number((unitPrice*quantity).toFixed(2));
 }
 
@@ -43,15 +43,18 @@ export function invitationUsesAfterOrder(currentUses:number){
 }
 
 export function checkInEligibility(input:{ticketStatus:string;firstCheckInAt:string|null;paymentStatus:string;eventStatus:string}){
-  if(input.eventStatus==="COMPLETED")return "EVENT_CLOSED" as const;
+  if(["CLOSED","COMPLETED","ARCHIVED"].includes(input.eventStatus))return "EVENT_CLOSED" as const;
   if(input.paymentStatus!=="PAID"||input.eventStatus==="CANCELLED"||input.ticketStatus==="CANCELLED"||input.ticketStatus==="REFUNDED")return "INVALID" as const;
   if(input.ticketStatus==="USED"||input.firstCheckInAt)return "ALREADY_USED" as const;
   return "AUTHORIZED" as const;
 }
 
 export function eventAcceptsNewActivity(status:string){
-  return status!=="CANCELLED"&&status!=="COMPLETED";
+  return status==="OPEN"||status==="PUBLISHED"||status==="ANNOUNCED"||status==="SOLD_OUT";
 }
+
+export function eventIsReadOnly(status:string){return status==="COMPLETED"||status==="ARCHIVED"||status==="CANCELLED";}
+export function eventIsPublic(status:string,visibility:string){return visibility==="PUBLIC"&&status!=="DRAFT"&&status!=="CANCELLED";}
 
 export function invitationBlockReason(invitation:InvitationRuleInput,now=new Date()){
   if(invitation.status!=="ACTIVE") return invitation.status==="EXPIRED"?"EXPIRED":"DISABLED";

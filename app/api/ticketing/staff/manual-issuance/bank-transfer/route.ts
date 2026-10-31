@@ -3,6 +3,7 @@ import {parseBankTransferInput,validIdempotencyKey} from "@/lib/ticketing/manual
 import {createManualIssuance,findManualIssuanceByIdempotencyKey} from "@/lib/ticketing/manual-repository";
 import {getStaffSession} from "@/lib/ticketing/staff-auth";
 import {deliverTicketEmail} from "@/lib/ticketing/ticket-email";
+import {getStaffEventContext} from "@/lib/ticketing/staff-event-context";
 
 export const runtime="nodejs";
 
@@ -13,7 +14,7 @@ export async function POST(request:Request){
   try{
     const existing=await findManualIssuanceByIdempotencyKey(idempotencyKey);if(existing){await Promise.all(existing.emailPayloads.map(payload=>deliverTicketEmail(payload)));return NextResponse.json({issuanceId:existing.issuanceId,source:existing.source,created:false,tickets:existing.tickets.map(({ticketCode})=>({ticketCode}))});}
     const data=await request.formData();const input=parseBankTransferInput(data);if(!input)return NextResponse.json({message:"Controlla i campi obbligatori e i valori inseriti."},{status:400});
-    const result=await createManualIssuance("nis-gala-2026",idempotencyKey,input,session);
+    const event=await getStaffEventContext(session);const result=await createManualIssuance(event.slug,idempotencyKey,input,session);
     await Promise.all(result.emailPayloads.map(payload=>deliverTicketEmail(payload)));
     return NextResponse.json({issuanceId:result.issuanceId,source:result.source,created:result.created,tickets:result.tickets.map(({ticketCode})=>({ticketCode}))},{status:result.created?201:200});
   }catch(error){

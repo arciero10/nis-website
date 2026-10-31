@@ -1,6 +1,7 @@
 import {NextResponse} from "next/server";
 import {getStaffSession} from "@/lib/ticketing/staff-auth";
 import {ticketingRepository} from "@/lib/ticketing/repository";
+import {getStaffEventContext} from "@/lib/ticketing/staff-event-context";
 
 export const runtime="nodejs";
 
@@ -11,12 +12,12 @@ export async function POST(request:Request){
   try{
     const ticketCode=await inputFrom(request);
     if(!ticketCode||ticketCode.length>64||!/^[A-Za-z0-9-]+$/.test(ticketCode))return NextResponse.json({status:"INVALID"});
-    return NextResponse.json(await ticketingRepository.inspectByTicketCode(ticketCode));
+    const event=await getStaffEventContext(session);return NextResponse.json(await ticketingRepository.inspectByTicketCode(ticketCode,event.id));
   }catch(error){console.error("Manual ticket lookup failed",error instanceof Error?error.message:"unknown");return NextResponse.json({message:"Verifica ingresso non disponibile."},{status:500});}
 }
 
 export async function PATCH(request:Request){
   const session=await getStaffSession(request);if(!session)return NextResponse.json({message:"Sessione staff non valida."},{status:401});
-  try{const ticketCode=await inputFrom(request);if(!ticketCode||ticketCode.length>64||!/^[A-Za-z0-9-]+$/.test(ticketCode))return NextResponse.json({status:"INVALID"});return NextResponse.json(await ticketingRepository.checkInByTicketCode(ticketCode,session));}
+  try{const ticketCode=await inputFrom(request);if(!ticketCode||ticketCode.length>64||!/^[A-Za-z0-9-]+$/.test(ticketCode))return NextResponse.json({status:"INVALID"});const event=await getStaffEventContext(session);return NextResponse.json(await ticketingRepository.checkInByTicketCode(ticketCode,session,event.id));}
   catch(error){console.error("Manual ticket check-in failed",error instanceof Error?error.message:"unknown");return NextResponse.json({message:"Registrazione ingresso non disponibile."},{status:500});}
 }

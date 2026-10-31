@@ -2,6 +2,7 @@ import {NextResponse} from "next/server";
 import {validReverseReason} from "@/lib/ticketing/checkin-rules";
 import {ticketingRepository} from "@/lib/ticketing/repository";
 import {getStaffSession} from "@/lib/ticketing/staff-auth";
+import {getStaffEventContext} from "@/lib/ticketing/staff-event-context";
 
 export const runtime="nodejs";
 
@@ -18,7 +19,7 @@ export async function POST(request:Request){
     if(result==="ALREADY_REVERSED")return NextResponse.json({message:"Check-in già annullato."},{status:409});
     if(result==="TICKET_NOT_REVERSIBLE")return NextResponse.json({message:"Il ticket associato non può essere riattivato nel suo stato attuale."},{status:409});
     let dashboard;
-    try{dashboard=await ticketingRepository.getStaffIngressDashboard("nis-gala-2026");}
+    try{const event=await getStaffEventContext(session);dashboard=await ticketingRepository.getStaffIngressDashboard(event.slug);}
     catch(error){console.error("Check-in reversal dashboard refresh failed",error instanceof Error?error.message:"unknown");}
     return NextResponse.json({message:"Check-in annullato. Il ticket è nuovamente valido.",dashboard});
   }catch(error){console.error("Check-in reversal failed",error instanceof Error?error.message:"unknown");return NextResponse.json({message:"Annullamento check-in non disponibile."},{status:500});}

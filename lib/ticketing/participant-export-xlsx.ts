@@ -14,7 +14,7 @@ export function buildParticipantWorkbookParts(data:ParticipantExportDataset){
   const cancelled:Cell[][]=[header(["Nominativo","Codice biglietto","Tipologia","Azienda/Ente","Stato"])];
   for(const row of data.cancelledRows)cancelled.push([{value:`${row.lastName} ${row.firstName}`},{value:row.ticketCode},{value:typeLabel(row.invitationType)},{value:row.organization??""},{value:row.ticketStatus==="REFUNDED"?"RIMBORSATO":"ANNULLATO"}]);
   const summary:Cell[][]=[
-    [{value:"Riepilogo NIS Gala 2026",style:1}],
+    [{value:`Riepilogo ${data.event?.title??"evento NIS"}`,style:1}],
     [{value:"Generato il"},{value:date(data.generatedAt)}],
     [{value:"Stato evento"},{value:data.event?.status==="COMPLETED"?"EVENTO CONCLUSO":data.event?.status??"N/D"}],
     [{value:"Concluso il"},{value:data.event?.completedAt?date(data.event.completedAt):"-"}],

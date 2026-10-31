@@ -2,6 +2,7 @@ import {NextResponse} from "next/server";
 import {getStaffSession} from "@/lib/ticketing/staff-auth";
 import {ticketingRepository} from "@/lib/ticketing/repository";
 import {INVITATION_TYPES,type StaffInvitationTypeFilter,type TicketIssuanceSource} from "@/types/ticketing";
+import {getStaffEventContext} from "@/lib/ticketing/staff-event-context";
 
 export const runtime="nodejs";
 
@@ -14,7 +15,7 @@ export async function GET(request:Request){
   if(!["ALL","PAYPAL","PAYPAL_CHARITY","CASH","BANK_TRANSFER","COMPANY","ADMIN"].includes(rawSource))return NextResponse.json({message:"Origine non valida."},{status:400});
   if(!["ALL","OMAGGIO"].includes(rawType)&&!INVITATION_TYPES.includes(rawType as (typeof INVITATION_TYPES)[number]))return NextResponse.json({message:"Tipo invito non valido."},{status:400});
   try{
-    const dashboard=await ticketingRepository.getStaffParticipants("nis-gala-2026",search,rawFilter as "ALL"|"PENDING"|"ENTERED"|"CANCELLED",session.role==="SUPERADMIN"?rawSource as "ALL"|TicketIssuanceSource:"ALL",session.role==="SUPERADMIN"?rawType as StaffInvitationTypeFilter:"ALL");
+    const event=await getStaffEventContext(session);const dashboard=await ticketingRepository.getStaffParticipants(event.slug,search,rawFilter as "ALL"|"PENDING"|"ENTERED"|"CANCELLED",session.role==="SUPERADMIN"?rawSource as "ALL"|TicketIssuanceSource:"ALL",session.role==="SUPERADMIN"?rawType as StaffInvitationTypeFilter:"ALL");
     if(session.role==="SUPERADMIN")return NextResponse.json(dashboard);
     return NextResponse.json({participants:dashboard.participants,entered:dashboard.entered,pending:dashboard.pending,cancelled:dashboard.cancelled,results:dashboard.results.map(person=>({ticketCode:person.ticketCode,firstName:person.firstName,lastName:person.lastName,status:person.status,companyName:person.companyName,source:person.companyName?"COMPANY":"PAYPAL"}))});
   }

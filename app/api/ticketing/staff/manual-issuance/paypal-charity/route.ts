@@ -3,6 +3,7 @@ import {parsePayPalCharityInput,validIdempotencyKey} from "@/lib/ticketing/manua
 import {createManualIssuance,findManualIssuanceByIdempotencyKey} from "@/lib/ticketing/manual-repository";
 import {getStaffSession} from "@/lib/ticketing/staff-auth";
 import {deliverTicketEmail} from "@/lib/ticketing/ticket-email";
+import {getStaffEventContext} from "@/lib/ticketing/staff-event-context";
 
 export const runtime="nodejs";
 
@@ -13,7 +14,7 @@ export async function POST(request:Request){
   try{
     const existing=await findManualIssuanceByIdempotencyKey(idempotencyKey);if(existing){await Promise.all(existing.emailPayloads.map(payload=>deliverTicketEmail(payload)));return NextResponse.json({issuanceId:existing.issuanceId,source:existing.source,created:false,tickets:existing.tickets.map(({ticketCode})=>({ticketCode}))});}
     const input=parsePayPalCharityInput(await request.formData());if(!input)return NextResponse.json({message:"Controlla nome, cognome, email, importo e data della donazione."},{status:400});
-    const result=await createManualIssuance("nis-gala-2026",idempotencyKey,input,session);await Promise.all(result.emailPayloads.map(payload=>deliverTicketEmail(payload)));
+    const event=await getStaffEventContext(session);const result=await createManualIssuance(event.slug,idempotencyKey,input,session);await Promise.all(result.emailPayloads.map(payload=>deliverTicketEmail(payload)));
     return NextResponse.json({issuanceId:result.issuanceId,source:result.source,created:result.created,tickets:result.tickets.map(({ticketCode})=>({ticketCode}))},{status:result.created?201:200});
   }catch(error){const message=error instanceof Error?error.message:"Emissione non riuscita.";console.error("Manual PayPal Charity ticket issuance failed",message);const conflict=/già utilizzato|biglietto attivo|Posti insufficienti/.test(message);return NextResponse.json({message:conflict?message:"Non è stato possibile emettere il biglietto. Riprova senza ripetere l'invio."},{status:conflict?409:500});}
 }

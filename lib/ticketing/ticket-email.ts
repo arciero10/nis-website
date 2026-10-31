@@ -13,7 +13,8 @@ export async function deliverTicketEmail(payload:TicketEmailPayload,force=false)
 }
 
 export async function deliverConfirmationTicketEmails(confirmation:TicketConfirmation){
-  return Promise.all(confirmation.tickets.map((ticket,index)=>{const attendee=confirmation.attendees[index];return deliverTicketEmail({ticketId:ticket.id,firstName:attendee.firstName,lastName:attendee.lastName,email:attendee.email,ticketCode:ticket.ticketCode,qrToken:ticket.qrToken,category:ticket.category,amount:confirmation.event.price,currency:confirmation.event.currency,source:"STANDARD",companyName:null,allocationType:null,issuanceSource:"PAYPAL",invitationType:"STANDARD"});}));
+  const eventContext={eventSlug:confirmation.event.slug,eventTitle:confirmation.event.title,eventDate:confirmation.event.eventDate,eventLocation:confirmation.event.location,eventAddress:confirmation.event.address,eventCoverImage:confirmation.event.coverImage,eventContactEmail:confirmation.event.contactEmail};
+  return Promise.all(confirmation.tickets.map((ticket,index)=>{const attendee=confirmation.attendees[index];return deliverTicketEmail({...eventContext,ticketId:ticket.id,firstName:attendee.firstName,lastName:attendee.lastName,email:attendee.email,ticketCode:ticket.ticketCode,qrToken:ticket.qrToken,category:ticket.category,amount:confirmation.event.price,currency:confirmation.event.currency,source:"STANDARD",companyName:null,allocationType:null,issuanceSource:"PAYPAL",invitationType:"STANDARD"});}));
 }
 
 export async function resendTicketEmail(ticketCode:string){const payload=await ticketingRepository.findTicketEmailPayload(ticketCode);if(!payload)return {status:"NOT_FOUND" as const};return deliverTicketEmail(payload,true);}
@@ -24,7 +25,7 @@ export async function deliverPartnerAllocationEmail(allocationId:string,force=fa
   catch{console.error("Partner invitation email claim failed");return {status:"FAILED" as const};}
   try{
     const tickets=payload.tickets.map(ticket=>({...ticket,walletLinks:walletLinksForToken(ticket.qrToken)}));const provider=getEmailProvider();
-    const content=buildPartnerInvitationEmailContent({companyName:payload.companyName,allocationType:payload.allocationType,packageName:payload.packageName,tickets});
+    const content=buildPartnerInvitationEmailContent({...payload,tickets});
     await provider.send({to:payload.contactEmail,replyTo:GALA_REPLY_TO,subject:content.subject,text:content.text,html:content.html});
     await ticketingRepository.markPartnerAllocationEmailSent(allocationId);return {status:"SENT" as const};
   }

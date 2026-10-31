@@ -1,9 +1,16 @@
 export type IsoDateTime=string;
 
-export const EVENT_STATUSES=["DRAFT","ANNOUNCED","PUBLISHED","SOLD_OUT","CANCELLED","COMPLETED"] as const;
+export const EVENT_STATUSES=["DRAFT","PUBLISHED","OPEN","CLOSED","COMPLETED","ARCHIVED","CANCELLED","ANNOUNCED","SOLD_OUT"] as const;
 export type EventStatus=(typeof EVENT_STATUSES)[number];
 
-export const PAYMENT_STATUSES=["PENDING","PAID","FAILED","REFUNDED","CANCELLED"] as const;
+export const EVENT_TYPES=["CHARITY","INTERNAL","PUBLIC","PRIVATE","CORPORATE","OTHER"] as const;
+export type EventType=(typeof EVENT_TYPES)[number];
+export const EVENT_VISIBILITIES=["PUBLIC","PRIVATE","INTERNAL"] as const;
+export type EventVisibility=(typeof EVENT_VISIBILITIES)[number];
+export const RSVP_STATUSES=["CONFIRMED","DECLINED","WAITLIST","PENDING"] as const;
+export type RsvpStatus=(typeof RSVP_STATUSES)[number];
+
+export const PAYMENT_STATUSES=["NOT_REQUIRED","PENDING","PAID","FAILED","REFUNDED","PENDING_BANK_TRANSFER","PENDING_CASH","CANCELLED"] as const;
 export type PaymentStatus=(typeof PAYMENT_STATUSES)[number];
 
 export const TICKET_CATEGORIES=["STANDARD","VIP","PARTNER","SPONSOR","STAFF","ARTIST","PRESS","COMPLIMENTARY"] as const;
@@ -49,16 +56,67 @@ export interface Event{
   slug:string;
   title:string;
   description:string;
+  longDescription:string|null;
   location:string|null;
+  address:string|null;
   eventDate:IsoDateTime|null;
+  endsAt:IsoDateTime|null;
   doorsOpenAt:IsoDateTime|null;
+  registrationOpensAt:IsoDateTime|null;
+  registrationClosesAt:IsoDateTime|null;
   checkinOpensAt:IsoDateTime|null;
   checkinClosesAt:IsoDateTime|null;
-  price:number;
-  currency:"EUR";
+  price:number|null;
+  currency:string;
   capacity:number|null;
   status:EventStatus;
+  eventType:EventType;
+  visibility:EventVisibility;
+  isFree:boolean;
+  isCharity:boolean;
+  allowsCompanions:boolean;
+  maxCompanions:number|null;
+  coverImage:string|null;
+  organizationalNotes:string|null;
+  contactEmail:string|null;
+  publicUrl:string|null;
   completedAt:IsoDateTime|null;
+  archivedAt:IsoDateTime|null;
+  createdAt:IsoDateTime;
+  updatedAt:IsoDateTime;
+}
+
+export interface EventTicketType{
+  id:string;
+  eventId:string;
+  code:string;
+  label:string;
+  price:number|null;
+  currency:string;
+  isFree:boolean;
+  maxQuantity:number|null;
+  isPublic:boolean;
+  isActive:boolean;
+  displayOrder:number;
+  notes:string|null;
+}
+
+export interface EventRegistration{
+  id:string;
+  eventId:string;
+  attendeeId:string|null;
+  ticketId:string|null;
+  ticketTypeId:string|null;
+  primaryRegistrationId:string|null;
+  participantRole:"PRIMARY"|"COMPANION"|"GUEST"|"COMPANY"|"STAFF";
+  firstName:string;
+  lastName:string;
+  email:string|null;
+  phone:string|null;
+  company:string|null;
+  rsvpStatus:RsvpStatus;
+  paymentStatus:PaymentStatus;
+  notes:string|null;
   createdAt:IsoDateTime;
   updatedAt:IsoDateTime;
 }

@@ -35,7 +35,8 @@ const money = (value: number | null) =>
 
 export async function buildParticipantPdf(data: ParticipantExportDataset) {
   const doc = await PDFDocument.create();
-  doc.setTitle("Gala 2026 - Elenco partecipanti");
+  const reportTitle = data.event?.title ?? "Evento NIS";
+  doc.setTitle(`${reportTitle} - Elenco partecipanti`);
   const regular = await doc.embedFont(StandardFonts.Helvetica);
   const bold = await doc.embedFont(StandardFonts.HelveticaBold);
   const size: [number, number] = [841.89, 595.28];
@@ -272,7 +273,7 @@ export async function buildParticipantPdf(data: ParticipantExportDataset) {
       font: bold,
       color: gold,
     });
-    page.drawText("Gala 2026 - Elenco partecipanti", {
+    page.drawText(`${reportTitle} - Elenco partecipanti`, {
       x: first ? 105 : 82,
       y: size[1] - (first ? 58 : 41),
       size: first ? 18 : 13,
@@ -422,7 +423,7 @@ export async function buildParticipantPdf(data: ParticipantExportDataset) {
 
   const pages = doc.getPages();
   pages.forEach((item, index) => {
-    item.drawText("NIS Gala 2026 - Report operativo partecipanti", {
+    item.drawText(`${reportTitle} - Report operativo partecipanti`, {
       x: 36,
       y: 24,
       size: 6.5,
