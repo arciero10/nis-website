@@ -1,4 +1,13 @@
 export const legacyRedirects:Readonly<Record<string,string>>={
+  "/&":"/",
+  "/$":"/",
+  "/-Home":"/",
+  "/5x1000-5x1000":"/5x1000",
+  "/organigramma-Organigramma":"/organigramma",
+  "/settori-Settori":"/settori",
+  "/eventi-Eventi":"/eventi",
+  "/news-News":"/news",
+  "/contatti-Contatti":"/contatti",
   "/be-nis-be-nice":"/diventa-socio",
   "/la-nazionale":"/chi-siamo",
   "/missione":"/chi-siamo",
