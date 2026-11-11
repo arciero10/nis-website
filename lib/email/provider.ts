@@ -4,6 +4,7 @@ export type EmailMessage={
   text:string;
   html:string;
   replyTo?:string;
+  fromName?:string;
 };
 
 export interface EmailProvider{
@@ -91,7 +92,7 @@ export class MicrosoftGraphEmailProvider implements EmailProvider{
       subject:message.subject,
       body:{contentType:"HTML",content:message.html},
       toRecipients:[{emailAddress:{address:message.to}}],
-      from:{emailAddress:{name:"Biglietti NIS",address:settings.sender}},
+      from:{emailAddress:{name:message.fromName||"Biglietti NIS",address:settings.sender}},
       ...(message.replyTo?{replyTo:[{emailAddress:{address:message.replyTo}}]}:{}),
     };
 

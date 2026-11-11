@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import type {Metadata} from "next";
 import MetricStrip from "@/components/MetricStrip";
 import ProjectFeature from "@/components/ProjectFeature";
@@ -33,6 +34,8 @@ export default function Home(){return <>
     <div className="section-head home-flow-heading"><div><div className="eyebrow">SETTORI</div><h2>Diversi sport. Un unico obiettivo.</h2></div><Link href="/settori" className="section-link">Tutti i settori <span aria-hidden="true">→</span></Link></div>
     <SectorGrid/>
   </div></section>
+
+  <section className="home-nissettone"><div className="shell home-nissettone-inner"><div className="home-nissettone-media"><Image src="/images/nissettone/nissettone-3.jpeg" fill sizes="(max-width: 760px) 100vw, 48vw" alt="NISSETTONE 2026"/></div><div><span>BE NIS. BE NICE.</span><h2>Il panettone che ti cura.</h2><p>Scopri il NISSETTONE 2026, l&apos;iniziativa natalizia solidale della Nazionale Italiana Sanitari.</p><Link href="/nissettone" className="btn btn-blue">SCOPRI IL NISSETTONE</Link></div></div></section>
 
   <section className="home-closing"><div className="shell home-closing-inner">
     <div className="home-closing-copy"><div className="eyebrow white">BE NIS. BE NICE.</div><h2>Entra nella Community. Sostieni il cambiamento.</h2><p>Professionisti, sportivi, famiglie e sostenitori: insieme possiamo trasformare partecipazione e solidarietà in progetti concreti per la salute.</p></div>

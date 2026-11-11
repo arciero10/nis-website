@@ -51,8 +51,8 @@ export function completedCapture(body:Record<string,unknown>,expectedAmount:stri
   return parsed;
 }
 
-export async function verifyPayPalWebhook(headers:Headers,event:unknown){
-  const webhookId=process.env.PAYPAL_WEBHOOK_ID?.trim();if(!webhookId) throw new Error("PAYPAL_WEBHOOK_ID non configurato.");
+export async function verifyPayPalWebhook(headers:Headers,event:unknown,configuredWebhookId?:string){
+  const webhookId=configuredWebhookId?.trim()||process.env.PAYPAL_WEBHOOK_ID?.trim();if(!webhookId) throw new Error("PAYPAL_WEBHOOK_ID non configurato.");
   const body=await paypalJson("/v1/notifications/verify-webhook-signature",{method:"POST",body:JSON.stringify({auth_algo:headers.get("paypal-auth-algo"),cert_url:headers.get("paypal-cert-url"),transmission_id:headers.get("paypal-transmission-id"),transmission_sig:headers.get("paypal-transmission-sig"),transmission_time:headers.get("paypal-transmission-time"),webhook_id:webhookId,webhook_event:event})});
   return body.verification_status==="SUCCESS";
 }

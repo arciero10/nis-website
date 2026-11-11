@@ -9,6 +9,7 @@ import type {StaffRole} from "@/lib/ticketing/checkin-rules";
 const superadminLinks=[
   {href:"/staff",label:"Dashboard"},
   {href:"/staff/eventi",label:"Eventi"},
+  {href:"/staff/nissettone",label:"Ordini NISSETTONE"},
   {href:"/staff/partecipanti",label:"Partecipanti"},
   {href:"/staff/emissione",label:"Biglietti"},
   {href:"/checkin",label:"Check-in"},

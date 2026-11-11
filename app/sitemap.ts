@@ -11,6 +11,7 @@ export default async function sitemap():Promise<MetadataRoute.Sitemap>{
     {path:"/chi-siamo",changeFrequency:"monthly",priority:.9},
     {path:"/organigramma",changeFrequency:"monthly",priority:.7},
     {path:"/progetti",changeFrequency:"monthly",priority:.9},
+    {path:"/nissettone",changeFrequency:"weekly",priority:.9},
     {path:"/progetti/il-1-battito",changeFrequency:"monthly",priority:.8},
     {path:"/progetti/prevenzione",changeFrequency:"monthly",priority:.7},
     {path:"/progetti/spirito-nis",changeFrequency:"monthly",priority:.7},

@@ -15,6 +15,7 @@ export const nav = [
   {label:"Chi siamo",href:"/chi-siamo"},
   {label:"Organigramma",href:"/organigramma"},
   {label:"Progetti",href:"/progetti"},
+  {label:"NISSETTONE",href:"/nissettone"},
   {label:"Settori",href:"/settori"},
   {label:"Eventi",href:"/eventi"},
   {label:"News",href:"/news"},
