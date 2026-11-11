@@ -66,10 +66,22 @@ test("inventory reservations and payment finalization are transactional and idem
 
 test("refunds restore inventory and duplicate webhooks cannot be processed twice",async()=>{
   const repository=await source("../lib/nissettone/repository.ts");
+  assert.equal(rules.nissettonePaymentDispositionForEvent("PAYMENT.CAPTURE.REFUNDED"),"REFUNDED");
+  assert.equal(rules.nissettonePaymentDispositionForEvent("PAYMENT.CAPTURE.REVERSED"),"REFUNDED");
+  assert.equal(rules.nissettonePaymentDispositionForEvent("PAYMENT.CAPTURE.DENIED"),"FAILED");
   assert.match(repository,/status==="REFUNDED"&&order\.payment_status==="PAID"/);
   assert.match(repository,/stock_committed=GREATEST\(0,stock_committed-\$2\)/);
   assert.match(repository,/movement_type,quantity,reason\) VALUES\(\$1,\$2,'REFUND'/);
   assert.match(repository,/nissettone_paypal_events\(event_id,event_type,order_id\)/);
+});
+
+test("REFUNDED and REVERSED share one idempotent inventory release path",async()=>{
+  const [webhook,repository]=await Promise.all([source("../app/api/nissettone/paypal/webhook/route.ts"),source("../lib/nissettone/repository.ts")]);
+  assert.match(webhook,/nissettonePaymentDispositionForEvent\(type\)/);
+  assert.match(webhook,/disposition==="REFUNDED"/);
+  assert.match(repository,/if\(status==="REFUNDED"&&order\.payment_status==="PAID"\)/);
+  assert.match(repository,/WHERE id=\$1 AND payment_status<>\$2/);
+  assert.match(repository,/ON CONFLICT DO NOTHING/);
 });
 
 test("webhook is signed with a dedicated id and checkout never uses PayPal Charity",async()=>{

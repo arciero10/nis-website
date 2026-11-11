@@ -14,3 +14,9 @@ export function isDeclaredRomeMunicipality(value:string){return value.trim().toL
 export function addressVerificationFor(method:NissettoneDeliveryMethod){return method==="PICKUP"?"NOT_REQUIRED" as const:"PENDING" as const;}
 export function checkoutConfigured(environment:NodeJS.ProcessEnv=process.env){return environment.NISSETTONE_PAYPAL_ENABLED==="true"&&Boolean(environment.PAYPAL_CLIENT_ID?.trim()&&environment.PAYPAL_CLIENT_SECRET?.trim()&&environment.NISSETTONE_PAYPAL_WEBHOOK_ID?.trim()&&(environment.PAYPAL_ENV==="sandbox"||environment.PAYPAL_ENV==="live"));}
 export function availableStock(stockTotal:number,stockCommitted:number,reserved:number){return Math.max(0,stockTotal-stockCommitted-reserved);}
+export function nissettonePaymentDispositionForEvent(eventType:string){
+  if(eventType==="PAYMENT.CAPTURE.REFUNDED"||eventType==="PAYMENT.CAPTURE.REVERSED")return "REFUNDED" as const;
+  if(eventType==="PAYMENT.CAPTURE.DENIED")return "FAILED" as const;
+  if(eventType==="CHECKOUT.ORDER.CANCELLED")return "CANCELLED" as const;
+  return null;
+}
