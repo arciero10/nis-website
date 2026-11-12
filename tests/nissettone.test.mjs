@@ -7,11 +7,16 @@ const source=path=>readFile(new URL(path,import.meta.url),"utf8");
 const rulesSource=await source("../lib/nissettone/rules.ts");
 const rulesCompiled=ts.transpileModule(rulesSource,{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText;
 const rules=await import(`data:text/javascript;base64,${Buffer.from(rulesCompiled).toString("base64")}`);
+const validationSource=(await source("../lib/nissettone/validation.ts")).replace(/^import .*;\r?\n/gm,"");
+const nameSource=await source("../lib/ticketing/name-format.ts");
+const validationCompiled=ts.transpileModule(`${nameSource}\nconst NISSETTONE_MAX_QUANTITY=250;\nconst isDeclaredRomeMunicipality=value=>value.trim().toLocaleLowerCase("it-IT")==="roma";\nconst addressVerificationFor=method=>method==="PICKUP"?"NOT_REQUIRED":"PENDING";\n${validationSource}`,{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText;
+const validationRules=await import(`data:text/javascript;base64,${Buffer.from(validationCompiled).toString("base64")}`);
+const baseOrder={requestId:"11111111-1111-4111-8111-111111111111",quantity:1,firstName:"mARIA",lastName:"dE lUCA",email:"cliente@example.com",phone:"3331234567",deliveryMethod:"PICKUP",privacyAccepted:true,termsAccepted:true};
 
-test("NISSETTONE costs 50 EUR per item and never trusts a client total",()=>{
-  assert.equal(rules.NISSETTONE_UNIT_PRICE_CENTS,5000);
-  assert.equal(rules.nissettoneTotalCents(1),5000);
-  assert.equal(rules.nissettoneTotalCents(3),15000);
+test("NISSETTONE costs 55 EUR per item and never trusts a client total",()=>{
+  assert.equal(rules.NISSETTONE_UNIT_PRICE_CENTS,5500);
+  assert.equal(rules.nissettoneTotalCents(1),5500);
+  assert.equal(rules.nissettoneTotalCents(3),16500);
   assert.throws(()=>rules.nissettoneTotalCents(0));
 });
 
@@ -41,13 +46,63 @@ test("commercial PayPal checkout is fail-closed until credentials and its dedica
 });
 
 test("migration is additive, isolated from Gala and seeds a disabled 250 item product",async()=>{
-  const migration=await source("../migrations/028_nissettone_2026.sql");
-  assert.match(migration,/CREATE TABLE IF NOT EXISTS nissettone_products/);
-  assert.match(migration,/CREATE TABLE IF NOT EXISTS nissettone_orders/);
-  assert.match(migration,/stock_total INTEGER NOT NULL/);
-  assert.match(migration,/quantity BETWEEN 1 AND 250/);
-  assert.match(migration,/VALUES\('nissettone-2026','NISSETTONE 2026',5000,'EUR',250,'DRAFT'/);
-  assert.doesNotMatch(migration,/DROP\s|TRUNCATE\s|ALTER TABLE ticketing_|UPDATE ticketing_|DELETE FROM ticketing_/i);
+  const [base,fiscal]=await Promise.all([source("../migrations/028_nissettone_2026.sql"),source("../migrations/029_nissettone_buyer_fiscal_data.sql")]);
+  assert.match(base,/CREATE TABLE IF NOT EXISTS nissettone_products/);
+  assert.match(base,/CREATE TABLE IF NOT EXISTS nissettone_orders/);
+  assert.match(base,/stock_total INTEGER NOT NULL/);
+  assert.match(base,/quantity BETWEEN 1 AND 250/);
+  assert.match(base,/VALUES\('nissettone-2026','NISSETTONE 2026',5000,'EUR',250,'DRAFT'/);
+  assert.match(fiscal,/ADD COLUMN IF NOT EXISTS buyer_type/);
+  assert.match(fiscal,/ADD COLUMN IF NOT EXISTS document_status/);
+  assert.match(fiscal,/SET unit_price_cents=5500/);
+  assert.match(fiscal,/status='DRAFT'/);
+  assert.match(fiscal,/NOT EXISTS \(\s*SELECT 1 FROM nissettone_orders/);
+  assert.doesNotMatch(`${base}\n${fiscal}`,/DROP\s|TRUNCATE\s|ALTER TABLE ticketing_|UPDATE ticketing_|DELETE FROM ticketing_/i);
+});
+
+test("buyer and fiscal data are validated server-side without mixing delivery address",async()=>{
+  const validation=await source("../lib/nissettone/validation.ts");
+  assert.match(validation,/buyerType==="ORGANIZATION"/);
+  assert.match(validation,/!legalName\|\|!fiscalCode/);
+  assert.match(validation,/buyerType==="ORGANIZATION"\?vatNumber/);
+  assert.match(validation,/buyerType==="PRIVATE"&&invoiceRequested/);
+  assert.match(validation,/deliveryMethod/);
+  assert.match(validation,/fiscalStreet/);
+  assert.match(validation,/street,houseNumber,postcode,city/);
+  assert.doesNotMatch(validation,/buyerType==="ORGANIZATION"&&[^\n]*!vatNumber/);
+  const privateOrder=validationRules.parseNissettoneOrderInput({...baseOrder,buyerType:"PRIVATE"});
+  assert.equal(privateOrder.firstName,"Maria");
+  assert.equal(privateOrder.lastName,"De Luca");
+  assert.equal(privateOrder.fiscalCode,null);
+  const company=validationRules.parseNissettoneOrderInput({...baseOrder,buyerType:"ORGANIZATION",legalName:"Impresa Demo",fiscalCode:"ABC123",vatNumber:"IT01234567890",fiscalStreet:"Via Roma",fiscalHouseNumber:"1",fiscalPostcode:"00100",fiscalCity:"Roma",fiscalProvince:"RM",fiscalCountry:"Italia"});
+  assert.equal(company.vatNumber,"IT01234567890");
+  const association=validationRules.parseNissettoneOrderInput({...baseOrder,buyerType:"ORGANIZATION",legalName:"Associazione Demo",fiscalCode:"DEF456",fiscalStreet:"Via Lazio",fiscalHouseNumber:"2",fiscalPostcode:"00100",fiscalCity:"Roma",fiscalProvince:"RM",fiscalCountry:"Italia"});
+  assert.equal(association.vatNumber,null);
+  const invoicedDelivery=validationRules.parseNissettoneOrderInput({...baseOrder,buyerType:"PRIVATE",invoiceRequested:true,fiscalCode:"RSSMRA80A01H501Z",fiscalStreet:"Via Fiscale",fiscalHouseNumber:"3",fiscalPostcode:"00100",fiscalCity:"Roma",fiscalProvince:"RM",fiscalCountry:"Italia",deliveryMethod:"DELIVERY",street:"Via Consegna",houseNumber:"4",postcode:"00100",city:"Roma"});
+  assert.equal(invoicedDelivery.fiscalStreet,"Via Fiscale");
+  assert.equal(invoicedDelivery.street,"Via Consegna");
+});
+
+test("dashboard and exports keep fiscal data behind SUPERADMIN routes",async()=>{
+  const [page,route,exporter,exportRoute]=await Promise.all([source("../components/StaffNissettoneOrders.tsx"),source("../app/api/nissettone/staff/orders/route.ts"),source("../lib/nissettone/export.ts"),source("../app/api/nissettone/staff/exports/[format]/route.ts")]);
+  assert.match(page,/Dati fiscali riservati/);
+  assert.match(page,/documentStatus/);
+  assert.match(route,/role!=="SUPERADMIN"/);
+  assert.match(route,/administrativeNotes/);
+  assert.match(exporter,/Tipologia acquirente/);
+  assert.match(exporter,/Codice fiscale/);
+  assert.match(exporter,/Stato documento/);
+  assert.match(exportRoute,/role!=="SUPERADMIN"/);
+});
+
+test("NISSETTONE email uses its dedicated Graph sender and fails closed when unset",async()=>{
+  const [email,provider,env]=await Promise.all([source("../lib/nissettone/email.ts"),source("../lib/email/provider.ts"),source("../.env.example")]);
+  assert.match(email,/NISSETTONE_EMAIL_FROM/);
+  assert.match(email,/status:"DISABLED"/);
+  assert.match(email,/from:sender/);
+  assert.match(email,/replyTo:sender/);
+  assert.match(provider,/microsoftGraphSettings\(message\.from\)/);
+  assert.match(env,/NISSETTONE_EMAIL_FROM=ordini@nazionaleitalianasanitari\.com/);
 });
 
 test("inventory reservations and payment finalization are transactional and idempotent",async()=>{

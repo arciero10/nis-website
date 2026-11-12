@@ -5,6 +5,7 @@ export type EmailMessage={
   html:string;
   replyTo?:string;
   fromName?:string;
+  from?:string;
 };
 
 export interface EmailProvider{
@@ -32,11 +33,11 @@ type TokenResponse={
 const tokenRefreshSkewMs=60_000;
 let cachedAccessToken:CachedAccessToken|null=null;
 
-function microsoftGraphSettings():MicrosoftGraphSettings{
+function microsoftGraphSettings(senderOverride?:string):MicrosoftGraphSettings{
   const tenantId=process.env.MICROSOFT_TENANT_ID?.trim();
   const clientId=process.env.MICROSOFT_CLIENT_ID?.trim();
   const clientSecret=process.env.MICROSOFT_CLIENT_SECRET;
-  const sender=process.env.TICKETING_EMAIL_FROM?.trim();
+  const sender=senderOverride?.trim()||process.env.TICKETING_EMAIL_FROM?.trim();
 
   if(!tenantId||!clientId||!clientSecret||!sender){
     throw new Error("Provider email Microsoft Graph non configurato.");
@@ -107,7 +108,7 @@ export class MicrosoftGraphEmailProvider implements EmailProvider{
   }
 
   async send(message:EmailMessage){
-    const settings=microsoftGraphSettings();
+    const settings=microsoftGraphSettings(message.from);
     let accessToken=await this.getAccessToken(settings);
     let response=await this.sendWithToken(message,settings,accessToken);
 
