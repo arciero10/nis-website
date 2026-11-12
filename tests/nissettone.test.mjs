@@ -163,13 +163,14 @@ test("admin APIs and page are SUPERADMIN-only and keep economic data private",as
   assert.doesNotMatch(publicPage,/revenueCents|ricavi complessivi|incassi totali/i);
 });
 
-test("the three official product images and public SEO route are wired",async()=>{
-  for(const file of ["nissettone-01.jpeg","nissettone-2.jpeg","nissettone-3.jpeg"]){
+test("the four official product images and public SEO route are wired",async()=>{
+  for(const file of ["nissettone-prodotto.jpg","nissettone-01.jpeg","nissettone-2.jpeg","nissettone-3.jpeg"]){
     await access(new URL(`../public/images/nissettone/${file}`,import.meta.url));
   }
-  const [page,sitemap,site]=await Promise.all([source("../app/nissettone/page.tsx"),source("../app/sitemap.ts"),source("../data/site.ts")]);
+  const [page,checkout,sitemap,site]=await Promise.all([source("../app/nissettone/page.tsx"),source("../components/NissettoneCheckout.tsx"),source("../app/sitemap.ts"),source("../data/site.ts")]);
   assert.match(page,/Product/);
   assert.match(page,/NISSETTONE 2026/);
+  assert.match(checkout,/nissettone-prodotto\.jpg/);
   assert.match(sitemap,/\/nissettone/);
   assert.match(site,/NISSETTONE/);
 });
