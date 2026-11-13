@@ -163,6 +163,22 @@ test("admin APIs and page are SUPERADMIN-only and keep economic data private",as
   assert.doesNotMatch(publicPage,/revenueCents|ricavi complessivi|incassi totali/i);
 });
 
+test("inventory activation sends STATUS and records the DRAFT to ACTIVE audit atomically",async()=>{
+  const [route,repository,dashboard,migration]=await Promise.all([
+    source("../app/api/nissettone/staff/inventory/route.ts"),
+    source("../lib/nissettone/repository.ts"),
+    source("../components/StaffNissettoneOrders.tsx"),
+    source("../migrations/028_nissettone_2026.sql"),
+  ]);
+  assert.match(dashboard,/name="action" defaultValue="STATUS"/);
+  assert.match(route,/body\.action==="STATUS"/);
+  assert.match(route,/body\.status==="ACTIVE"/);
+  assert.match(repository,/UPDATE nissettone_products SET status=\$2/);
+  assert.match(repository,/PRODUCT_STATUS/);
+  assert.match(repository,/STOCK_UNCHANGED/);
+  assert.match(migration,/quantity INTEGER NOT NULL CHECK \(quantity <> 0\)/);
+});
+
 test("the four official product images and public SEO route are wired",async()=>{
   for(const file of ["nissettone-prodotto.jpg","nissettone-01.jpeg","nissettone-2.jpeg","nissettone-3.jpeg"]){
     await access(new URL(`../public/images/nissettone/${file}`,import.meta.url));
