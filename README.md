@@ -50,8 +50,8 @@ MICROSOFT_CLIENT_ID=
 MICROSOFT_CLIENT_SECRET=
 TICKETING_EMAIL_FROM=biglietti@nazionaleitalianasanitari.com
 NISSETTONE_EMAIL_FROM=ordini@nazionaleitalianasanitari.com
-NISSETTONE_TERMS_URL=
-NISSETTONE_PRIVACY_URL=
+NISSETTONE_TERMS_URL=/nissettone/condizioni
+NISSETTONE_PRIVACY_URL=/privacy-policy
 NIS_TICKETING_ADMIN_EMAIL=alessandro.arciero@tiscali.it
 CANDIDATURE_TO=info@nazionaleitalianasanitari.com
 ```

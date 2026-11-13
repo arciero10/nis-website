@@ -56,6 +56,30 @@ test("checkout consent links only to configured approved legal documents",async(
   assert.match(checkout,/termsUrl&&privacyUrl/);
 });
 
+test("published NISSETTONE legal pages use verified facts and remain required by checkout",async()=>{
+  const [conditions,privacy,checkout,sitemap,environment]=await Promise.all([
+    source("../app/nissettone/condizioni/page.tsx"),
+    source("../app/privacy-policy/page.tsx"),
+    source("../components/NissettoneCheckout.tsx"),
+    source("../app/sitemap.ts"),
+    source("../.env.example"),
+  ]);
+  assert.match(conditions,/55,00 €/);
+  assert.match(conditions,/20 novembre 2026/);
+  assert.match(conditions,/Pasticceria Sabotino/);
+  assert.match(conditions,/Informazioni alimentari e allergeni/);
+  assert.match(conditions,/href="\/privacy-policy"/);
+  assert.doesNotMatch(conditions,/\[DA COMPLETARE\]|TODO|placeholder/i);
+  assert.match(privacy,/Ordini e preordini NISSETTONE 2026/);
+  assert.match(privacy,/Microsoft Graph/);
+  assert.match(privacy,/PayPal/);
+  assert.match(checkout,/input type="checkbox" required/);
+  assert.doesNotMatch(checkout,/Consegna inclusa/);
+  assert.match(sitemap,/\/nissettone\/condizioni/);
+  assert.match(environment,/NISSETTONE_TERMS_URL=\/nissettone\/condizioni/);
+  assert.match(environment,/NISSETTONE_PRIVACY_URL=\/privacy-policy/);
+});
+
 test("migration is additive, isolated from Gala and seeds a disabled 250 item product",async()=>{
   const [base,fiscal]=await Promise.all([source("../migrations/028_nissettone_2026.sql"),source("../migrations/029_nissettone_buyer_fiscal_data.sql")]);
   assert.match(base,/CREATE TABLE IF NOT EXISTS nissettone_products/);
