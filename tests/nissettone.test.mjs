@@ -38,11 +38,22 @@ test("delivery accepts only a declared Roma municipality and pickup uses Sabotin
 });
 
 test("commercial PayPal checkout is fail-closed until credentials and its dedicated webhook exist",()=>{
-  const configured={NISSETTONE_PAYPAL_ENABLED:"true",PAYPAL_CLIENT_ID:"client",PAYPAL_CLIENT_SECRET:"secret",PAYPAL_ENV:"sandbox",NISSETTONE_PAYPAL_WEBHOOK_ID:"webhook"};
+  const configured={NISSETTONE_PAYPAL_ENABLED:"true",PAYPAL_CLIENT_ID:"client",PAYPAL_CLIENT_SECRET:"secret",PAYPAL_ENV:"sandbox",NISSETTONE_PAYPAL_WEBHOOK_ID:"webhook",NISSETTONE_TERMS_URL:"/nissettone/condizioni-preordine",NISSETTONE_PRIVACY_URL:"/privacy-policy"};
   assert.equal(rules.checkoutConfigured(configured),true);
   assert.equal(rules.checkoutConfigured({...configured,NISSETTONE_PAYPAL_WEBHOOK_ID:""}),false);
   assert.equal(rules.checkoutConfigured({...configured,PAYPAL_ENV:"invalid"}),false);
   assert.equal(rules.checkoutConfigured({...configured,NISSETTONE_PAYPAL_ENABLED:"false"}),false);
+  assert.equal(rules.checkoutConfigured({...configured,NISSETTONE_TERMS_URL:""}),false);
+  assert.equal(rules.checkoutConfigured({...configured,NISSETTONE_PRIVACY_URL:"http://example.com/privacy"}),false);
+});
+
+test("checkout consent links only to configured approved legal documents",async()=>{
+  const checkout=await source("../components/NissettoneCheckout.tsx");
+  assert.match(checkout,/Ho letto e accetto le/);
+  assert.match(checkout,/Condizioni di preordine/);
+  assert.match(checkout,/Informativa sulla privacy/);
+  assert.doesNotMatch(checkout,/da approvare amministrativamente/);
+  assert.match(checkout,/termsUrl&&privacyUrl/);
 });
 
 test("migration is additive, isolated from Gala and seeds a disabled 250 item product",async()=>{

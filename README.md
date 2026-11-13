@@ -50,11 +50,15 @@ MICROSOFT_CLIENT_ID=
 MICROSOFT_CLIENT_SECRET=
 TICKETING_EMAIL_FROM=biglietti@nazionaleitalianasanitari.com
 NISSETTONE_EMAIL_FROM=ordini@nazionaleitalianasanitari.com
+NISSETTONE_TERMS_URL=
+NISSETTONE_PRIVACY_URL=
 NIS_TICKETING_ADMIN_EMAIL=alessandro.arciero@tiscali.it
 CANDIDATURE_TO=info@nazionaleitalianasanitari.com
 ```
 
 L'App Registration Microsoft Entra deve avere esclusivamente il permesso **Microsoft Graph > Application > Mail.Send** con **Admin Consent**. Non sono richiesti altri permessi applicativi, login utente o permessi delegated. Ogni mittente deve essere una casella esistente e autorizzata nel tenant. Finché `ordini@nazionaleitalianasanitari.com` non è disponibile, lasciare `NISSETTONE_EMAIL_FROM` non configurata: gli ordini restano validi e l'invio NISSETTONE viene disabilitato in sicurezza.
+
+Il checkout NISSETTONE resta disabilitato finché `NISSETTONE_TERMS_URL` e `NISSETTONE_PRIVACY_URL` non puntano a documenti approvati e realmente pubblicati. Sono ammessi percorsi interni assoluti (`/…`) oppure URL HTTPS; non usare bozze o placeholder.
 
 Tutte le variabili sono esclusivamente server-side. Il client secret e gli access token non devono essere esposti nel browser, nelle risposte API o nei log.
 

@@ -14,7 +14,17 @@ export function validNissettoneQuantity(value:number,available:number){return Nu
 export function nissettoneTotalCents(quantity:number,unitPriceCents=NISSETTONE_UNIT_PRICE_CENTS){if(!Number.isInteger(quantity)||quantity<1||!Number.isInteger(unitPriceCents)||unitPriceCents<1)throw new Error("Quantità o prezzo non validi.");return quantity*unitPriceCents;}
 export function isDeclaredRomeMunicipality(value:string){return value.trim().toLocaleLowerCase("it-IT")==="roma";}
 export function addressVerificationFor(method:NissettoneDeliveryMethod){return method==="PICKUP"?"NOT_REQUIRED" as const:"PENDING" as const;}
-export function checkoutConfigured(environment:NodeJS.ProcessEnv=process.env){return environment.NISSETTONE_PAYPAL_ENABLED==="true"&&Boolean(environment.PAYPAL_CLIENT_ID?.trim()&&environment.PAYPAL_CLIENT_SECRET?.trim()&&environment.NISSETTONE_PAYPAL_WEBHOOK_ID?.trim()&&(environment.PAYPAL_ENV==="sandbox"||environment.PAYPAL_ENV==="live"));}
+function publicDocumentUrl(value:string|undefined){
+  const url=value?.trim()??"";
+  if(/^\/(?!\/)/.test(url))return url;
+  try{return new URL(url).protocol==="https:"?url:"";}catch{return "";}
+}
+export function nissettoneLegalDocuments(environment:NodeJS.ProcessEnv=process.env){
+  const termsUrl=publicDocumentUrl(environment.NISSETTONE_TERMS_URL);
+  const privacyUrl=publicDocumentUrl(environment.NISSETTONE_PRIVACY_URL);
+  return {termsUrl,privacyUrl,ready:Boolean(termsUrl&&privacyUrl)};
+}
+export function checkoutConfigured(environment:NodeJS.ProcessEnv=process.env){return environment.NISSETTONE_PAYPAL_ENABLED==="true"&&nissettoneLegalDocuments(environment).ready&&Boolean(environment.PAYPAL_CLIENT_ID?.trim()&&environment.PAYPAL_CLIENT_SECRET?.trim()&&environment.NISSETTONE_PAYPAL_WEBHOOK_ID?.trim()&&(environment.PAYPAL_ENV==="sandbox"||environment.PAYPAL_ENV==="live"));}
 export function availableStock(stockTotal:number,stockCommitted:number,reserved:number){return Math.max(0,stockTotal-stockCommitted-reserved);}
 export function nissettonePaymentDispositionForEvent(eventType:string){
   if(eventType==="PAYMENT.CAPTURE.REFUNDED"||eventType==="PAYMENT.CAPTURE.REVERSED")return "REFUNDED" as const;
