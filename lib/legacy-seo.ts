@@ -29,6 +29,7 @@ export const legacyGonePaths:ReadonlySet<string>=new Set([
   "/tag/fideuram",
   "/tag/moveax",
   "/top-5-destinations-adventure-travel",
+  "/moveax-al-fianco-della-solidarieta-supportare-loncologia-pediatrica-e-una-scelta-naturale",
 ]);
 
 export function resolveLegacySeoPath(pathname:string){
