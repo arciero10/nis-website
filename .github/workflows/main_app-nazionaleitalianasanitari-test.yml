@@ -163,6 +163,8 @@ jobs:
                 if ! status=$(curl \
                   --silent \
                   --show-error \
+                  --connect-timeout 10 \
+                  --max-time 30 \
                   --location \
                   --header "Cache-Control: no-cache" \
                   --dump-header "$headers_file" \
