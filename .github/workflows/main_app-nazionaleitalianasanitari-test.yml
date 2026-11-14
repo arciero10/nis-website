@@ -143,14 +143,23 @@ jobs:
               sleep 5
             done
 
-            wait_for_page() {
-              path="$1"
-              body_file="$2"
-              headers_file="$3"
-              url="${public_origin}${path}?deploy=${GITHUB_SHA}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
-              status="000"
+            is_temporary_http_failure() {
+              case "$1" in
+                000|408|425|429|500|502|503|504) return 0 ;;
+                *) return 1 ;;
+              esac
+            }
 
-              for attempt in $(seq 1 24); do
+            wait_for_url() {
+              label="$1"
+              url="$2"
+              body_file="$3"
+              headers_file="$4"
+              status="000"
+              retry_delays=(5 10 15 20 30 30)
+              max_attempts=$((${#retry_delays[@]} + 1))
+
+              for attempt in $(seq 1 "$max_attempts"); do
                 if ! status=$(curl \
                   --silent \
                   --show-error \
@@ -164,16 +173,34 @@ jobs:
                 fi
 
                 if [ "$status" = "200" ]; then
-                  echo "${path}: HTTP ${status}"
+                  echo "${label}: HTTP ${status} (tentativo ${attempt}/${max_attempts}) - ${url}"
                   grep -iE '^(cache-control|x-nextjs-cache|etag):' "$headers_file" || true
                   return 0
                 fi
 
-                sleep 5
-              done
+                if ! is_temporary_http_failure "$status"; then
+                  echo "::error::${label}: HTTP ${status} non temporaneo al tentativo ${attempt}/${max_attempts} - ${url}"
+                  return 1
+                fi
 
-              echo "::error::Applicazione non raggiungibile su ${path}: ultimo stato HTTP ${status}."
-              return 1
+                if [ "$attempt" -eq "$max_attempts" ]; then
+                  echo "::error::${label}: disponibilita temporanea non risolta dopo ${max_attempts} tentativi; ultimo HTTP ${status} - ${url}"
+                  return 1
+                fi
+
+                delay="${retry_delays[$((attempt - 1))]}"
+                echo "::warning::${label}: HTTP ${status} temporaneo al tentativo ${attempt}/${max_attempts}; nuovo tentativo tra ${delay}s - ${url}"
+                sleep "$delay"
+              done
+            }
+
+            wait_for_page() {
+              path="$1"
+              body_file="$2"
+              headers_file="$3"
+              url="${public_origin}${path}?deploy=${GITHUB_SHA}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+
+              wait_for_url "Pagina ${path}" "$url" "$body_file" "$headers_file"
             }
 
             verify_server_markup() {
@@ -194,7 +221,8 @@ jobs:
             eventi_headers=$(mktemp)
             home_body=$(mktemp)
             home_headers=$(mktemp)
-            trap 'rm -f "$eventi_body" "$eventi_headers" "$home_body" "$home_headers"' EXIT
+            sponsor_headers=$(mktemp)
+            trap 'rm -f "$eventi_body" "$eventi_headers" "$home_body" "$home_headers" "$sponsor_headers"' EXIT
 
             echo "Verifica deploy commit ${GITHUB_SHA}"
             verify_server_markup "/eventi" "Sponsor ufficiali NIS Gala 2026" "$eventi_body" "$eventi_headers"
@@ -211,10 +239,6 @@ jobs:
               "limori.png" \
               "moretti.png" \
               "sakura.png"; do
-              curl \
-                --fail \
-                --silent \
-                --show-error \
-                --output /dev/null \
-                "${public_origin}/images/gala-2026/sponsor/${sponsor_asset}?deploy=${GITHUB_SHA}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+              sponsor_url="${public_origin}/images/gala-2026/sponsor/${sponsor_asset}?deploy=${GITHUB_SHA}-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+              wait_for_url "Sponsor ${sponsor_asset}" "$sponsor_url" /dev/null "$sponsor_headers"
             done
