@@ -7,10 +7,13 @@ const canonicalHost="www.nazionaleitalianasanitari.com";
 
 export function middleware(request:NextRequest){
   const forwardedHost=request.headers.get("x-forwarded-host")?.split(",")[0].trim();
+  const forwardedProtocol=request.headers.get("x-forwarded-proto")?.split(",")[0].trim().toLowerCase();
   const requestHost=forwardedHost||request.headers.get("host")||request.nextUrl.hostname;
   const hostname=requestHost.split(":")[0].toLowerCase();
+  const protocol=forwardedProtocol?`${forwardedProtocol}:`:request.nextUrl.protocol;
+  const publicHost=hostname===apexHost||hostname===canonicalHost;
 
-  const {normalizedPath,hasTrailingSlash,redirectTo:canonicalPath,gone,preserveNotFound}=resolveLegacySeoPath(request.nextUrl.pathname);
+  const {normalizedPath,hasTrailingSlash,gone}=resolveLegacySeoPath(request.nextUrl.pathname);
 
   if(gone){
     return new NextResponse(null,{
@@ -19,19 +22,14 @@ export function middleware(request:NextRequest){
     });
   }
 
-  if(preserveNotFound&&hostname!==apexHost){
+  if(hostname!==apexHost&&(!publicHost||protocol==="https:")&&!hasTrailingSlash){
     return NextResponse.next();
   }
 
-  if(hostname!==apexHost&&!canonicalPath&&!hasTrailingSlash){
-    return NextResponse.next();
-  }
-
-  const useCanonicalHost=hostname===apexHost||Boolean(canonicalPath);
-  const destinationHost=useCanonicalHost?canonicalHost:requestHost;
-  const destinationProtocol=useCanonicalHost?"https:":request.nextUrl.protocol;
+  const destinationHost=hostname===apexHost?canonicalHost:requestHost;
+  const destinationProtocol=publicHost?"https:":protocol;
   const destination=new URL(
-    `${canonicalPath||normalizedPath}${request.nextUrl.search}`,
+    `${normalizedPath}${request.nextUrl.search}`,
     `${destinationProtocol}//${destinationHost}`,
   );
 
