@@ -80,6 +80,24 @@ test("published NISSETTONE legal pages use verified facts and remain required by
   assert.match(environment,/NISSETTONE_PRIVACY_URL=\/privacy-policy/);
 });
 
+test("NISSETTONE product structured data reflects only a real public offer",async()=>{
+  const [page,structuredData]=await Promise.all([
+    source("../app/nissettone/page.tsx"),
+    source("../lib/nissettone/structured-data.ts"),
+  ]);
+  assert.match(page,/createNissettoneProductJsonLd\(product,commerceConfigured\)/);
+  assert.match(page,/schema&&<StructuredData data=\{schema\}/);
+  assert.match(structuredData,/product\.status==="ACTIVE"\|\|product\.status==="SOLD_OUT"/);
+  assert.match(structuredData,/if\(!hasPublicOffer\)return null/);
+  assert.match(structuredData,/brand:\{"@type":"Brand",name:"NISSETTONE"\}/);
+  assert.match(structuredData,/price:\(product\.unitPriceCents\/100\)\.toFixed\(2\)/);
+  assert.match(structuredData,/priceCurrency:product\.currency/);
+  assert.match(structuredData,/product\.available<=0/);
+  assert.match(structuredData,/https:\/\/schema\.org\/SoldOut/);
+  assert.match(structuredData,/https:\/\/schema\.org\/InStock/);
+  assert.doesNotMatch(structuredData,/PreOrder|aggregateRating|review:|priceValidUntil|validThrough|shippingDetails|hasMerchantReturnPolicy/);
+});
+
 test("migration is additive, isolated from Gala and seeds a disabled 250 item product",async()=>{
   const [base,fiscal]=await Promise.all([source("../migrations/028_nissettone_2026.sql"),source("../migrations/029_nissettone_buyer_fiscal_data.sql")]);
   assert.match(base,/CREATE TABLE IF NOT EXISTS nissettone_products/);
