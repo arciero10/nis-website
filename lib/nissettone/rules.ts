@@ -1,4 +1,4 @@
-export const NISSETTONE_UNIT_PRICE_CENTS=5500;
+export const NISSETTONE_UNIT_PRICE_CENTS=4900;
 export const NISSETTONE_INITIAL_STOCK=250;
 export const NISSETTONE_MAX_QUANTITY=250;
 export const NISSETTONE_RESERVATION_MINUTES=20;
@@ -24,7 +24,7 @@ export function nissettoneLegalDocuments(environment:NodeJS.ProcessEnv=process.e
   const privacyUrl=publicDocumentUrl(environment.NISSETTONE_PRIVACY_URL);
   return {termsUrl,privacyUrl,ready:Boolean(termsUrl&&privacyUrl)};
 }
-export function checkoutConfigured(environment:NodeJS.ProcessEnv=process.env){return environment.NISSETTONE_PAYPAL_ENABLED==="true"&&nissettoneLegalDocuments(environment).ready&&Boolean(environment.PAYPAL_CLIENT_ID?.trim()&&environment.PAYPAL_CLIENT_SECRET?.trim()&&environment.NISSETTONE_PAYPAL_WEBHOOK_ID?.trim()&&(environment.PAYPAL_ENV==="sandbox"||environment.PAYPAL_ENV==="live"));}
+export function checkoutConfigured(environment:NodeJS.ProcessEnv=process.env){return environment.NISSETTONE_PAYPAL_ENABLED==="true"&&environment.NISSETTONE_PRICING_APPROVED==="true"&&nissettoneLegalDocuments(environment).ready&&Boolean(environment.PAYPAL_CLIENT_ID?.trim()&&environment.PAYPAL_CLIENT_SECRET?.trim()&&environment.NISSETTONE_PAYPAL_WEBHOOK_ID?.trim()&&(environment.PAYPAL_ENV==="sandbox"||environment.PAYPAL_ENV==="live"));}
 export function availableStock(stockTotal:number,stockCommitted:number,reserved:number){return Math.max(0,stockTotal-stockCommitted-reserved);}
 export function nissettonePaymentDispositionForEvent(eventType:string){
   if(eventType==="PAYMENT.CAPTURE.REFUNDED"||eventType==="PAYMENT.CAPTURE.REVERSED")return "REFUNDED" as const;

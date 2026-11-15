@@ -4,6 +4,7 @@ import {SITE_URL} from "@/lib/seo";
 const productUrl=`${SITE_URL}/nissettone`;
 const productDescription="Il panettone da 1 kg al cioccolato che sostiene i progetti benefici della Nazionale Italiana Sanitari.";
 const productImages=[
+  `${SITE_URL}/images/nissettone/nissettone-2026.jpg`,
   `${SITE_URL}/images/nissettone/nissettone-3.jpeg`,
   `${SITE_URL}/images/nissettone/nissettone-01.jpeg`,
   `${SITE_URL}/images/nissettone/nissettone-2.jpeg`,

@@ -12,7 +12,7 @@ export const metadata=createPageMetadata({
 export default function Page(){return <>
   <PageHero eyebrow="NISSETTONE 2026" title="Condizioni di" accent="preordine." intro="Informazioni applicabili al preordine del NISSETTONE 2026." image="/images/nissettone/nissettone-3.jpeg" path="/nissettone/condizioni"/>
   <section className="section"><div className="shell legal-content">
-    <p className="legal-updated">Ultimo aggiornamento: 13 novembre 2026</p>
+    <p className="legal-updated">Ultimo aggiornamento: 15 novembre 2026</p>
 
     <h2>1. Identificazione dell’organizzazione</h2>
     <p>L’iniziativa NISSETTONE 2026 è presentata dalla <strong>Nazionale Italiana Sanitari</strong>, codice fiscale {site.cf}. Per informazioni è possibile scrivere a <a href={`mailto:${site.email}`}>{site.email}</a>.</p>
@@ -21,13 +21,13 @@ export default function Page(){return <>
     <p>Il NISSETTONE 2026 è un panettone da 1 kg al cioccolato, senza glassa, realizzato in collaborazione con la Pasticceria Antonini di Roma.</p>
 
     <h2>3. Prezzo e disponibilità</h2>
-    <p>Il prezzo unitario è di <strong>55,00 €</strong>. La disponibilità è limitata alle quantità effettivamente presenti nel sistema al momento dell’ordine. Il riepilogo mostrato prima del pagamento indica quantità, prezzo unitario, totale e modalità di ricezione selezionata.</p>
+    <p>Il contributo unitario è di <strong>49,00 €</strong>. La disponibilità è limitata alle quantità effettivamente presenti nel sistema al momento dell’ordine. Il riepilogo mostrato prima del pagamento indica quantità, contributo unitario, totale e modalità di ricezione selezionata.</p>
 
     <h2>4. Procedura di preordine</h2>
     <p>Il cliente seleziona quantità e modalità di ricezione, inserisce i dati richiesti, consulta queste condizioni e l’informativa privacy e presta l’accettazione obbligatoria. Il sistema ricostruisce il totale lato server e crea una prenotazione temporanea; l’ordine è confermato soltanto dopo la verifica server-side del pagamento completato.</p>
 
     <h2>5. Pagamento tramite PayPal</h2>
-    <p>Il pagamento online è gestito tramite PayPal. Il sito NIS invia a PayPal il riferimento tecnico dell’ordine, la descrizione del prodotto, la quantità, l’importo e la valuta e verifica lato server l’esito del pagamento. Il sito non acquisisce né conserva credenziali PayPal o dati dello strumento di pagamento. Le operazioni effettuate nell’interfaccia PayPal sono soggette anche alle condizioni e all’informativa del relativo fornitore.</p>
+    <p>Il pagamento online è gestito tramite PayPal senza maggiorazioni legate allo strumento di pagamento. Il sito NIS invia a PayPal il riferimento tecnico dell’ordine, la descrizione del prodotto, la quantità, l’importo e la valuta e verifica lato server l’esito del pagamento. Il sito non acquisisce né conserva credenziali PayPal o dati dello strumento di pagamento. Le operazioni effettuate nell’interfaccia PayPal sono soggette anche alle condizioni e all’informativa del relativo fornitore.</p>
 
     <h2>6. Consegna e ritiro</h2>
     <p>È previsto il ritiro presso <strong>Pasticceria Sabotino, Via Sabotino 23/25, 00195 Roma</strong>. È inoltre prevista la consegna nel Comune di Roma, secondo le modalità operative comunicate e confermate in relazione all’ordine. La modalità scelta è riportata nel riepilogo prima del pagamento e nella conferma dell’ordine.</p>

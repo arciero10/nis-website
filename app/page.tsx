@@ -35,7 +35,7 @@ export default function Home(){return <>
     <SectorGrid/>
   </div></section>
 
-  <section className="home-nissettone"><div className="shell home-nissettone-inner"><div className="home-nissettone-media"><Image src="/images/nissettone/nissettone-3.jpeg" fill sizes="(max-width: 760px) 100vw, 48vw" alt="NISSETTONE 2026"/></div><div><span>BE NIS. BE NICE.</span><h2>Il panettone che ti cura.</h2><p>Scopri il NISSETTONE 2026, l&apos;iniziativa natalizia solidale della Nazionale Italiana Sanitari.</p><Link href="/nissettone" className="btn btn-blue">SCOPRI IL NISSETTONE</Link></div></div></section>
+  <section className="home-nissettone"><div className="shell home-nissettone-inner"><div className="home-nissettone-media"><Image src="/images/nissettone/nissettone-2026.jpg" fill sizes="(max-width: 760px) 100vw, 48vw" style={{objectFit:"contain"}} alt="Locandina ufficiale NISSETTONE 2026 con contributo di 49 euro"/></div><div><span>BE NIS. BE NICE.</span><h2>Il panettone che ti cura.</h2><p>Scopri il NISSETTONE 2026, l&apos;iniziativa natalizia solidale della Nazionale Italiana Sanitari.</p><Link href="/nissettone" className="btn btn-blue">SCOPRI IL NISSETTONE</Link></div></div></section>
 
   <section className="home-closing"><div className="shell home-closing-inner">
     <div className="home-closing-copy"><div className="eyebrow white">BE NIS. BE NICE.</div><h2>Entra nella Community. Sostieni il cambiamento.</h2><p>Professionisti, sportivi, famiglie e sostenitori: insieme possiamo trasformare partecipazione e solidarietà in progetti concreti per la salute.</p></div>
