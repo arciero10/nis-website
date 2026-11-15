@@ -13,7 +13,7 @@ export default function StaffCharityRequests(){
   const [loading,setLoading]=useState(true);
   const [busy,setBusy]=useState<string|null>(null);
   const [message,setMessage]=useState("");
-  const load=useCallback(async()=>{setLoading(true);try{const response=await fetch("/api/ticketing/staff/charity-requests",{cache:"no-store"});if(response.status===401){window.location.assign("/checkin");return;}if(!response.ok)throw new Error();const body=await response.json() as {requests:CharityRequest[]};setRequests(body.requests);}catch{setMessage("Non è stato possibile caricare le richieste Charity.");}finally{setLoading(false);}},[]);
+  const load=useCallback(async()=>{setLoading(true);try{const response=await fetch("/api/ticketing/staff/charity-requests",{cache:"no-store"});if(response.status===401){window.location.assign("/admin");return;}if(!response.ok)throw new Error();const body=await response.json() as {requests:CharityRequest[]};setRequests(body.requests);}catch{setMessage("Non è stato possibile caricare le richieste Charity.");}finally{setLoading(false);}},[]);
   useEffect(()=>{void load();},[load]);
 
   async function action(item:CharityRequest,type:"confirm"|"cancel"){

@@ -19,6 +19,14 @@ export default function Icon({name,size=32}:{name:string,size?:number}){
     project:<><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 4v16M8 10h13M14 10v10"/></>,
     room:<><path d="M4 21V4a1 1 0 0 1 1-1h11a1 1 0 0 1 1 1v17M2 21h20"/><path d="M13 12h.01"/></>,
     medical:<><path d="M9 3h6v6h6v6h-6v6H9v-6H3V9h6z"/><path d="M5 12h3l1.5-3 3 6 1.5-3h5"/></>,
+    dashboard:<><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></>,
+    ticket:<><path d="M3 7a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v3a2 2 0 0 0 0 4v3a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2v-3a2 2 0 0 0 0-4Z"/><path d="M13 5v2M13 11v2M13 17v2"/></>,
+    scan:<><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M7 12h10"/></>,
+    chart:<><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></>,
+    box:<><path d="m3 6 9-4 9 4-9 4Z"/><path d="m3 6 9 4 9-4v12l-9 4-9-4Z"/><path d="M12 10v12"/></>,
+    search:<><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></>,
+    door:<><path d="M4 21h16M6 21V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v17M14 12h.01"/></>,
+    logout:<><path d="M10 17l5-5-5-5M15 12H3M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/></>,
   };
   return <svg {...c}>{paths[name]||paths.heart}</svg>
 }

@@ -9,11 +9,40 @@ test("STAFF navigation exposes only operational sections and logout",async()=>{
   assert.match(navigation,/const staffLinks=\[[\s\S]*Check-in[\s\S]*Partecipanti[\s\S]*Ingressi[\s\S]*\]/);
   assert.match(navigation,/const superadminLinks=\[[\s\S]*Dashboard[\s\S]*Eventi[\s\S]*Biglietti[\s\S]*Aziende[\s\S]*Report[\s\S]*\]/);
   assert.match(navigation,/role==="SUPERADMIN"\?superadminLinks:staffLinks/);
+  assert.match(navigation,/NIS[\s\S]*Management/);
+  assert.doesNotMatch(navigation,/href:"\/staff/);
+  assert.doesNotMatch(navigation,/href:"\/checkin/);
   assert.match(navigation,/loggingOut\?"Uscita\.\.\.":"Esci"/);
   assert.match(styles,/staff-sidebar-toggle/);
   assert.match(styles,/staff-navigation\.staff-sidebar/);
   assert.match(styles,/@media\(max-width:960px\)/);
   assert.match(styles,/staff-dashboard-metrics-operational\{grid-template-columns:repeat\(3/);
+});
+
+test("NIS Management reuses one authentication flow and maps canonical admin routes",async()=>{
+  const [access,routing,middleware,guard,dashboard,report]=await Promise.all([
+    source("../components/AdminAccess.tsx"),
+    source("../lib/admin-routing.ts"),
+    source("../middleware.ts"),
+    source("../lib/ticketing/staff-page.ts"),
+    source("../app/staff/page.tsx"),
+    source("../app/staff/report/page.tsx"),
+  ]);
+  assert.match(access,/fetch\("\/api\/ticketing\/checkin\/session"/);
+  assert.match(access,/router\.replace\("\/admin\/dashboard"\)/);
+  assert.match(access,/NIS Management/);
+  for(const path of ["dashboard","eventi","partecipanti","biglietti","checkin","aziende","report"]){assert.match(routing,new RegExp(`\/admin\/${path}`));}
+  assert.match(routing,/pathname==="\/checkin"[\s\S]*return "\/admin\/checkin"/);
+  assert.match(routing,/pathname==="\/staff"[\s\S]*return "\/admin\/dashboard"/);
+  assert.match(middleware,/request\.nextUrl\.search/);
+  assert.match(middleware,/NextResponse\.redirect\(destination,307\)/);
+  assert.match(middleware,/NextResponse\.rewrite\(destination\)/);
+  assert.match(guard,/if\(!session\)redirect\("\/admin"\)/);
+  assert.match(guard,/session\.role!=="SUPERADMIN"\)redirect\("\/admin\/dashboard"\)/);
+  assert.match(dashboard,/session\.role==="STAFF"/);
+  assert.match(dashboard,/Dashboard operativa/);
+  assert.match(dashboard,/Dashboard amministrativa/);
+  assert.match(report,/requireSuperadminSession/);
 });
 
 test("sensitive staff pages and APIs require SUPERADMIN",async()=>{

@@ -6,7 +6,7 @@ export default function robots():MetadataRoute.Robots{
     rules:{
       userAgent:"*",
       allow:"/",
-      disallow:["/api/","/staff/","/checkin","/biglietto/","/conferma-biglietti/","/inviti/","/i/"],
+      disallow:["/api/","/admin","/admin/","/staff/","/checkin","/biglietto/","/conferma-biglietti/","/inviti/","/i/"],
     },
     sitemap:`${SITE_URL}/sitemap.xml`,
     host:SITE_URL,

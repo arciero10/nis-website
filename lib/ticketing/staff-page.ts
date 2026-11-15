@@ -6,12 +6,12 @@ export async function requireStaffSession(){
   const cookieStore=await cookies();
   const token=cookieStore.get(CHECKIN_SESSION_COOKIE)?.value??"";
   const session=await getStaffSessionByToken(token);
-  if(!session)redirect("/checkin");
+  if(!session)redirect("/admin");
   return session;
 }
 
 export async function requireSuperadminSession(){
   const session=await requireStaffSession();
-  if(session.role!=="SUPERADMIN")redirect("/checkin");
+  if(session.role!=="SUPERADMIN")redirect("/admin/dashboard");
   return session;
 }

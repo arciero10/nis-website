@@ -8,7 +8,7 @@ type IssuanceKind="paypal-charity"|"cash"|"bank-transfer"|"admin";
 type PaymentMethod="PAYPAL"|"CASH"|"BANK_TRANSFER"|"COMPLIMENTARY";
 type Result={message:string;tickets?:{ticketCode:string}[]};
 
-function TicketLinks({tickets}:Pick<Result,"tickets">){return tickets?.length?<ul className="staff-issued-tickets">{tickets.map(ticket=><li key={ticket.ticketCode}><strong>{ticket.ticketCode}</strong><Link href={`/staff/ticket/${ticket.ticketCode}`}>Apri dettaglio</Link></li>)}</ul>:null;}
+function TicketLinks({tickets}:Pick<Result,"tickets">){return tickets?.length?<ul className="staff-issued-tickets">{tickets.map(ticket=><li key={ticket.ticketCode}><strong>{ticket.ticketCode}</strong><Link href={`/admin/biglietti/${ticket.ticketCode}`}>Apri dettaglio</Link></li>)}</ul>:null;}
 
 const routeForMethod:Record<PaymentMethod,IssuanceKind>={PAYPAL:"paypal-charity",CASH:"cash",BANK_TRANSFER:"bank-transfer",COMPLIMENTARY:"admin"};
 

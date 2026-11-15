@@ -1,0 +1,85 @@
+/* NIS Management: scoped application shell and responsive admin surfaces. */
+.nis-management-login{
+  position:relative;
+  min-height:100svh;
+  padding:clamp(20px,4vw,56px);
+  overflow:hidden;
+  background:#eaf0f5;
+}
+.nis-management-login:before{
+  content:"";
+  position:absolute;
+  inset:0 66% 0 0;
+  background:#071d37;
+}
+.management-login-card{
+  position:relative;
+  z-index:1;
+  width:min(100%,980px);
+  min-height:590px;
+  display:grid;
+  grid-template-columns:minmax(320px,.9fr) minmax(380px,1.1fr);
+  overflow:hidden;
+  border:1px solid #cdd9e4;
+  border-radius:8px;
+  background:#fff;
+  color:#071d37;
+  box-shadow:0 28px 80px rgba(7,29,55,.18);
+}
+.management-login-brand{
+  padding:54px 48px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  background:#071d37;
+  color:#fff;
+}
+.management-login-brand img{width:86px;height:86px;margin-bottom:34px;border-radius:8px;background:#fff;object-fit:contain}
+.management-login-brand>span{color:#d8bc72;font-size:11px;font-weight:900;letter-spacing:.08em}
+.management-login-brand h1{margin:10px 0 18px;font-size:clamp(42px,5vw,62px);line-height:.96;letter-spacing:0}
+.management-login-brand p{max-width:330px;margin:0;color:#c7d5e2;font-size:16px;line-height:1.65}
+.management-login-form{padding:54px 58px;display:flex;flex-direction:column;justify-content:center}
+.management-login-lock{width:48px;height:48px;margin-bottom:24px;display:grid;place-items:center;border:1px solid #c9d9e8;border-radius:8px;background:#eef5fb;color:#0869c6}
+.management-login-form>span{color:#8a6b22;font-size:11px;font-weight:900;letter-spacing:.08em}
+.management-login-form h2{margin:7px 0 10px;font-size:32px;line-height:1.15;letter-spacing:0}
+.management-login-form>p{margin:0 0 28px;color:#5c7185;line-height:1.6}
+.management-login-form form{display:grid;gap:10px}
+.management-login-form label{color:#29465f;font-size:13px;font-weight:850}
+.management-login-form input{width:100%;min-height:52px;padding:12px 14px;border:1px solid #aebfce;border-radius:6px;background:#fff;color:#071d37;font:inherit}
+.management-login-form input:focus{border-color:#0869c6;outline:3px solid rgba(8,105,198,.16)}
+.management-login-form form button{min-height:52px;margin-top:6px;border:0;border-radius:6px;background:#0869c6;color:#fff;font:inherit;font-size:13px;font-weight:900;cursor:pointer}
+.management-login-form form button:hover{background:#075aa9}.management-login-form form button:disabled{opacity:.62;cursor:wait}
+.management-login-form>small{margin-top:20px;color:#708294;font-size:12px;text-align:center}
+.management-login-loading{position:relative;z-index:1;padding:24px;display:flex;align-items:center;gap:12px;border-radius:7px;background:#fff;color:#29465f;box-shadow:0 16px 40px rgba(7,29,55,.15)}
+.management-login-loading span{width:18px;height:18px;border:2px solid #bfd0df;border-top-color:#0869c6;border-radius:50%;animation:management-spin .8s linear infinite}
+@keyframes management-spin{to{transform:rotate(360deg)}}
+
+.nis-staff-page{padding:24px;display:block;background:#eef2f6;color:#132d46}
+.staff-workspace{width:min(100%,1500px);grid-template-columns:264px minmax(0,1fr);grid-auto-rows:max-content;gap:20px 28px}
+.staff-navigation.staff-sidebar{top:20px;width:264px;min-height:calc(100svh - 40px);padding:20px 14px;border:1px solid #163b5d;background:#071d37;box-shadow:0 18px 46px rgba(7,29,55,.16)}
+.staff-sidebar-brand{grid-template-columns:52px minmax(0,1fr) auto;padding:0 6px 19px}.staff-sidebar-brand img{width:52px;height:52px}.staff-sidebar-brand strong{font-size:20px}.staff-sidebar-brand span{color:#d8bc72;font-size:11px;font-weight:750}
+.staff-sidebar-links{gap:4px}.staff-navigation.staff-sidebar .staff-sidebar-links a{min-height:46px;padding:10px 12px;gap:11px;border-left:0;border-radius:6px;color:#cbd8e4;font-size:13px}.staff-navigation.staff-sidebar .staff-sidebar-links a svg{flex:0 0 auto;color:#8fa8be}.staff-navigation.staff-sidebar .staff-sidebar-links a:hover{background:#102f4d}.staff-navigation.staff-sidebar .staff-sidebar-links a[aria-current="page"]{background:#fff;color:#071d37;box-shadow:0 7px 18px rgba(0,0,0,.15)}.staff-navigation.staff-sidebar .staff-sidebar-links a[aria-current="page"] svg{color:#0869c6}
+.staff-sidebar-event{padding:14px;border-color:#36506a;background:#0c2947}.staff-sidebar-event span,.staff-sidebar-account span{letter-spacing:.05em}.staff-sidebar-account{padding:16px 7px 2px}.staff-sidebar-account strong{font-size:14px}
+.management-topbar{min-height:66px;padding:11px 18px 11px 22px;display:flex;align-items:center;justify-content:space-between;gap:20px;border:1px solid #d4dee7;border-radius:8px;background:#fff;box-shadow:0 6px 18px rgba(12,42,70,.04)}
+.management-topbar>div:first-child{display:grid;gap:3px}.management-topbar>div:first-child>span{color:#8a6b22;font-size:9px;font-weight:900;letter-spacing:.09em}.management-topbar>div:first-child>strong{color:#071d37;font-size:18px}
+.management-topbar-account{display:flex;align-items:center;gap:12px}.management-topbar-account>span{padding:6px 10px;border-radius:999px;background:#eef3f7;color:#425b70;font-size:11px;font-weight:850}.management-topbar-account button{min-height:40px;padding:8px 12px;display:inline-flex;align-items:center;gap:7px;border:1px solid #c5d2de;border-radius:6px;background:#fff;color:#29465f;font:inherit;font-size:12px;font-weight:850;cursor:pointer}.management-topbar-account button:hover{border-color:#8facC5;background:#f5f8fa}.management-topbar-account button:disabled{opacity:.6}
+.staff-main-content{gap:20px}.event-admin-heading,.staff-page-heading{padding:26px 28px;border:1px solid #d4dee7;border-radius:8px;background:#fff;box-shadow:0 6px 20px rgba(12,42,70,.04)}.staff-page-heading h1,.event-admin-heading h1{letter-spacing:0}.staff-page-heading>span,.event-admin-heading>div>span{color:#8a6b22;letter-spacing:.06em}.management-dashboard-intro{min-height:126px;border:0;background:#0b3154;color:#fff;box-shadow:0 14px 34px rgba(7,29,55,.14)}.management-dashboard-intro h1{color:#fff}.management-dashboard-intro p{color:#d0dce7}.management-dashboard-intro>div>span{color:#d8bc72}.management-dashboard-intro .event-admin-primary-cta{gap:8px;background:#fff;color:#0b3154}.management-role-chip{padding:7px 10px;border:1px solid rgba(216,188,114,.5);border-radius:999px;color:#d8bc72;font-size:11px}
+.staff-dashboard-overview{padding:24px 28px;border-color:#d4dee7;box-shadow:0 7px 22px rgba(12,42,70,.04)}.staff-dashboard-overview header>strong{border-radius:999px;background:#e7f4ec;color:#17623c}.staff-dashboard-overview dl{gap:1px;border:0;background:#dfe7ee}.staff-dashboard-overview dl div{padding:17px 10px;background:#f8fafc}.staff-dashboard-overview dd{font-size:25px}
+.management-section-title{margin:4px 0 14px;display:flex;align-items:end;justify-content:space-between;gap:20px}.management-section-title>div>span{color:#8a6b22;font-size:10px;font-weight:900;letter-spacing:.08em}.management-section-title h2{margin:5px 0 0;color:#071d37;font-size:25px;letter-spacing:0}.management-section-title>p{margin:0;color:#667b8e;font-size:13px}
+.management-shortcut-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.management-shortcut-grid>a{min-width:0;min-height:122px;padding:20px;display:grid;grid-template-columns:44px minmax(0,1fr) auto;align-items:center;gap:14px;border:1px solid #d4dee7;border-radius:8px;background:#fff;color:#173b59;box-shadow:0 5px 17px rgba(12,42,70,.035);transition:border-color .18s ease,transform .18s ease,box-shadow .18s ease}.management-shortcut-grid>a:hover{transform:translateY(-2px);border-color:#91b9df;box-shadow:0 12px 26px rgba(12,42,70,.09)}.management-shortcut-icon{width:44px;height:44px;display:grid;place-items:center;border-radius:7px;background:#eaf3fb;color:#0869c6}.management-shortcut-grid a>div{min-width:0;display:grid;gap:5px}.management-shortcut-grid a strong{font-size:16px}.management-shortcut-grid a>div>span{color:#677b8d;font-size:12px;line-height:1.45}.management-shortcut-grid a>b{color:#7590a8;font-size:21px}.management-shortcut-grid.is-staff{grid-template-columns:repeat(2,minmax(0,1fr))}.management-shortcut-grid.is-staff>a.is-primary{border-color:#0b3154;background:#0b3154;color:#fff}.management-shortcut-grid.is-staff>a.is-primary .management-shortcut-icon{background:#fff;color:#0869c6}.management-shortcut-grid.is-staff>a.is-primary div>span,.management-shortcut-grid.is-staff>a.is-primary>b{color:#c8d6e2}
+
+.staff-metrics article,.staff-dashboard-metrics article,.staff-participant-controls,.staff-search>form,.staff-participant-list article,.staff-ingress-list article,.staff-manual-card,.staff-charity-requests,.staff-partner-form,.staff-partner-summary,.staff-partner-nominees,.staff-partner-list article,.staff-ticket-detail,.staff-export-panel,.nissettone-admin-toolbar,.nissettone-admin-list article,.nissettone-inventory{border-color:#d4dee7;border-radius:8px;box-shadow:0 5px 18px rgba(12,42,70,.04)}
+.staff-metrics article,.staff-dashboard-metrics article{border-top-width:3px}.staff-participant-list article,.staff-ingress-list article,.staff-search-results article{border-left-width:3px}.staff-participant-controls,.staff-search>form{padding:20px 22px}.staff-participant-controls>input,.staff-search input,.staff-manual-fields input,.staff-manual-fields select,.staff-manual-fields textarea,.staff-partner-form input,.staff-partner-form textarea,.staff-partner-form select,.nissettone-admin-toolbar input,.nissettone-admin-toolbar select,.nissettone-inventory input,.nissettone-inventory select{border-color:#b9c8d5;border-radius:6px}.staff-filter-bar button,.staff-allocation-filters button{border-radius:6px}.staff-filter-bar button.is-active,.staff-allocation-filters button.is-active{background:#eaf3fb}.staff-feedback{border-radius:6px;box-shadow:0 5px 16px rgba(12,42,70,.04)}
+.nissettone-admin-list article{overflow:hidden}.nissettone-admin-list dl{border-color:#e1e7ed;background:#f8fafb}.nissettone-admin-list dl div{padding:12px 9px}.nissettone-admin-list footer select,.nissettone-admin-list footer button{min-height:44px;border-radius:6px}
+
+@media(max-width:1180px){.management-shortcut-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:960px){
+  .nis-staff-page{padding:14px}.staff-workspace{display:block}.staff-workspace>.staff-sidebar-toggle{display:inline-flex;margin:0}.staff-workspace>:not(.staff-navigation):not(.staff-sidebar-toggle):not(.staff-sidebar-backdrop){margin-top:12px}.staff-navigation.staff-sidebar{width:min(310px,88vw);padding-top:18px}.management-topbar{min-height:58px}.management-topbar>div:first-child>span{display:none}
+}
+@media(max-width:840px){
+  .nis-management-login{padding:12px;background:#071d37}.nis-management-login:before{display:none}.management-login-card{min-height:calc(100svh - 24px);grid-template-columns:1fr}.management-login-brand{padding:28px 24px 24px}.management-login-brand img{width:62px;height:62px;margin-bottom:20px}.management-login-brand h1{margin:7px 0 10px;font-size:38px}.management-login-brand p{font-size:14px;line-height:1.5}.management-login-form{padding:30px 24px}.management-login-lock{display:none}.management-login-form h2{font-size:27px}.management-login-form>p{margin-bottom:22px}.management-login-form>small{margin-top:16px}
+  .management-topbar{padding:9px 11px 9px 15px}.management-topbar>div:first-child>strong{font-size:16px}.management-topbar-account>span{display:none}.management-topbar-account button{width:42px;padding:0;justify-content:center}.management-topbar-account button>span{display:none}
+  .event-admin-heading,.staff-page-heading{padding:21px 18px}.management-dashboard-intro{min-height:0}.management-dashboard-intro h1{font-size:27px}.management-role-chip{align-self:flex-start}.staff-dashboard-overview{padding:20px 18px}.staff-dashboard-overview dl{grid-template-columns:repeat(2,minmax(0,1fr))}.staff-dashboard-overview dl div:last-child{grid-column:1/-1}.management-section-title{align-items:flex-start;flex-direction:column}.management-section-title>p{display:none}.management-shortcut-grid,.management-shortcut-grid.is-staff{grid-template-columns:1fr}.management-shortcut-grid>a{min-height:96px;padding:16px}.management-shortcut-grid a>div>span{font-size:13px}
+  .staff-participant-list article,.staff-ingress-list article,.staff-search-results article{box-shadow:0 4px 14px rgba(12,42,70,.04)}.nissettone-admin-list dl{grid-template-columns:repeat(2,minmax(0,1fr))}.nissettone-admin-list footer{display:grid;grid-template-columns:1fr}.nissettone-admin-list footer select,.nissettone-admin-list footer button{width:100%}
+}
+@media(prefers-reduced-motion:reduce){.management-login-loading span{animation:none}.management-shortcut-grid>a{transition:none}}

@@ -19,7 +19,7 @@ export default function StaffTicketSearch(){
     if(query.length<2){setMessage("Inserisci almeno 2 caratteri.");setLoading(false);return;}
     try{
       const response=await fetch(`/api/ticketing/staff/tickets?q=${encodeURIComponent(query)}`,{cache:"no-store"});
-      if(response.status===401){window.location.assign("/checkin");return;}
+      if(response.status===401){window.location.assign("/admin");return;}
       if(!response.ok)throw new Error();
       const body=await response.json() as {results:StaffTicketSearchResult[]};setResults(body.results);if(body.results.length===0)setMessage("Nessun biglietto trovato.");
     }catch{setMessage("Ricerca non disponibile. Riprova tra poco.");}finally{setLoading(false);}
@@ -31,7 +31,7 @@ export default function StaffTicketSearch(){
     const ticketCode=ticket.ticketCode;setCheckingCode(ticketCode);setMessage("");
     try{
       const inspection=await fetch("/api/ticketing/checkin/manual",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({ticketCode})});
-      if(inspection.status===401){window.location.assign("/checkin");return;}if(!inspection.ok)throw new Error();const preview=await inspection.json() as StaffCheckInResponse;
+      if(inspection.status===401){window.location.assign("/admin");return;}if(!inspection.ok)throw new Error();const preview=await inspection.json() as StaffCheckInResponse;
       if(preview.status!=="VALID"){setMessage(preview.status==="ALREADY_USED"?`Biglietto già utilizzato da ${holder}.`:preview.status==="NOT_OPEN"?"Check-in non ancora aperto.":preview.status==="CLOSED"?"Check-in chiuso.":"Il biglietto non è valido.");return;}
       const response=await fetch("/api/ticketing/checkin/manual",{method:"PATCH",headers:{"Content-Type":"application/json"},body:JSON.stringify({ticketCode})});if(!response.ok)throw new Error();const result=await response.json() as StaffCheckInResponse;
       if(result.status==="AUTHORIZED")setResults(current=>current.map(item=>item.ticketCode===ticketCode?{...item,status:"USED",checkedInAt:result.checkedInAt,checkinMethod:result.method,checkedInBy:result.operatorName}:item));

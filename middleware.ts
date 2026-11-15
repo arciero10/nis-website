@@ -1,5 +1,6 @@
 import type {NextRequest} from "next/server";
 import {NextResponse} from "next/server";
+import {resolveAdminInternalPath,resolveLegacyAdminPath} from "@/lib/admin-routing";
 import {resolveLegacySeoPath} from "@/lib/legacy-seo";
 
 const apexHost="nazionaleitalianasanitari.com";
@@ -22,8 +23,20 @@ export function middleware(request:NextRequest){
     });
   }
 
+  const legacyAdminPath=resolveLegacyAdminPath(normalizedPath);
+  if(legacyAdminPath){
+    const destinationHost=hostname===apexHost?canonicalHost:requestHost;
+    const destinationProtocol=publicHost?"https:":protocol;
+    const destination=new URL(`${legacyAdminPath}${request.nextUrl.search}`,`${destinationProtocol}//${destinationHost}`);
+    return NextResponse.redirect(destination,307);
+  }
+
   if(hostname!==apexHost&&(!publicHost||protocol==="https:")&&!hasTrailingSlash){
-    return NextResponse.next();
+    const internalPath=resolveAdminInternalPath(normalizedPath);
+    if(!internalPath)return NextResponse.next();
+    const destination=request.nextUrl.clone();
+    destination.pathname=internalPath;
+    return NextResponse.rewrite(destination);
   }
 
   const destinationHost=hostname===apexHost?canonicalHost:requestHost;
