@@ -5,7 +5,7 @@ import test from "node:test";
 const source=path=>readFile(new URL(path,import.meta.url),"utf8");
 
 test("STAFF navigation exposes only operational sections and logout",async()=>{
-  const [navigation,styles]=await Promise.all([source("../components/StaffNavigation.tsx"),source("../app/globals.css")]);
+  const [navigation,styles,managementStyles]=await Promise.all([source("../components/StaffNavigation.tsx"),source("../app/globals.css"),source("../app/management.css")]);
   assert.match(navigation,/const staffLinks=\[[\s\S]*Check-in[\s\S]*Partecipanti[\s\S]*Ingressi[\s\S]*\]/);
   assert.match(navigation,/const superadminLinks=\[[\s\S]*Dashboard[\s\S]*Eventi[\s\S]*Biglietti[\s\S]*Aziende[\s\S]*Report[\s\S]*\]/);
   assert.match(navigation,/role==="SUPERADMIN"\?superadminLinks:staffLinks/);
@@ -17,6 +17,8 @@ test("STAFF navigation exposes only operational sections and logout",async()=>{
   assert.match(styles,/staff-navigation\.staff-sidebar/);
   assert.match(styles,/@media\(max-width:960px\)/);
   assert.match(styles,/staff-dashboard-metrics-operational\{grid-template-columns:repeat\(3/);
+  assert.match(managementStyles,/@media\(min-width:961px\)\{\.staff-workspace>\.staff-navigation\.staff-sidebar\{position:fixed/);
+  assert.match(managementStyles,/max-height:calc\(100svh - 40px\);overflow-y:auto/);
 });
 
 test("NIS Management reuses one authentication flow and maps canonical admin routes",async()=>{
