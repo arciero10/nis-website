@@ -8,7 +8,7 @@ const esc=(value:string)=>value.replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;
 const money=(cents:number)=>new Intl.NumberFormat("it-IT",{style:"currency",currency:"EUR"}).format(cents/100);
 const labels:Record<NissettoneEmailType,{subject:string;heading:string;message:string}>={
   PREORDER:{subject:"Preordine NISSETTONE ricevuto",heading:"Abbiamo ricevuto il tuo preordine",message:"La prenotazione è temporanea e sarà confermata soltanto dopo la verifica del pagamento."},
-  PAID:{subject:"Pagamento NISSETTONE confermato",heading:"Il tuo ordine è confermato",message:"Il pagamento è stato verificato. Il prodotto sarà disponibile a partire dal 20 novembre 2026."},
+  PAID:{subject:"Pagamento NISSETTONE confermato",heading:"Il tuo ordine è confermato",message:"Il pagamento è stato verificato. Riceverai le indicazioni relative alla disponibilità e alla modalità di ricezione scelta."},
   READY:{subject:"Il tuo NISSETTONE è pronto per il ritiro",heading:"Il tuo ordine è pronto",message:`Puoi ritirarlo presso ${NISSETTONE_PICKUP_ADDRESS}, seguendo le indicazioni comunicate dall'organizzazione.`},
   DELIVERY_UPDATE:{subject:"Aggiornamento consegna NISSETTONE",heading:"Il tuo ordine è in consegna",message:"La consegna è in gestione. Non viene promessa una fascia oraria specifica."},
   CANCELLED:{subject:"Ordine NISSETTONE annullato",heading:"Ordine annullato",message:"Il tuo ordine è stato annullato. Per informazioni puoi rispondere a questa email."},

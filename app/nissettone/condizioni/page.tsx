@@ -12,7 +12,7 @@ export const metadata=createPageMetadata({
 export default function Page(){return <>
   <PageHero eyebrow="NISSETTONE 2026" title="Condizioni di" accent="preordine." intro="Informazioni applicabili al preordine del NISSETTONE 2026." image="/images/nissettone/nissettone-3.jpeg" path="/nissettone/condizioni"/>
   <section className="section"><div className="shell legal-content">
-    <p className="legal-updated">Ultimo aggiornamento: 15 novembre 2026</p>
+    <p className="legal-updated">Ultimo aggiornamento: 16 novembre 2026</p>
 
     <h2>1. Identificazione dell’organizzazione</h2>
     <p>L’iniziativa NISSETTONE 2026 è presentata dalla <strong>Nazionale Italiana Sanitari</strong>, codice fiscale {site.cf}. Per informazioni è possibile scrivere a <a href={`mailto:${site.email}`}>{site.email}</a>.</p>
@@ -21,7 +21,7 @@ export default function Page(){return <>
     <p>Il NISSETTONE 2026 è un panettone da 1 kg al cioccolato, senza glassa, realizzato in collaborazione con la Pasticceria Antonini di Roma.</p>
 
     <h2>3. Prezzo e disponibilità</h2>
-    <p>Il contributo unitario è di <strong>49,00 €</strong>. La disponibilità è limitata alle quantità effettivamente presenti nel sistema al momento dell’ordine. Il riepilogo mostrato prima del pagamento indica quantità, contributo unitario, totale e modalità di ricezione selezionata.</p>
+    <p>Il prezzo unitario è di <strong>52,00 €</strong>, identico per tutte le modalità di pagamento autorizzate e senza supplementi legati allo strumento scelto. La disponibilità è limitata alle quantità effettivamente presenti nel sistema al momento dell’ordine. Il riepilogo mostrato prima del pagamento indica quantità, prezzo unitario, totale e modalità di ricezione selezionata.</p>
 
     <h2>4. Procedura di preordine</h2>
     <p>Il cliente seleziona quantità e modalità di ricezione, inserisce i dati richiesti, consulta queste condizioni e l’informativa privacy e presta l’accettazione obbligatoria. Il sistema ricostruisce il totale lato server e crea una prenotazione temporanea; l’ordine è confermato soltanto dopo la verifica server-side del pagamento completato.</p>

@@ -13,11 +13,17 @@ const validationCompiled=ts.transpileModule(`${nameSource}\nconst NISSETTONE_MAX
 const validationRules=await import(`data:text/javascript;base64,${Buffer.from(validationCompiled).toString("base64")}`);
 const baseOrder={requestId:"11111111-1111-4111-8111-111111111111",quantity:1,firstName:"mARIA",lastName:"dE lUCA",email:"cliente@example.com",phone:"3331234567",deliveryMethod:"PICKUP",privacyAccepted:true,termsAccepted:true};
 
-test("NISSETTONE contribution is 49 EUR per item and never trusts a client total",()=>{
-  assert.equal(rules.NISSETTONE_UNIT_PRICE_CENTS,4900);
-  assert.equal(rules.nissettoneTotalCents(1),4900);
-  assert.equal(rules.nissettoneTotalCents(3),14700);
+test("NISSETTONE has one 52 EUR server-side price for every payment method",()=>{
+  assert.equal(rules.NISSETTONE_UNIT_PRICE_CENTS,5200);
+  assert.equal(rules.nissettoneTotalCents(1),5200);
+  assert.equal(rules.nissettoneTotalCents(3),15600);
   assert.throws(()=>rules.nissettoneTotalCents(0));
+});
+
+test("availability notice follows midnight in Europe/Rome on 20 November 2026",()=>{
+  assert.equal(rules.NISSETTONE_AVAILABLE_FROM,"2026-11-20T00:00:00+01:00");
+  assert.equal(rules.showNissettoneAvailabilityNotice(new Date("2026-11-19T22:59:59.999Z")),true);
+  assert.equal(rules.showNissettoneAvailabilityNotice(new Date("2026-11-19T23:00:00.000Z")),false);
 });
 
 test("quantity and availability are capped at the real 250 item inventory",()=>{
@@ -65,8 +71,8 @@ test("published NISSETTONE legal pages use verified facts and remain required by
     source("../app/sitemap.ts"),
     source("../.env.example"),
   ]);
-  assert.match(conditions,/49,00 €/);
-  assert.match(conditions,/senza maggiorazioni legate allo strumento di pagamento/);
+  assert.match(conditions,/52,00 €/);
+  assert.match(conditions,/senza supplementi legati allo strumento scelto/);
   assert.match(conditions,/20 novembre 2026/);
   assert.match(conditions,/Pasticceria Sabotino/);
   assert.match(conditions,/Informazioni alimentari e allergeni/);
@@ -100,8 +106,8 @@ test("NISSETTONE product structured data reflects only a real public offer",asyn
   assert.doesNotMatch(structuredData,/PreOrder|aggregateRating|review:|priceValidUntil|validThrough|shippingDetails|hasMerchantReturnPolicy/);
 });
 
-test("migrations are additive, preserve historical orders and hold the 49 EUR product in DRAFT",async()=>{
-  const [base,fiscal,price]=await Promise.all([source("../migrations/028_nissettone_2026.sql"),source("../migrations/029_nissettone_buyer_fiscal_data.sql"),source("../migrations/030_nissettone_price_49_checkout_hold.sql")]);
+test("migrations are additive, preserve historical orders and hold the 52 EUR product in DRAFT",async()=>{
+  const [base,fiscal,price]=await Promise.all([source("../migrations/028_nissettone_2026.sql"),source("../migrations/029_nissettone_buyer_fiscal_data.sql"),source("../migrations/030_nissettone_price_52_checkout_hold.sql")]);
   assert.match(base,/CREATE TABLE IF NOT EXISTS nissettone_products/);
   assert.match(base,/CREATE TABLE IF NOT EXISTS nissettone_orders/);
   assert.match(base,/stock_total INTEGER NOT NULL/);
@@ -112,7 +118,8 @@ test("migrations are additive, preserve historical orders and hold the 49 EUR pr
   assert.match(fiscal,/SET unit_price_cents=5500/);
   assert.match(fiscal,/status='DRAFT'/);
   assert.match(fiscal,/NOT EXISTS \(\s*SELECT 1 FROM nissettone_orders/);
-  assert.match(price,/SET unit_price_cents=4900/);
+  assert.match(price,/SET unit_price_cents=5200/);
+  assert.match(price,/unit_price_cents IN \(4900,5500\)/);
   assert.match(price,/status='DRAFT'/);
   assert.doesNotMatch(price,/UPDATE nissettone_orders|DELETE FROM|DROP\s|TRUNCATE\s/i);
   assert.doesNotMatch(`${base}\n${fiscal}\n${price}`,/DROP\s|TRUNCATE\s|ALTER TABLE ticketing_|UPDATE ticketing_|DELETE FROM ticketing_/i);
@@ -239,14 +246,18 @@ test("inventory activation sends STATUS and records the DRAFT to ACTIVE audit at
 });
 
 test("the official product images and public SEO route are wired",async()=>{
-  for(const file of ["nissettone-2026.jpg","nissettone-prodotto.jpg","nissettone-01.jpeg","nissettone-2.jpeg","nissettone-3.jpeg"]){
+  for(const file of ["nissettone-01.jpeg","nissettone-2.jpeg","nissettone-3.jpeg"]){
     await access(new URL(`../public/images/nissettone/${file}`,import.meta.url));
   }
   const [page,checkout,sitemap,site]=await Promise.all([source("../app/nissettone/page.tsx"),source("../components/NissettoneCheckout.tsx"),source("../app/sitemap.ts"),source("../data/site.ts")]);
   assert.match(page,/Product/);
   assert.match(page,/NISSETTONE 2026/);
-  assert.match(checkout,/nissettone-2026\.jpg/);
-  assert.match(page,/nissettone-2026\.jpg/);
+  assert.match(checkout,/nissettone-2\.jpeg/);
+  assert.match(checkout,/nissettone-3\.jpeg/);
+  assert.doesNotMatch(checkout,/nissettone-2026\.jpg/);
+  assert.doesNotMatch(checkout,/nissettone-prodotto\.jpg/);
+  assert.match(page,/nissettone-3\.jpeg/);
+  assert.doesNotMatch(page,/nissettone-2026\.jpg/);
   assert.match(sitemap,/\/nissettone/);
   assert.match(site,/NISSETTONE/);
 });
