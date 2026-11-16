@@ -7,6 +7,8 @@ export const metadata=createPageMetadata({
   description:"Informativa sul trattamento dei dati personali attraverso il sito della Nazionale Italiana Sanitari.",
   path:"/privacy-policy",
 });
+export const dynamic="force-dynamic";
+export const revalidate=0;
 
 export default function Page(){return <>
   <PageHero eyebrow="PRIVACY POLICY" title="Privacy" accent="Policy." intro="Informazioni sul trattamento dei dati personali attraverso il sito della Nazionale Italiana Sanitari." image="/images/hero-contact.jpg" path="/privacy-policy"/>

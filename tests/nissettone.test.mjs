@@ -75,6 +75,8 @@ test("published NISSETTONE legal pages use verified facts and remain required by
     source("../.env.example"),
   ]);
   assert.match(conditions,/52,00 €/);
+  assert.match(conditions,/dynamic="force-dynamic"/);
+  assert.match(conditions,/revalidate=0/);
   assert.match(conditions,/senza supplementi legati allo strumento scelto/);
   assert.match(conditions,/20 novembre 2026/);
   assert.match(conditions,/Pasticceria Sabotino/);
@@ -82,6 +84,8 @@ test("published NISSETTONE legal pages use verified facts and remain required by
   assert.match(conditions,/href="\/privacy-policy"/);
   assert.doesNotMatch(conditions,/\[DA COMPLETARE\]|TODO|placeholder/i);
   assert.match(privacy,/Ordini e preordini NISSETTONE 2026/);
+  assert.match(privacy,/dynamic="force-dynamic"/);
+  assert.match(privacy,/revalidate=0/);
   assert.match(privacy,/Microsoft Graph/);
   assert.match(privacy,/PayPal/);
   assert.match(checkout,/input type="checkbox" required/);

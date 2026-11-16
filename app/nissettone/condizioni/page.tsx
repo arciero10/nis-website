@@ -8,6 +8,8 @@ export const metadata=createPageMetadata({
   description:"Informazioni sul preordine, pagamento, ritiro e consegna del NISSETTONE 2026.",
   path:"/nissettone/condizioni",
 });
+export const dynamic="force-dynamic";
+export const revalidate=0;
 
 export default function Page(){return <>
   <PageHero eyebrow="NISSETTONE 2026" title="Condizioni di" accent="preordine." intro="Informazioni applicabili al preordine del NISSETTONE 2026." image="/images/nissettone/nissettone-3.jpeg" path="/nissettone/condizioni"/>
