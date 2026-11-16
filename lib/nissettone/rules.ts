@@ -2,7 +2,8 @@ export const NISSETTONE_UNIT_PRICE_CENTS=5200;
 export const NISSETTONE_INITIAL_STOCK=250;
 export const NISSETTONE_MAX_QUANTITY=250;
 export const NISSETTONE_RESERVATION_MINUTES=20;
-export const NISSETTONE_PICKUP_ADDRESS="Pasticceria Sabotino, Via Sabotino 23/25, 00195 Roma";
+export const NISSETTONE_DELIVERY_MIN_QUANTITY=5;
+export const NISSETTONE_PICKUP_ADDRESS="Pasticceria Sabotino-Antonini, Via Sabotino 19, Roma";
 export const NISSETTONE_AVAILABLE_FROM="2026-11-20T00:00:00+01:00";
 
 export type NissettoneDeliveryMethod="PICKUP"|"DELIVERY";
@@ -15,6 +16,7 @@ export function validNissettoneQuantity(value:number,available:number){return Nu
 export function nissettoneTotalCents(quantity:number,unitPriceCents=NISSETTONE_UNIT_PRICE_CENTS){if(!Number.isInteger(quantity)||quantity<1||!Number.isInteger(unitPriceCents)||unitPriceCents<1)throw new Error("Quantità o prezzo non validi.");return quantity*unitPriceCents;}
 export function showNissettoneAvailabilityNotice(now:Date=new Date()){return now.getTime()<Date.parse(NISSETTONE_AVAILABLE_FROM);}
 export function isDeclaredRomeMunicipality(value:string){return value.trim().toLocaleLowerCase("it-IT")==="roma";}
+export function deliveryAvailableForQuantity(quantity:number){return Number.isInteger(quantity)&&quantity>=NISSETTONE_DELIVERY_MIN_QUANTITY;}
 export function addressVerificationFor(method:NissettoneDeliveryMethod){return method==="PICKUP"?"NOT_REQUIRED" as const:"PENDING" as const;}
 function publicDocumentUrl(value:string|undefined){
   const url=value?.trim()??"";

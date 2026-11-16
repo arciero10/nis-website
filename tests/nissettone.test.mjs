@@ -9,7 +9,7 @@ const rulesCompiled=ts.transpileModule(rulesSource,{compilerOptions:{module:ts.M
 const rules=await import(`data:text/javascript;base64,${Buffer.from(rulesCompiled).toString("base64")}`);
 const validationSource=(await source("../lib/nissettone/validation.ts")).replace(/^import .*;\r?\n/gm,"");
 const nameSource=await source("../lib/ticketing/name-format.ts");
-const validationCompiled=ts.transpileModule(`${nameSource}\nconst NISSETTONE_MAX_QUANTITY=250;\nconst isDeclaredRomeMunicipality=value=>value.trim().toLocaleLowerCase("it-IT")==="roma";\nconst addressVerificationFor=method=>method==="PICKUP"?"NOT_REQUIRED":"PENDING";\n${validationSource}`,{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText;
+const validationCompiled=ts.transpileModule(`${nameSource}\nconst NISSETTONE_MAX_QUANTITY=250;\nconst isDeclaredRomeMunicipality=value=>value.trim().toLocaleLowerCase("it-IT")==="roma";\nconst deliveryAvailableForQuantity=quantity=>Number.isInteger(quantity)&&quantity>=5;\nconst addressVerificationFor=method=>method==="PICKUP"?"NOT_REQUIRED":"PENDING";\n${validationSource}`,{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText;
 const validationRules=await import(`data:text/javascript;base64,${Buffer.from(validationCompiled).toString("base64")}`);
 const baseOrder={requestId:"11111111-1111-4111-8111-111111111111",quantity:1,firstName:"mARIA",lastName:"dE lUCA",email:"cliente@example.com",phone:"3331234567",deliveryMethod:"PICKUP",privacyAccepted:true,termsAccepted:true};
 
@@ -34,13 +34,16 @@ test("quantity and availability are capped at the real 250 item inventory",()=>{
   assert.equal(rules.availableStock(250,120,30),100);
 });
 
-test("delivery accepts only a declared Roma municipality and pickup uses Sabotino",()=>{
+test("delivery requires five items in Roma and pickup uses the official Sabotino-Antonini address",()=>{
   assert.equal(rules.isDeclaredRomeMunicipality(" Roma "),true);
   assert.equal(rules.isDeclaredRomeMunicipality("Fiumicino"),false);
   assert.equal(rules.addressVerificationFor("DELIVERY"),"PENDING");
   assert.equal(rules.addressVerificationFor("PICKUP"),"NOT_REQUIRED");
-  assert.match(rules.NISSETTONE_PICKUP_ADDRESS,/Pasticceria Sabotino/);
-  assert.match(rules.NISSETTONE_PICKUP_ADDRESS,/Via Sabotino 23\/25/);
+  assert.equal(rules.NISSETTONE_DELIVERY_MIN_QUANTITY,5);
+  assert.equal(rules.deliveryAvailableForQuantity(4),false);
+  assert.equal(rules.deliveryAvailableForQuantity(5),true);
+  assert.match(rules.NISSETTONE_PICKUP_ADDRESS,/Pasticceria Sabotino-Antonini/);
+  assert.match(rules.NISSETTONE_PICKUP_ADDRESS,/Via Sabotino 19/);
 });
 
 test("commercial PayPal checkout is fail-closed until pricing and infrastructure are approved",()=>{
@@ -144,8 +147,10 @@ test("buyer and fiscal data are validated server-side without mixing delivery ad
   const association=validationRules.parseNissettoneOrderInput({...baseOrder,buyerType:"ORGANIZATION",legalName:"Associazione Demo",fiscalCode:"DEF456",fiscalStreet:"Via Lazio",fiscalHouseNumber:"2",fiscalPostcode:"00100",fiscalCity:"Roma",fiscalProvince:"RM",fiscalCountry:"Italia"});
   assert.equal(association.vatNumber,null);
   const invoicedDelivery=validationRules.parseNissettoneOrderInput({...baseOrder,buyerType:"PRIVATE",invoiceRequested:true,fiscalCode:"RSSMRA80A01H501Z",fiscalStreet:"Via Fiscale",fiscalHouseNumber:"3",fiscalPostcode:"00100",fiscalCity:"Roma",fiscalProvince:"RM",fiscalCountry:"Italia",deliveryMethod:"DELIVERY",street:"Via Consegna",houseNumber:"4",postcode:"00100",city:"Roma"});
-  assert.equal(invoicedDelivery.fiscalStreet,"Via Fiscale");
-  assert.equal(invoicedDelivery.street,"Via Consegna");
+  assert.equal(invoicedDelivery,null);
+  const eligibleDelivery=validationRules.parseNissettoneOrderInput({...baseOrder,quantity:5,buyerType:"PRIVATE",invoiceRequested:true,fiscalCode:"RSSMRA80A01H501Z",fiscalStreet:"Via Fiscale",fiscalHouseNumber:"3",fiscalPostcode:"00100",fiscalCity:"Roma",fiscalProvince:"RM",fiscalCountry:"Italia",deliveryMethod:"DELIVERY",street:"Via Consegna",houseNumber:"4",postcode:"00100",city:"Roma"});
+  assert.equal(eligibleDelivery.fiscalStreet,"Via Fiscale");
+  assert.equal(eligibleDelivery.street,"Via Consegna");
 });
 
 test("dashboard and exports keep fiscal data behind SUPERADMIN routes",async()=>{

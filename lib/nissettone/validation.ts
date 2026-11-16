@@ -1,5 +1,5 @@
 import {formatPersonNamePart} from "@/lib/ticketing/name-format";
-import {addressVerificationFor,isDeclaredRomeMunicipality,NISSETTONE_MAX_QUANTITY,type NissettoneBuyerType,type NissettoneDeliveryMethod} from "@/lib/nissettone/rules";
+import {addressVerificationFor,deliveryAvailableForQuantity,isDeclaredRomeMunicipality,NISSETTONE_MAX_QUANTITY,type NissettoneBuyerType,type NissettoneDeliveryMethod} from "@/lib/nissettone/rules";
 
 const emailPattern=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const clean=(value:unknown,max:number)=>typeof value==="string"?value.replace(/[\u0000-\u001f\u007f]+/g," ").replace(/\s+/g," ").trim().slice(0,max):"";
@@ -16,6 +16,7 @@ export function parseNissettoneOrderInput(payload:unknown):NissettoneOrderInput|
   if(buyerType==="PRIVATE"&&invoiceRequested&&(!fiscalCode||!fiscalStreet||!fiscalHouseNumber||!/^\d{5}$/.test(fiscalPostcode??"")||!fiscalCity||!fiscalProvince||!fiscalCountry))return null;
   const needsFiscalData=buyerType==="ORGANIZATION"||invoiceRequested;const buyer={buyerType,firstName,lastName,email,phone,legalName:buyerType==="ORGANIZATION"?legalName:null,fiscalCode:needsFiscalData?fiscalCode:null,vatNumber:buyerType==="ORGANIZATION"?vatNumber:null,fiscalStreet:needsFiscalData?fiscalStreet:null,fiscalHouseNumber:needsFiscalData?fiscalHouseNumber:null,fiscalPostcode:needsFiscalData?fiscalPostcode:null,fiscalCity:needsFiscalData?fiscalCity:null,fiscalProvince:needsFiscalData?fiscalProvince:null,fiscalCountry:needsFiscalData?fiscalCountry:null,sdiCode:buyerType==="ORGANIZATION"?sdiCode:null,pec:buyerType==="ORGANIZATION"?pec:null,administrativeEmail:buyerType==="ORGANIZATION"?administrativeEmail:null,invoiceRequested};
   if(deliveryMethod==="PICKUP")return {requestId,quantity,...buyer,deliveryMethod,street:null,houseNumber:null,postcode:null,city:null,details:null,notes:clean(value.notes,500)||null,privacyAccepted:true,termsAccepted:true};
+  if(!deliveryAvailableForQuantity(quantity))return null;
   const street=clean(value.street,160);const houseNumber=clean(value.houseNumber,30);const postcode=clean(value.postcode,10);const city=clean(value.city,80);const details=clean(value.details,120);const notes=clean(value.notes,500);
   if(!street||!houseNumber||!/^\d{5}$/.test(postcode)||!isDeclaredRomeMunicipality(city))return null;
   return {requestId,quantity,...buyer,deliveryMethod,street,houseNumber,postcode,city:"Roma",details:details||null,notes:notes||null,privacyAccepted:true,termsAccepted:true};
