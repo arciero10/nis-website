@@ -128,8 +128,13 @@ test("migrations are additive, preserve historical orders and hold the 52 EUR pr
   assert.match(fiscal,/status='DRAFT'/);
   assert.match(fiscal,/NOT EXISTS \(\s*SELECT 1 FROM nissettone_orders/);
   assert.match(price,/SET unit_price_cents=5200/);
-  assert.match(price,/unit_price_cents IN \(4900,5500\)/);
+  assert.match(price,/unit_price_cents NOT IN \(4900,5200,5500\)/);
   assert.match(price,/status='DRAFT'/);
+  assert.match(price,/FOR UPDATE/);
+  assert.match(price,/product_record\.status <> 'DRAFT'/);
+  assert.match(price,/product_record\.currency <> 'EUR'/);
+  assert.match(price,/product_record\.stock_total <> 250/);
+  assert.match(price,/product_record\.stock_committed > product_record\.stock_total/);
   assert.doesNotMatch(price,/UPDATE nissettone_orders|DELETE FROM|DROP\s|TRUNCATE\s/i);
   assert.doesNotMatch(`${base}\n${fiscal}\n${price}`,/DROP\s|TRUNCATE\s|ALTER TABLE ticketing_|UPDATE ticketing_|DELETE FROM ticketing_/i);
 });
