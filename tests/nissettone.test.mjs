@@ -75,6 +75,8 @@ test("published NISSETTONE legal pages use verified facts and remain required by
     source("../.env.example"),
   ]);
   assert.match(conditions,/52,00 €/);
+  assert.match(conditions,/iniziativa solidale e di raccolta fondi/);
+  assert.match(conditions,/non attribuisce automaticamente al pagamento una qualificazione fiscale/);
   assert.match(conditions,/dynamic="force-dynamic"/);
   assert.match(conditions,/revalidate=0/);
   assert.match(conditions,/senza supplementi legati allo strumento scelto/);
@@ -258,7 +260,7 @@ test("the official product images and public SEO route are wired",async()=>{
   for(const file of ["nissettone-01.jpeg","nissettone-2.jpeg","nissettone-3.jpeg"]){
     await access(new URL(`../public/images/nissettone/${file}`,import.meta.url));
   }
-  const [page,checkout,sitemap,site]=await Promise.all([source("../app/nissettone/page.tsx"),source("../components/NissettoneCheckout.tsx"),source("../app/sitemap.ts"),source("../data/site.ts")]);
+  const [page,checkout,sitemap,site,styles]=await Promise.all([source("../app/nissettone/page.tsx"),source("../components/NissettoneCheckout.tsx"),source("../app/sitemap.ts"),source("../data/site.ts"),source("../app/globals.css")]);
   assert.match(page,/Product/);
   assert.match(page,/NISSETTONE 2026/);
   assert.match(checkout,/nissettone-2\.jpeg/);
@@ -267,6 +269,10 @@ test("the official product images and public SEO route are wired",async()=>{
   assert.doesNotMatch(checkout,/nissettone-prodotto\.jpg/);
   assert.match(page,/nissettone-3\.jpeg/);
   assert.doesNotMatch(page,/nissettone-2026\.jpg/);
+  for(const project of ["Scuola Viva","Il Giardino Funzionale","NIS Care","Spirito NIS"])assert.match(page,new RegExp(project));
+  assert.match(page,/Dona il Nissettone… sennò ti aspetta il siringone!/);
+  assert.match(styles,/\.nissettone-hero\{min-height:520px!important/);
+  assert.match(styles,/\.nissettone-project-grid/);
   assert.match(sitemap,/\/nissettone/);
   assert.match(site,/NISSETTONE/);
 });
